@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://hoxnox.com/</link><description></description><atom:link href="http://hoxnox.com/feeds/merder-kim.rss.xml" rel="self"></atom:link><lastBuildDate>Thu, 20 Sep 2012 00:00:00 +0400</lastBuildDate><item><title>Об организации проектов C++</title><link>http://hoxnox.com/devel/repo_org.html</link><description>&lt;div class="section" id="id1"&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/merder-kim.rss.xml" rel="self"></atom:link><lastBuildDate>Thu, 20 Sep 2012 00:00:00 +0400</lastBuildDate><item><title>Об организации проектов C++</title><link>http://blog.hoxnox.com/devel/repo_org.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Структура репоризитория и проекта&lt;/h2&gt;
 &lt;p&gt;Все C/C++ проекты храняться в едином репозитории, работа которого опирается на систему контроля
 версий git. Каждый проект представляет собой git-репозиторий (как правило bare).&lt;/p&gt;
@@ -176,4 +176,4 @@ git read-tree --prefix= -u string@rmt
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 20 Sep 2012 00:00:00 +0400</pubDate><guid>tag:hoxnox.com,2012-09-20:devel/repo_org.html</guid><category>git</category><category>management</category></item></channel></rss>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 20 Sep 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-09-20:devel/repo_org.html</guid><category>git</category><category>management</category></item></channel></rss>

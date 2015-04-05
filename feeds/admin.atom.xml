@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://hoxnox.com/" rel="alternate"></link><link href="http://hoxnox.com/feeds/admin.atom.xml" rel="self"></link><id>http://hoxnox.com/</id><updated>2015-03-28T00:00:00+03:00</updated><entry><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link href="http://hoxnox.com/admin/kycera-cups.html" rel="alternate"></link><updated>2015-03-28T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2015-03-28:admin/kycera-cups.html</id><summary type="html">&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/admin.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2015-03-28T00:00:00+03:00</updated><entry><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link href="http://blog.hoxnox.com/admin/kycera-cups.html" rel="alternate"></link><updated>2015-03-28T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</id><summary type="html">&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
 in that case my wife's employer would agree to offset the costs. The
 second challenge - it must be integrated into home network. Every home
@@ -76,7 +76,7 @@ In the printer adding dialog use the following path:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</summary><category term="cups"></category><category term="gentoo"></category><category term="printserver"></category><category term="kyocera"></category><category term="ppd"></category></entry><entry><title>QEMU</title><link href="http://hoxnox.com/virtual/qemu.html" rel="alternate"></link><updated>2014-01-04T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2014-01-04:virtual/qemu.html</id><summary type="html">&lt;p&gt;Создать диск: &lt;/p&gt;
+&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</summary><category term="cups"></category><category term="gentoo"></category><category term="printserver"></category><category term="kyocera"></category><category term="ppd"></category></entry><entry><title>QEMU</title><link href="http://blog.hoxnox.com/virtual/qemu.html" rel="alternate"></link><updated>2014-01-04T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-01-04:virtual/qemu.html</id><summary type="html">&lt;p&gt;Создать диск: &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -123,7 +123,7 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
 драйверами, простой сетью (без низкоуровневых вещей типа icmp) и без
 графики (управление по ssh).&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;qemu-system-i386 -enable-kvm -cpu host -drive file=/media/data/vbox/Debian7.i386.virtio.survey.qcow2,index=0,media=disk,if=virtio -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::28955-:22 -nographic
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="qemu"></category></entry><entry><title>Samba и домен</title><link href="http://hoxnox.com/internet/samba_domen.html" rel="alternate"></link><updated>2012-04-19T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-04-19:internet/samba_domen.html</id><summary type="html">&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="qemu"></category></entry><entry><title>Samba и домен</title><link href="http://blog.hoxnox.com/internet/samba_domen.html" rel="alternate"></link><updated>2012-04-19T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-19:internet/samba_domen.html</id><summary type="html">&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
 пользователя на контроллер домена. Для этого необходимо собрать её с ключём ads. Затем настроить
 керберос (/etc/krb5.conf)&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;[libdefaults]

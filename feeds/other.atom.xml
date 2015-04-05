@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://hoxnox.com/" rel="alternate"></link><link href="http://hoxnox.com/feeds/other.atom.xml" rel="self"></link><id>http://hoxnox.com/</id><updated>2014-10-31T00:00:00+03:00</updated><entry><title>YaC 2014</title><link href="http://hoxnox.com/devel/YaC.html" rel="alternate"></link><updated>2014-10-31T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2014-10-31:devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/other.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2014-10-31T00:00:00+03:00</updated><entry><title>YaC 2014</title><link href="http://blog.hoxnox.com/devel/YaC.html" rel="alternate"></link><updated>2014-10-31T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-31:devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
 компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
 Security". Прослушал следующие доклады:&lt;/p&gt;
 &lt;ol&gt;
@@ -59,7 +59,7 @@ Security". Прослушал следующие доклады:&lt;/p&gt;
    filesystem, shared IPC, host networking, share device nodes),
    обнаружение служб (srvice discovery).&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;</summary><category term="YaC"></category></entry><entry><title>К-свёртка</title><link href="http://hoxnox.com/other/kconvol.html" rel="alternate"></link><updated>2012-06-07T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-06-07:other/kconvol.html</id><summary type="html">&lt;div class="section" id="id2"&gt;
+&lt;/ol&gt;</summary><category term="YaC"></category></entry><entry><title>К-свёртка</title><link href="http://blog.hoxnox.com/other/kconvol.html" rel="alternate"></link><updated>2012-06-07T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-07:other/kconvol.html</id><summary type="html">&lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Понятие к-свёртки&lt;/h2&gt;
 &lt;p&gt;Рассмотрим множества не повторяющихся
 натуральных чисел. Причем чаще всего
@@ -255,7 +255,7 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 соответствующим блоком типа A даст ответ принадлежит ли данный системный номер свёртке.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="algorithm"></category><category term="container"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://hoxnox.com/other/parallel_notes.html" rel="alternate"></link><updated>2012-03-28T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-03-28:other/parallel_notes.html</id><summary type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
+</summary><category term="algorithm"></category><category term="container"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://blog.hoxnox.com/other/parallel_notes.html" rel="alternate"></link><updated>2012-03-28T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-28:other/parallel_notes.html</id><summary type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
 &lt;table border="1" class="docutils"&gt;
 &lt;colgroup&gt;
 &lt;col width="36%" /&gt;

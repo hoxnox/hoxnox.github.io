@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://hoxnox.com/" rel="alternate"></link><link href="http://hoxnox.com/feeds/inet.atom.xml" rel="self"></link><id>http://hoxnox.com/</id><updated>2014-02-14T00:00:00+04:00</updated><entry><title>Динамическая маршрутизация</title><link href="http://hoxnox.com/inet/ospf.html" rel="alternate"></link><updated>2014-02-14T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2014-02-14:inet/ospf.html</id><summary type="html">&lt;p&gt;Существует 2 вида протоколов динамической маршрутизации - EGP и IGP.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/inet.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2014-02-14T00:00:00+04:00</updated><entry><title>Динамическая маршрутизация</title><link href="http://blog.hoxnox.com/inet/ospf.html" rel="alternate"></link><updated>2014-02-14T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-02-14:inet/ospf.html</id><summary type="html">&lt;p&gt;Существует 2 вида протоколов динамической маршрутизации - EGP и IGP.
 Внешний и внутренний соответственно. Внешний только один - BGP.
 Внутренние, в свою очередь, делятся на Distance-Vector (RIP, EIGRP) и Link
 State (OSPF, IS-IS). Если на маршрутизаторе настроено несколько
@@ -106,7 +106,7 @@ Hello-пакеты, а каждые 30 минут рассылаются LSA —
 &lt;p&gt;loopback&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;interface loo 0
 ip address 172.16.255.1 255.255.255.255
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="ospf"></category><category term="inet"></category><category term="routing"></category></entry><entry><title>Использование одного локального адреса для двух различных соединений</title><link href="http://hoxnox.com/inet/tcp_commonlocaladdr.rst.html" rel="alternate"></link><updated>2012-10-31T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-10-31:inet/tcp_commonlocaladdr.rst.html</id><summary type="html">&lt;p&gt;Как выяснилось стэк TCP/IP Linux-3.3.8 идентифицирует соединение не только по локальному адресу, но
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="ospf"></category><category term="inet"></category><category term="routing"></category></entry><entry><title>Использование одного локального адреса для двух различных соединений</title><link href="http://blog.hoxnox.com/inet/tcp_commonlocaladdr.rst.html" rel="alternate"></link><updated>2012-10-31T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-10-31:inet/tcp_commonlocaladdr.rst.html</id><summary type="html">&lt;p&gt;Как выяснилось стэк TCP/IP Linux-3.3.8 идентифицирует соединение не только по локальному адресу, но
 и по удалённому. Следовательно можно использовать несколько сокетов, забинденных на один локальный
 арес, но соединенных с разными удалёнными адресами. Проверим данную гипотезу. Для этого получим 5
 HTML страниц с www.afrinic.net www.lacnic.net www.arin.net www.ripe.net и www.apnic.net по протоколу
@@ -296,7 +296,7 @@ int main(int argc, char * argv[])
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-</summary><category term="tcp"></category></entry><entry><title>IPv4 адресация в интернете</title><link href="http://hoxnox.com/inet/ipv4.html" rel="alternate"></link><updated>2012-04-03T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-04-03:inet/ipv4.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</summary><category term="tcp"></category></entry><entry><title>IPv4 адресация в интернете</title><link href="http://blog.hoxnox.com/inet/ipv4.html" rel="alternate"></link><updated>2012-04-03T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-03:inet/ipv4.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Структура IPv4&lt;/h2&gt;
 &lt;p&gt;IPv4 - это 32 разрядное число, записанное для удобства побайтно. Если рассмотреть данное
 число в его двоичном представлении, то 4 самых старших бита (0, 1, 2, 3) классифицируют все адреса
@@ -363,7 +363,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;p&gt;Итого, всего адресов хостов в сети Интернет не более 2^7*(2^24-2) + 2^16(2^16-2) + 2^21*(2^8-2) =
 &lt;cite&gt;3 753 869 056&lt;/cite&gt;.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="Internet"></category><category term="IPv4"></category></entry><entry><title>Программирование сетевых приложений (TCP/IP) на C/C++</title><link href="http://hoxnox.com/inet/tcp_programming.html" rel="alternate"></link><updated>2012-04-02T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-04-02:inet/tcp_programming.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</summary><category term="Internet"></category><category term="IPv4"></category></entry><entry><title>Программирование сетевых приложений (TCP/IP) на C/C++</title><link href="http://blog.hoxnox.com/inet/tcp_programming.html" rel="alternate"></link><updated>2012-04-02T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-02:inet/tcp_programming.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Простейшие примеры&lt;/h2&gt;
 &lt;div class="section" id="tcp-ip"&gt;
 &lt;h3&gt;TCP/IP&lt;/h3&gt;
@@ -947,7 +947,7 @@ sysctl -w net.ipv4.tcp_tw_reuse=0
 &lt;p&gt;Эффективное программирование TCP/IP ( Йон Снейдер )
 &lt;a class="reference external" href="http://ru.fractalizer.ru/frpost_197"&gt;http://ru.fractalizer.ru/frpost_197&lt;/a&gt;/настройка-ядра-linux-для-поддержки-большо/&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Маршрутизация</title><link href="http://hoxnox.com/inet/route.html" rel="alternate"></link><updated>2012-03-26T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-03-26:inet/route.html</id><summary type="html">&lt;div class="section" id="id2"&gt;
+</summary><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Маршрутизация</title><link href="http://blog.hoxnox.com/inet/route.html" rel="alternate"></link><updated>2012-03-26T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-26:inet/route.html</id><summary type="html">&lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Основные понятия&lt;/h2&gt;
 &lt;p&gt;Без посторонней помощи компьютеры могут обмениваться пакетами только в рамках своей подсети. Для
 межсетевого взаимодействия им необходим маршрутизатор. Если несколько подсетей управляются одним
@@ -1028,7 +1028,7 @@ BGP). Часто операторы организуют точки обмена
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;/div&gt;
-</summary><category term="route"></category></entry><entry><title>DNS и Интернет</title><link href="http://hoxnox.com/inet/dns_internet.html" rel="alternate"></link><updated>2012-03-23T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-03-23:inet/dns_internet.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</summary><category term="route"></category></entry><entry><title>DNS и Интернет</title><link href="http://blog.hoxnox.com/inet/dns_internet.html" rel="alternate"></link><updated>2012-03-23T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-23:inet/dns_internet.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Главные по именам&lt;/h2&gt;
 &lt;p&gt;Выработкой правил функционирования DNS в Интернете занимается организация под названием &lt;a class="reference external" href="http://iana.org"&gt;IANA&lt;/a&gt;
 (Internet Assigned Numbers Authority), управляемая &lt;a class="reference external" href="http://icann.org"&gt;ICANN&lt;/a&gt; (Internet Corporation for Assigned Names
@@ -1140,7 +1140,7 @@ ns5.msk-ix.net.
 зоны которых могут являться копией зон оригинальных корневых серверов, а могут иметь свои записи,
 получая таким образом свой &amp;quot;альтернативный Интернет&amp;quot;.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="DNS"></category><category term="internet"></category></entry><entry><title>Кто ты такой, DNS?</title><link href="http://hoxnox.com/inet/dns.html" rel="alternate"></link><updated>2012-03-22T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-03-22:inet/dns.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</summary><category term="DNS"></category><category term="internet"></category></entry><entry><title>Кто ты такой, DNS?</title><link href="http://blog.hoxnox.com/inet/dns.html" rel="alternate"></link><updated>2012-03-22T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-22:inet/dns.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Основные понятия&lt;/h2&gt;
 &lt;p&gt;Не секрет, что каждая машина в сети, работающая по протоколу IP, уникально идентифицируется либо
 IPv4, либо IPv6. Использование данного номера при организации работы в сети имеет ряд существенных
@@ -1363,7 +1363,7 @@ Extensions&lt;/p&gt;
 &lt;li&gt;RFC1034, RFC1035&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
-</summary><category term="DNS"></category><category term="internet"></category><category term="DNS-zone"></category><category term="dig"></category><category term="nslookup"></category></entry><entry><title>Утилиты для работы с TCP/IP</title><link href="http://hoxnox.com/inet/tcp_utils.html" rel="alternate"></link><updated>2012-01-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-01-01:inet/tcp_utils.html</id><summary type="html">&lt;div class="section" id="ping"&gt;
+</summary><category term="DNS"></category><category term="internet"></category><category term="DNS-zone"></category><category term="dig"></category><category term="nslookup"></category></entry><entry><title>Утилиты для работы с TCP/IP</title><link href="http://blog.hoxnox.com/inet/tcp_utils.html" rel="alternate"></link><updated>2012-01-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-01-01:inet/tcp_utils.html</id><summary type="html">&lt;div class="section" id="ping"&gt;
 &lt;h2&gt;ping&lt;/h2&gt;
 &lt;p&gt;Посылает ICMP запросы и читает ответы. Все гениальное - просто.&lt;/p&gt;
 &lt;/div&gt;

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://hoxnox.com/</link><description></description><atom:link href="http://hoxnox.com/feeds/kim-merder.rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 28 Sep 2012 00:00:00 +0400</lastBuildDate><item><title>ODBC</title><link>http://hoxnox.com/devel/odbc.html</link><description>&lt;div class="section" id="id1"&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/kim-merder.rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 28 Sep 2012 00:00:00 +0400</lastBuildDate><item><title>ODBC</title><link>http://blog.hoxnox.com/devel/odbc.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Введение&lt;/h2&gt;
 &lt;p&gt;Для тех кто не в курсе, ODBC позволяет абстрагироваться от интерфейса конкретной СУБД. Это некоторая
 прослойка, в которой вы можете настроить источник данных, дать ему имя и общаться с ним на уровне
@@ -95,4 +95,4 @@ Database=test
 &lt;li&gt;libodbc++ reference : &lt;a class="reference external" href="http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html"&gt;http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kim Merder &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 28 Sep 2012 00:00:00 +0400</pubDate><guid>tag:hoxnox.com,2012-09-28:devel/odbc.html</guid><category>database</category><category>odbc</category><category>c++</category></item></channel></rss>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kim Merder &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 28 Sep 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-09-28:devel/odbc.html</guid><category>database</category><category>odbc</category><category>c++</category></item></channel></rss>

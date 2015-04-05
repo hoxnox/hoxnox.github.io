@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://hoxnox.com/" rel="alternate"></link><link href="http://hoxnox.com/feeds/chsheets.atom.xml" rel="self"></link><id>http://hoxnox.com/</id><updated>2012-08-02T00:00:00+04:00</updated><entry><title>git cheat sheet</title><link href="http://hoxnox.com/chsheets/git-en.html" rel="alternate"></link><updated>2012-08-02T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-08-02:chsheets/git-en.html</id><summary type="html">&lt;ul&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/chsheets.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2012-08-02T00:00:00+04:00</updated><entry><title>git cheat sheet</title><link href="http://blog.hoxnox.com/chsheets/git-en.html" rel="alternate"></link><updated>2012-08-02T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-08-02:chsheets/git-en.html</id><summary type="html">&lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;Change the origin of the repository&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Edit &lt;cite&gt;.git/config&lt;/cite&gt; file:&lt;/p&gt;
