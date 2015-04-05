@@ -1,0 +1,1312 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/sec.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 03 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Анализ протоколов</title><link>http://blog.hoxnox.com/sec/proto-analisys.html</link><description>&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
+разобраться в том, какой инструментарий может нам в этом помочь.
+Рассмотрим простую задачу - есть pcap файл с HTTP страфиком (см.
+&lt;a href="https://www.ietf.org/rfc/rfc2616.txt"&gt;RFC2616&lt;/a&gt;). Мы хотим получить все
+пары (запрос, ответ) - startstring, заголовки и тела (заниматься
+разбором этих частей не будем) и использовать полученные
+данные в своём приложении на C/C++.&lt;/p&gt;
+&lt;h2&gt;Wireshark&lt;/h2&gt;
+&lt;p&gt;Первое, что приходит в голову - проект Wireshark (бывший Etheral). В нём вводится понятие
+"диссектор" - часть архитектуры wireshark, осуществляющая разбор
+какого-либо протокола и производящая в зависимости от получаемых в
+результате разбора данных какие-либо действия. Широкий набор
+диссекторов, входящий в поставку заполняет "дерево представления" -
+основная часть интерфейса wireshark. Диссекторы организованы в виде
+дерева - каждый новый диссектор может опираться на результат работы
+другого диссектора. Кроме того они "регистрируют" все разбираемые поля.
+Таким образом вышестоящие диссекторы могут пользоваться результатами
+нижестоящих.&lt;/p&gt;
+&lt;p&gt;Диссекторы могут быть реализованы как на "родном"  для wireshark языке
+C/C++, так и на Lua, используя
+&lt;a href="http://wiki.wireshark.org/LuaAPI"&gt;"мощный API"&lt;/a&gt;. В первом случае - вам
+необходимо будет собирать диссектор вместе с wireshark, во втором -
+можно писать независимо и подключать модуль во время исполнения (ключ -X
+к tshark или через GUI пользователя).&lt;/p&gt;
+&lt;p&gt;К сожалению диссекторы тесно интегрированы с ядром wireshark. Вы не
+можете "оторвать" нужную вам часть и унести в свой проект. Всё
+усложняется лицензией - GPLv2. Проект активно развивается с 1998 года
+при поддержке сообщества.&lt;/p&gt;
+&lt;h2&gt;Bro (binpac)&lt;/h2&gt;
+&lt;p&gt;Проект bro - это сканер безопасности. Он имеет множество различных
+функциональностей, расширяем. Одной из
+составных частей является разбор трафика. В bro за это отвечают
+анализаторы (analyzer). Изначально они писались вручную, как и в
+wireshark (TODO: залезть внутрь, изучить архитектуру). Затем был
+предложен инструмент binpac и &lt;a href="https://www.bro.org/sphinx/components/binpac/README.html"&gt;специальный язык&lt;/a&gt;,
+с помощью которого можно описать протокол. На основе описания можно
+сгенерировать анализатор. Вся прелесть в том, что с определёнными
+заглушками данные анализаторы могут быть использован вне bro.&lt;/p&gt;
+&lt;p&gt;bro разрабатывается в Беркли при поддержке сообщества, грантов от
+крупных игроков индустрии безопасности и правительства США.&lt;/p&gt;
+&lt;h2&gt;Hilti (binpac++)&lt;/h2&gt;
+&lt;p&gt;Очень молодой, но достаточно интересный проект от создателей bro.
+Продолжение развития идей binpac++.&lt;/p&gt;
+&lt;p&gt;К сожалению он только начал своё развитие. Что-то понять можно только
+изучая исходный код и скудную, но интересную информацию с &lt;a href="www.icir.org/hilti/"&gt;официального
+сайта&lt;/a&gt; и из
+&lt;a href="http://www.youtube.com/watch?v=3sQ6thi_BR0&amp;amp;feature=youtu.be"&gt;презентаций&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;Xplico (capanalisys)&lt;/h2&gt;
+&lt;p&gt;Сам xplico зародился и развивается как open-source проект и его код 
+&lt;a href="https://sourceforge.net/projects/xplico/files/Xplico%20versions/"&gt;доступен&lt;/a&gt;
+под лицензией GPLv2. В дереве исходных кодов имеется немало диссекторов.
+Архитектура не так стройна как у Wireshark, тем не менее они чуть более
+оторваны от остального кода проекта, будет проще "вынести" их в своё
+приложение. Но автор проекта пытается коммерцианализировать эту часть
+проекта, унося её в &lt;a href="http://www.capanalysis.net/ca/"&gt;capanalysis&lt;/a&gt;. Судя
+по всему со временем диссекторы внутри самого xplico перестанут развиваться и
+дополнятся.&lt;/p&gt;
+&lt;h2&gt;Выводы&lt;/h2&gt;
+&lt;p&gt;Наиболее простым и удобным инструментом является Wireshark, но он не
+подойдёт если нужно "отойти в сторону" от pcap или унести диссекторы в
+своё приложение для этого придется отделять разбор протокола в отдельную
+часть. Наиболее перспективными кажутся идеи, положенные в основу binpac. Но к
+сожалению по нему не так много информации. Создаётся ощущение, что идеи
+развиваются в рамках проекта Hilti, но последний слишком сырой.
+Диссекторы Xplico перестают существовать как open-source проект.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 03 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-03:sec/proto-analisys.html</guid><category>bro</category><category>hilti</category><category>binpac</category><category>binpac++</category><category>binpacpp</category><category>xplico</category><category>wireshark</category></item><item><title>Сравнение двух подходов к визуализации записанного HTTP трафика - MITM и Реконструкция.</title><link>http://blog.hoxnox.com/sec/http_mitm_vs_rebuilding.html</link><description>&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
+решена. Более подробно об этой задаче можно прочитать
+&lt;a href="http://blog.hoxnox.com/sec/http_restoring.html"&gt;в первой статье на тему визуализации HTTP трафика&lt;/a&gt;.
+Как уже было упомянуто существует два подхода к разрешению
+"второстепенных" запросов. Первый - запустить в браузере "основную"
+страницу и, перехватывать все запросы в Интернет, отвечая на них данными
+из трафика. Будем называть такой подход MITM - как и
+&lt;a href="http://en.wikipedia.org/wiki/Man-in-the-middle_attack"&gt;известную одноименную атаку&lt;/a&gt;.
+Второй подход - осуществить разбор страницы, выделить все HTML элементы,
+ссылающиеся на внешние объекты, найти их в трафике и выполнить
+реконструкцию страницы, встроив все объекты внутрь HTML с помощью &lt;a href="http://tools.ietf.org/html/rfc2397"&gt;data
+URI&lt;/a&gt;. &lt;/p&gt;
+&lt;p&gt;Попробуем сравнить оба подхода по ряду критериев с точки зрения их
+реализации и поддержки.&lt;/p&gt;
+&lt;h2&gt;Качество представления&lt;/h2&gt;
+&lt;p&gt;Так как MITM подход не требует от реализации знаний о процессе
+построения представления страницы (её рендеринга браузером), качество
+данного подхода высокое и не зависит от сложности самой страницы.
+Браузер лучше знает какие данные ему нужно получить и куда их сложить,
+чтобы сделать правильную отрисовку. Кроме того такой подход позволяет в
+отличии от реконструкции
+правильно показать 
+элементы, содержимое которых загружается с помощью сложного javascript
+кода. Такие технологии набирают популярность с распространением
+Web-приложений.&lt;/p&gt;
+&lt;p&gt;Качество же представления подхода реконструкции напрямую зависит от качества реализации.
+Программист, реализующий данный подход "отвечает" за внешний вид
+страницы. От его экспертизы в области отрисовки HTML зависит то, как
+будет выглядеть результат. Подход реконструкции требует постоянной
+поддержки, так как Интернет бурно развивается, появляются новые методы
+верстки и программирования frontend.&lt;/p&gt;
+&lt;h2&gt;Форма результата&lt;/h2&gt;
+&lt;p&gt;Результатом работы &lt;em&gt;реконструкции&lt;/em&gt; является понятный и простой файл. Его
+можно сохранить на отчуждаемом носителе, показать на другом компьютере.
+Это естественно для среднестатистического пользователя. Для него
+отображаемый браузером URL - это файл в Интернете. В такой парадигме
+логично, что его можно куда-то сохранить, а потом открыть.&lt;/p&gt;
+&lt;p&gt;В случае же с MITM подходом результатом будет "картинка", "рендер"
+полученный браузером. Несмотря на то, что встроенные в браузер средства
+тоже позволяют "сохранить" страницу. Идеологически это совершенно разные
+вещи. Результат невозможно получить заранее где-то не на компьютере пользователя.&lt;/p&gt;
+&lt;h2&gt;Сложность реализации&lt;/h2&gt;
+&lt;p&gt;Как уже было сказано выше подход реконструкции требует высокой
+экспертизы в области представления HTML страниц, верстки и
+программирования frontend, что делает его реализацию и поддержку крайне
+сложной. Примерами реализации могут служить разве что проекты по
+"выкачиванию" порталов из Интернет, такие как
+&lt;a href="http://curl.haxx.se/"&gt;curl&lt;/a&gt;, &lt;a href="http://www.metaproducts.com/mp/offline_explorer.htm"&gt;Offline Explorer&lt;/a&gt;, &lt;a href="http://www.tenmax.com/teleport/pro/home.htm"&gt;Teleport Pro&lt;/a&gt; и другие.&lt;/p&gt;
+&lt;p&gt;Реализация MITM напротив, хотя имеет свои подводные камни, понятна и
+относительно проста. Кроме того имеются проекты с открытым исходным
+кодом с подобной функциональностью - &lt;a href="http://www.xplico.org"&gt;xplico&lt;/a&gt;, различные кеширующие
+HTTP-proxy.&lt;/p&gt;
+&lt;p&gt;Реализация реконструкции имеет низкую связность с пользовательским
+интерфейсом. Этот проект может развиваться практически независимо.
+MITM же напротив реализуется необходимо тесно с пользовательским интерфейсом -
+необходимо буквально встраивать код proxy-сервера в код прилоежния,
+взаимодействующего с пользователем. По сути тот же web-сервер, который
+отдаёт интерфес должен выступать и proxy-сервером.&lt;/p&gt;
+&lt;h2&gt;Выводы&lt;/h2&gt;
+&lt;p&gt;Оба подхода имеют свои положительные и отрицательные стороны. Принятие
+конкретного решения невозможно без глубокого анализа требований. Тем не
+менее сложность
+реализации и зависимость качества представления от неё перевешивают чашу
+весов в сторону MITM, не смотря на неочевидность формы полученного
+результата.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 18 Feb 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-02-18:sec/http_mitm_vs_rebuilding.html</guid><category>http</category><category>xplico</category><category>mitm</category></item><item><title>Визуализация записанного ранее HTTP трафика</title><link>http://blog.hoxnox.com/sec/http_restoring.html</link><description>&lt;p&gt;В проблеме "визуализации" собранного трафика необходимо решить две
+задачи:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Классификация трафика&lt;/li&gt;
+&lt;li&gt;"проигрывание" трафика заданного типа в соответствующем приложении&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Анализ публикаций в Интернете&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;wireshark + ncat http://aerokid240.blogspot.ru/2009/12/replaying-captured-web-traffic-using.html&lt;/li&gt;
+&lt;li&gt;Fiddler AutoResponder (http://114r16.blogspot.ru/2012/08/replaying-session-with-fiddler.html)&lt;/li&gt;
+&lt;li&gt;perl утилита http://patrick.net/sprocket/rwt.html&lt;/li&gt;
+&lt;li&gt;обсуждение https://www.mail-archive.com/tcpreplay-users@lists.sourceforge.net/msg00658.html&lt;/li&gt;
+&lt;li&gt;etherape - интересная штука для визуалиации трафика (http://en.wikipedia.org/wiki/EtherApe)&lt;/li&gt;
+&lt;li&gt;web page replay - https://github.com/chromium/web-page-replay&lt;/li&gt;
+&lt;li&gt;на основе MITM - http://mitmproxy.org/doc/&lt;/li&gt;
+&lt;li&gt;Загадочная TCPopera (обрывочная информация, доклады и презентации на просторах гугла)&lt;/li&gt;
+&lt;li&gt;NetScout (типа готовое решение) http://www.netscout.com/Pages/default.aspx&lt;/li&gt;
+&lt;li&gt;Load/Replay с проксированием, используемые в основном для репродукции багов: Loadster (http://www.loadsterperformance.com/documentation/tutorial), Selenium (http://docs.seleniumhq.org/), solex (http://solex.sourceforge.net/), WaRR (https://code.google.com/p/warr/)&lt;/li&gt;
+&lt;li&gt;В рамках задачи session replay (предполагается наличие специального ПО на сервере или клиенте): http://en.wikipedia.org/wiki/Session_replay&lt;/li&gt;
+&lt;li&gt;XPlico http://www.xplico.org&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;http трафик&lt;/h2&gt;
+&lt;p&gt;Сегодня HTTP - это стандарт де-факто в веб-программировании. Как
+следствие веб-трафик - это не только браузерный серфинг, но и, к
+примеру, мобильные приложения. По данным исследователей на 2013 год,
+мобильный трафик составляет около 10%. Будем считать, что задача
+отсеивания только браузерного трафика решена на этапе классификации.&lt;/p&gt;
+&lt;p&gt;Веб трафик представляет собой ряд HTTP запросов и ответов, происходящих
+в определенный промежуток времени. Как только пользователь открывает
+страницу браузера выполняется множество HTTP запросов. Каждый запрос
+относится к определенному веб-объекту, такому как видео, картинка, HTML
+файл, флеш файл, яваскрипт и проч. Можно выделить &lt;strong&gt;основной запрос
+пользователя&lt;/strong&gt;, и целый ряд запросов, которые браузер выполнил
+самостоятельно. Основной запрос, как правило возвращает HTML или XML,
+который содержит ряд встроенных веб-объектов, каждый из которых
+оборачивается очередным HTTP вызовом. Цель номер один - определить в
+трафике основные запросы. Затем понять какие HTTP запросы были вызваны
+подгрузкой встроенных объектов.&lt;/p&gt;
+&lt;h3&gt;Выделение основных запросов&lt;/h3&gt;
+&lt;p&gt;Посмотрим на запросы, полученные в итоге простой последовательности
+действий - открыть страницу ya.ru, ввести для поиска слово test и
+перейти по ссылке на Википедию. Записанный трафик - файл
+&lt;code&gt;wikipedia_request.pcap&lt;/code&gt;, выделенные HTTP заголовки сложены в
+&lt;code&gt;wikipedia_request.parsed&lt;/code&gt;. Получилось 18 запросов.&lt;/p&gt;
+&lt;p&gt;Мы знаем, что основными запросами являются - ввод адреса ya.ru, submit в
+форме поиска и клик по ссылке на Википедию. Если расчертить все HTTP
+запросы в виде графа, в котором HTTP заголовоки являются вершинами, а ребро от
+вершины A к вершине B существует тогда и только тогда, когда в вершине B
+имеется поле Referer, значение которого совпадает со значением URL
+вершины A (восстанавливается из Host и GET), то получится картинка,
+представленная в &lt;code&gt;wikipedia_request.png&lt;/code&gt;. Четко видно три основных
+источника, соответствующих основным запросам. &lt;strong&gt;Таким образом, подсчитывая
+ссылки и учитывая время, прошедшее между запросами, можно с определенной
+уверенностью восстанавливать активность пользователя.&lt;/strong&gt; Затем, используя
+графы ссылок, можно понять какие встроенные объекты были запрошены
+браузером пользователя автоматически, отыскать их "следы" в HTML
+странице, полученной в ответ на соответствующий основной запрос,
+осуществить их перезапись, указав локальный источник и направить данный
+HTML в браузер.&lt;/p&gt;
+&lt;h4&gt;Проблемы&lt;/h4&gt;
+&lt;p&gt;Существует целый океан проблем, с которым можно столкнуться, используя
+приведенную выше эвристику. Ниже будут приведены примеры граблей на
+которые очень легко наступить. В первом приближении не стоит
+зацикливаться на всех сложностях. Надо реализовать простейший вариант
+обработки, рабочий прототип, а затем решать проблемы по мере их
+поступления.&lt;/p&gt;
+&lt;h5&gt;Параноики&lt;/h5&gt;
+&lt;p&gt;Некоторые пользователи используют специальное ПО для ослабления "слежки" за
+ними со стороны ИТ-гигантов. Ярким примером является расширения для
+браузеров от EFF - "Privacy badger" (https://www.eff.org/privacybadger).
+Такое ПО вырезает из запросов ряд полей, в том числе "referer". К
+счастью таких пользователей мало.&lt;/p&gt;
+&lt;h5&gt;Фантомные запросы&lt;/h5&gt;
+&lt;p&gt;С первой мы столкнулись прямо в примере -
+внимательный читатель отметит, что на изображении вершина
+&lt;code&gt;yandex.ru/yandsearch?text=test&lt;/code&gt; помечена красным. Дело в том, что это
+так называемая "фантомная" вершина - не существует пользовательского GET
+запроса &lt;code&gt;GET /yandsearch?text=test&lt;/code&gt; к хосту yandex.ru. Таким образом у
+11 ответов указан referer, не соответствующий пользовательскому запросу.
+Поисковый запрос выглядел так: &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;GET /jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/ HTTP/1.1
+Host: clck.yandex.ru
+Referer: http://ya.ru/
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Не ассоциировав фантомный запрос с реальным мы не смогли "подцепить" его
+к ветке &lt;code&gt;http://ya.ru&lt;/code&gt;. Простого способа такой ассоциации не существует,
+тем не менее, учитывая временную линию и приняв фантомный запрос за
+основной - получаем довольно точную картину активности пользователя. К
+сожалению во многих случаях на такое способен только квалифицированный
+специалист.&lt;/p&gt;
+&lt;h5&gt;Чрезвычайная сложность веб-приложений&lt;/h5&gt;
+&lt;p&gt;Основной HTML и встроенные объекты в современных веб-приложениях очень
+тесно переплетены. Часто данные подаются в браузер отдельными JSON
+объектами, которые преобразуются активными скриптами (JavaScript, Flash,
+Java applet) к нужному виду.&lt;/p&gt;
+&lt;h5&gt;Кеш браузера&lt;/h5&gt;
+&lt;p&gt;Как правило пользовательский браузер кеширует огромное количество
+данных, таких как css, javascript, favicon, некоторые изображения. В
+результате для рендеринга очередного запроса ему достаточно получить
+данные из кеша, не обращаясь к удаленным серверам. В результате чего,
+анализируя трафик, мы не получим ряд очень важных для отображения
+элементов. В такой ситуации необходимо самим выполнить соответствующие
+запросы. К сожалению это может демаскировать оператора, поэтому решение
+о загрузке тех или иных данных из сети должен принимать он. Можно лишь
+стараться максимально упростить его выбор - что загружать, а что нет.&lt;/p&gt;
+&lt;h5&gt;meta Refresh&lt;/h5&gt;
+&lt;p&gt;Существует специальный тег meta с атрибутом http-equiv. Баузеры
+преобразовывают значение этого атрибута, заданное с помощью
+content, в формат заголовка ответа HTTP и обрабатывают их, как будто они
+прибыли непосредственно от сервера. Таким образом в ситуации &lt;code&gt;meta
+http-equiv="Refresh"&lt;/code&gt;, браузер получает правильный двухсотый ответ с
+контентом, но тут же запрашивает другую страницу, которую и покажет
+пользователю.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;meta http-equiv=&amp;quot;Refresh&amp;quot; content=&amp;quot;0;URL=forum/index.php&amp;quot;&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h4&gt;Алгоритм построения пользовательского "трейса"&lt;/h4&gt;
+&lt;p&gt;На вход подается pcap файл с трафиком за определенный период времени.
+Выделяются и нумеруются сессии запрос-ответ. Все тела ответов
+сохраняются за соответствующим номером. Все запросы выстраиваются в граф
+отношений на основе значений поля referer.
+Рассматриваем только фантомные вершины и вершины, ответом для
+которых был HTML (ответ на основной запрос пользователя просто обязан
+быть в формате HTML). Из этих вершин выделяем &lt;strong&gt;основные запросы&lt;/strong&gt; по
+количеству запросов-referer и времени между запросами (оно должно быть
+не меньше определенно заданного заранее значения). Отметим, что
+реферером основного запроса (если он есть) может быть только основной
+запрос. Все оставшиеся запросы должны соответствовать какому-либо
+основному.&lt;/p&gt;
+&lt;h3&gt;Отображение основного зарпоса со встроенными объектами&lt;/h3&gt;
+&lt;p&gt;Следующей задачей является отображение отдельно взятого основного
+запроса вместе с его встроенными объектами так, как видел его
+пользователь. Задачу можно решить двумя способами.&lt;/p&gt;
+&lt;p&gt;Первый - открыть
+основную страницу в браузере, перехватить все сопутствующие запросы и
+ответить на них трафиком из анализируемого файла.
+Такой выше механизм
+реализован в приложении &lt;a href="http://www.xplico.org"&gt;XPlico.&lt;/a&gt;.
+Интересно то, каким образом реализована данная функциональность. Так как
+приложение имеет web-интерфейс и запускается с HTTP-сервера, этот же
+сервер может выступать в качестве http-proxy. Пользователь, запуская
+браузер для приложения xplico указывает этот же адрес в качестве
+http-proxy. Таким образом, когда пользователь открывает сохраненную
+страницу, запросы браузера на загрузку встроенного содержимого
+направляются через xplico, что позволяет ему отвечать уже имеющимся в
+pcap трафиком.&lt;/p&gt;
+&lt;p&gt;Второй подход - заменить все встроенные объекты непосредственно в HTML
+коде основной страницы. При решении этой задачи первое, что необходимо
+сделать - создать отображение пар (запрос, ответ) из pcap файла на
+ссылки, полученные из атрибута &lt;code&gt;src&lt;/code&gt; всех тегов и атрибута &lt;code&gt;href&lt;/code&gt; тега
+&lt;code&gt;link&lt;/code&gt;. В результате разбора трафика для каждой пары (запрос, ответ)
+создается контент-файл, в который записываются данные из ответа.
+Подменив все ссылки на имена файлов, мы получим локальную копию
+страницы.&lt;/p&gt;
+&lt;h4&gt;Проблемы&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;Разница в браузерах.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Пользователь может просматривать страницу в
+   одном браузере, а оператор в другом. За счет блоков вида:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;!--[if gte ie 9]&amp;gt;
+...
+&amp;lt;!--&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;браузер пользователя будет запрашивать блоки javascript и css,
+  характерные для него. В свою очередь браузер оператора не подхватит
+  эти куски, так как у него, возможно, срабо:тает другой &lt;code&gt;if&lt;/code&gt; блок,
+  требующий загрузки других объектов. К сожалению из-за
+  &lt;a href="http://en.wikipedia.org/wiki/Browser_wars"&gt;войны браузеров&lt;/a&gt;
+  веб-мастера все чаще используют такой подход.&lt;/p&gt;
+&lt;p&gt;Примером может служить популярный новостной портал
+  &lt;a href="http://lenta.ru"&gt;lenta.ru&lt;/a&gt;. Восстановленный трафик, который был
+  записан для Firefox-31.0, некорректно отображается в Chromium-30.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Битый pcap.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Хорошо видно на примере семпла rbcru.pcap. При загрузке файла
+   &lt;code&gt;http://s.rbk.ru/rbc_static/fp_v4/skin/not-so-default-pack.css?1398866344&lt;/code&gt;
+   libpcap пропустил несколько пакетов. В итоге полученный css хоть и
+   выглядел вполне нормальным, но не содержал описаний ключевых классов.
+   В результате чего страница у оператора отрендерится неверно. Для
+   того, чтобы получить орининал можно заменить 7.css на его полную
+   версию - not-so-default-pack.css.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="broken css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDADUlKC8oITUvKy88OTU/UIVXUElJUKN1e2GFwarLyL6qurfV8P//1eL/5re6////////////zv//////////////2wBDATk8PFBGUJ1XV53/3Lrc////////////////////////////////////////////////////////////////////wgARCADZAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAfSQoAAAAAAAAAAAAAAAAAAAAIQApQQoAAAAAAAAAAAAAAAAAAAABDJSlBlIAAAAAAAAAAAAAAAAAAAAAAQ2tBwZwkQVYlXQBAAAUgAIUFBCFKQoMlAKQQpEqgEPS3QckygpEs1utqAAAAAAAAAAAAAAAAAAAIUGADYAABCSW0RIbUAAAAAAAAAAAAAACFBkyU0UAhQQQokIbUAAAAAAAAAAAAAACFBgApoAgBDiU0UqbUAAAAAAAAAAAAAACFBkgNFBk5QBioWMErqekAAAAAAAAAAAAAAAhQYIDoAYPPHMpqrHMhK1HvoAAAAAAAAAAAAAACFBghSmgQ4xwKZKDINHuoAAAAAAAAAAAAAACFBghSmgYPJGq2AACnoAAAAAAAAAAAAAAAIUEBClBk5gAAApohQaBQAAAAAAAAAAACFBkAhopDIAAKQAAFIU0CFAIUAAAhSFBCgAhQZAKUEMRQQoAABKohQAhSFBCgEKQAFAAKClBghoGgQwUhSFMmgQoBAAUEABSAAAoIACkKbIUGSkBoAyCkAAAAKQpAUhSFIClAAAAABAAUGSApoAyCFBQAAAAAAAAAAAAAAACFBQZABSkIAAAAAAAUoAAAAAAAAAAAIUGCFKaBkyAUgAAKUAA0AAAAAAAAAAACFBkAoKQyUoAAAAKAAAAAAAAAAAAACFBAUAEMgoIAAACgAA0AAAAAAAAAACFBgFKUAhQAAAAAAAAAAAAAAAAAACFBghSlKAAAAAAAAAAAAAAAAAAAACFBkApQAAAAAAAAAAAAAAAAAAAACFBkAgNgAAAAAAAAAAAAAAAAAAAAhQZAANAAAAAAAAAAAAAAAAAAAAAhQQoAAAAAAAAAAAAAAAAAAAAAAIU//E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" title="Рендер со сломанным css" /&gt;
+   &lt;img alt="normal_css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCADpAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAepQAAAAAAAAAAAAAAAAAAAAAQgKUhQAAAAAAAAAAAAAAAAAAAAADIKUgQAAAAAAAAAAAAAAAAAAAAACEKaWHFmkBSAoAICkBSApAUAEBQACApCkBYlAUENHVqEABSRqgAAAAABCA0AAAQgKUAAhIApDVCFIACghQADMltAhogAAAAAABQAAAAAACFICA0ACFABACGjBQAAAAAACgFAAAAAAICApQCAgORQUpsAAAAAAAhoAAAAAAAAgMg0UEOUCmaEgZrR2KQoAABCgEKQoBQAAAAACAAApDlHOhREISqekAAFBCkKAQpCgFAAAAAAICApQQ5RiqQRSEB6KAAAAAAAAoKAAAAAACAyDRQQ4A0AAAdSAAAAAAAA0AAAAAAACAgNAAwAAAAbMgpCgEKAAAQ0AAAAAAACAyUFKDIIUoAKCAAAAhQQoABQAAAAAACAgBoAgIUAhoAgAAAAAABQAAAAAQAFIACGgAAAAAAAAAAAAAAAAAAAACFIQAAoIACgAAAAAAAAAAAAAAAAAFICApQCAhQAQFBAUENAAAAAAAAAAAAhSAhQUAgAIUAhQACApQAAAAAAAAAAACAyAaKDJQAAAAUAAAAAAAAAAAAAAAgAAKDIKACFAIUFAAAAAAAAAAAAAAIAACggAAAAIUhQAAUAAAAAAAAAAAgMgpSkIUAhQUAAAAAAAAAAAAAAhAUFIAQpQAAAAAAAAAAAAAAAAAAAACFIQAApQAAAAAAAAAAAAAAAAAAAACAhoAAAAAAAAAAAAAAAAAAAAAAAgABQAAAAAAAAAAAAAAAAAAAAACAyUFKAAAAAAAAAAAAAAAAAAAAACAgBSgAAAAAAAAAAAAAAAAAAAAAhQAAAAAAAAAAAAAAAA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" title="Нормальный рендер" /&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Фреймы.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Фреймы популярная технология, позволяющая иметь полноценный HTML
+   документ в другом HTML документе. Представленный способ выборки
+   пользовательских запросов будет считать фрейм таковым. В простейшем
+   случае он встроится в страницу, полученную ранее. Достаточно лишь не
+   считать пользовательскими документы, встроенные в другие. К сожалению
+   мы сталкиваемся с необходимостью следить за порядком получения
+   страниц, что может создать трудности при многопоточной обработке.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Сложный java-script.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Как мы уже отмечали, современные web-приложения представляют собой
+   сложные java-script приложение. браузер может подргужать из Интернета
+   объекты, встраивая их в определенные части тела документа, в
+   результате интерпретации каких-то функций java-script. Хорошим
+   примером может служить заглавная страница &lt;a href="http://fox.com"&gt;fox&lt;/a&gt;.&lt;/p&gt;
+&lt;h3&gt;Встраивание объектов&lt;/h3&gt;
+&lt;p&gt;Необходимо, чтобы результат разбора pcap был одним файлом. Надо
+попытаться все встроенные объекты хранить прямо в пользовательском html.
+Существует несколько стандартизованных схем: &lt;a href="http://tools.ietf.org/html/rfc2397" title="RFC 2397"&gt;RFC2397&lt;/a&gt;, 
+&lt;a href="http://tools.ietf.org/html/rfc2392" title="RFC 2392"&gt;RFC2392&lt;/a&gt;. Мы воспользуемся &lt;a href="http://tools.ietf.org/html/rfc2397" title="RFC 2397"&gt;RFC2397&lt;/a&gt; и заменим все соответствующие
+встоенным объектам URL. Данный способ является самым простым и
+достаточно эффективным, но при наличии "тяжелых" объектов браузер может
+некорректно отображать получившуюся страницу. К примеру, chromium на
+некоторых примерах при скроллинге стирает изображения:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wiping" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCAEPAfQDAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/9oADAMBAAIQAxAAAAHtGagBooJCoAAAAAAAAAUoAAAAAAAAAAAjz1k6Rlc2ZAPXFM0AKUEgSszUCk1ZpAAIUoAAAAAAAAAAAAAAJHCoalyExYUeuAICFBQvOayaTVhJLloumbcgAUSgAAAAAAAAAAAAAWzhVLGVJmhD1RgAhqoQSyb63naAAA5zUN3IAApQAAAAAAAAAACQBCnKuSdJdLELEwnpWAEKZC5m+t52gAAAOU1DdyBSgoAAAAAAAAAABIgBTjZgq6imaSDuoxVAKc5vrcItAAAAczE30uBQUEKCFAKAAAAAAAAABHGspFhqJQ0naUSgBJcr1uZFoAAADBDM30uIUoAAAAIUAAAAAAAFAjjWQQgBU9MsIADnN9LigtAAAAZBzm+twIUEKCFIUEKAAAAAAACFEYrIABkHoiEBAYm+twBaAAAAhDM1q5oAAAAAAAAAKAAAAAI5lXSAAQ0QzQFMzfS4Ei0AAABzKZmtJqwQ0AAAAAAAAAAAAABHFbFq2UCIaBmhTRym+twJFoAAADmUzNaTVkAKAUAAAAAAAAAAACMLkHSxCpENkJQAxN9bgSLQAAAHMpib3cDQBQAAAAAAAAAAAABHFR0sAAS6SGaENEmqmrJFoAAAADlN9bgAAAAAAAAAAAAAAAI4rZdXOqgKYzd2CUALHNvrcSLQAAAAxKXdyAAAAAAAAAAAAAAAEYWA2gEC1KAADDQ0zaAAAAhzm+twAAAAAAAAAAAAAAAJFMggAKClAAAOTemd2CSwi1LZSHLPTrrnQAAAAAAAAAAAAAAASAqFBQAIAAAA5t5gtTVyIsliw63FSAAoICgAAAAAAAAAAAAVCgoAEAAAAcZvdmVkABW0hmXpcAQAoAKAAAAAAAAAAQsQtKhS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" title="Chromium wiping" /&gt;&lt;/p&gt;
+&lt;p&gt;Internet Explorer 8, распространяющийся в составе Windows 7 вообще не
+умеет работать по &lt;a href="http://tools.ietf.org/html/rfc2397" title="RFC 2397"&gt;RFC2397&lt;/a&gt;, но уже Internet Explorer 11 справляется.&lt;/p&gt;
+&lt;p&gt;Встроенный документ может в свою очередь может содержать встроенные документы.
+Важно встраивать объекты в нужном порядке. К примеру, если С встроен в
+B, а B в свою очередь встроен в A, необходимо сначала C встроить в B и
+только потом B встроить в A. Для определения порядка встраивания
+необходимо сначала строить направленный граф отношений. Кроме того
+необходимо следить за тем, чтобы встроенные объекты не образовывали
+циклы. С другой стороны, наш граф имеет строго предопределенную
+структуру, что позволяет не углубляться в [задачу обхода
+ориентированного графа][grap_walk]. Мы точно знаем с какой вершины
+необходимо начать обход. Далее можем производить рекурсивное
+встраивание, лишь следя за отсутствием циклов.&lt;/p&gt;
+&lt;p&gt;Все проверенные браузеры Firefox 30.0, Chromium 35.0, Internet Explorer
+11 нормально разбирают по крайней мере дважды вложенные документы. Для
+проверки можно попытаться открыть следующий документ:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;script &lt;/span&gt;&lt;span class="na"&gt;type=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;application/javascript&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;src=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;data:application/javascript;base64,ZnVuY3Rpb24gZml4X2NvbnRlbnQoKQp7Cgl2YXIgbmFtZV9pbnB1dCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjb250ZW50JykKCW5hbWVfaW5wdXQuaW5uZXJIVE1MID0gIjxpbWcgc3JjPSdkYXRhOmltYWdlL2dpZjtiYXNlNjQsUjBsR09EbGhNZ0FlQU1aY0FBQUFBQU1EQXdVRkJRWUdCZ2NIQndnSUNBb0tDZ3NMQ3c0T0RoQVFFQkVSRVJJU0VoTVRFeFVWRlJZV0Zod2NIQjRlSGg4Zkh5QWdJQ0VoSVNJaUlpUWtKQ2NuSnlnb0tDa3BLU29xS2l3c0xDNHVMakV4TVRJeU1qMDlQVUJBUUVSRVJFeE1URkZSVVZKU1VsTlRVMWxaV1ZwYVdseGNYRjVlWG1Sa1pHVmxaV2hvYUd4c2JHMXRiWGg0ZUlxS2lvNk9qcENRa0pLU2twaVltSm1abWFDZ29LV2xwYkt5c3JPenM3Mjl2YjYrdnNEQXdNSEJ3Y0xDd3NiR3hzakl5TXpNek03T3p0UFQwOVhWMWRmWDE5bloyZURnNE9MaTR1VGs1T1hsNWVibTV1Zm41K25wNmV2cjYrenM3TzN0N2U3dTd1L3Y3L0R3OFBIeDhmUHo4L1QwOVBYMTlmYjI5dmYzOS9uNStmdjcrLzM5L2YvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3lINUJBRUtBSDhBTEFBQUFBQXlBQjRBQUFmK2dGeUNnNFNGaG9lSWlZcUxqSTJPajVDUmtwT1VsWmFYbUptYW01eWRucCtnbkFDakFBVVVMVStkQUl5cmdsaEVLaUNxcklWUEJvSkZKQXNJSWsyQ0FEWWNCQTRuVG9NMEVnSVZNNjFjelluTldFVXJzbHdiT2xkU0xDbS9HVGxVU1NZbGdqZ1NPMVE3RWMzUGlLU2tEMGVHVXcrL1FZTk1ESUllT0lNM3pRaTBCR1VaRWdLRklDTWpHb3dLOEdzTG9WWUtvZ3lDMHN4Q3dFRkxFZ2o2NEFLSkZpeXQyRUdVS0lnaUpIWks4bkU1UUVVUWo1Q0ZXdTBiaElQZG9tWURRM0Rqd2dHR0ZTQVlZRDRrTjZGSGxSNFQxckVpSllDQ0N5dUNnblFZQUVHRzBFSE5aa1JRRm1NQTFsQ0xmRndBcStpRUVDcy9OcndnbTZpR0JnTU9HR0E0WkV1M3J0MjdlUE95RFFRQU93PT0nLz4iCn0KCg==&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;body&lt;/span&gt; &lt;span class="na"&gt;onload=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;setTimeout(fix_content, 500)&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;div&lt;/span&gt; &lt;span class="na"&gt;id=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;content&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt; tick, tick, tick &lt;span class="nt"&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Блок base64 в нем - это HTML-документ типа application/javascript следующего вида:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;fix_content&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;name_input&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;document&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getElementById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;content&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;name_input&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;innerHTML&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;lt;img src=&amp;#39;data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==&amp;#39;/&amp;gt;&amp;quot;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;В котором в свою очередь блок base64 представляет собой image/gif
+изображение:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="bang" src="data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==" title="Bang!" /&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 18 Feb 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-02-18:sec/http_restoring.html</guid><category>http</category><category>pcap</category><category>traffic</category><category>xplico</category><category>forensic analysis</category></item><item><title>TLS - практика</title><link>http://blog.hoxnox.com/sec/ssl_practice.html</link><description>&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;Установление соединения&lt;/h2&gt;
+&lt;p&gt;Первое, что мы сделаем - пошлём простейший пакет, содержащий ClinetHello.&lt;/p&gt;
+&lt;p&gt;Итак, структура простейшего ClientHello&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ProtocolVersion = { 0x03, 0x03 } соответствует TLS 1.2
+Random = { gmt_unix_time = { 0x50, 0x2C, 0xDA, 0x7A }, random = {0x69, 0xC7, 0xE0, 0x2A, 0x2C, 0x2F, 0x06, 0x43,
+                                                                 0x3C, 0xA5, 0xFD, 0xA5, 0x1A, 0xDF, 0x36, 0x45,
+                                                                 0x38, 0x7E, 0x32, 0x8E, 0x1F, 0xE3, 0xBA, 0x16,
+                                                                 0x6E, 0x4B, 0x77, 0x1B, 0x01, 0x86, 0xCA, 0xAE,
+                                                                 0x77, 0xD1, 0x81, 0x0F} }
+SessionID = { 0x00 }
+CipherSuite = { 0x00, 0x01, 0x02 }
+CompressionMethod = { 0x00 }
+
+Итоговый дамп:
+{ 0x03, 0x03, 0x50, 0x2C, 0xDA, 0x7A, 0x69, 0xC7, 0xE0, 0x2A, 0x2C, 0x2F, 0x06, 0x43, 0x3C,
+  0xA5, 0xFD, 0xA5, 0x1A, 0xDF, 0x36, 0x45, 0x38, 0x7E, 0x32, 0x8E, 0x1F, 0xE3, 0xBA, 0x16,
+  0x6E, 0x4B, 0x77, 0x1B, 0x01, 0x86, 0xCA, 0xAE, 0x77, 0xD1, 0x81, 0x0F, 0x00 }
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;реализация на си (сокеты)&lt;/p&gt;
+&lt;p&gt;...&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;/***всё семейство RSA***/
+CipherSuite = { 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x3B, 0x00, 0x04, 0x00, 0x05,
+                0x00, 0x0A, 0x00, 0x2F, 0x00, 0x35, 0x00, 0x3C, 0x00, 0x3D, 0x16 }
+/***всё семейство DH***/
+CipherSuite = { 0x00, 0x00, 0x00, 0x0D, 0x00, 0x10, 0x00, 0x13, 0x00, 0x16, 0x00, 0x30,
+                0x00, 0x31, 0x00, 0x32, 0x00, 0x33, 0x00, 0x36, 0x00, 0x37, 0x00, 0x38,
+                0x00, 0x39, 0x00, 0x3E, 0x00, 0x3F, 0x00, 0x40, 0x00, 0x67, 0x00, 0x68,
+                0x00, 0x69, 0x00, 0x6A, 0x00, 0x6B, 0x2A }
+CompressionMethod = 0x0
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Thu, 16 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-16:sec/ssl_practice.html</guid><category>tls</category><category>ssl</category><category>security</category><category>cryptography</category><category>protocol</category><category>c++</category></item><item><title>Что такое SSL?</title><link>http://blog.hoxnox.com/sec/tls.html</link><description>&lt;p&gt;SSL - это протокол, позволяющий устанавливать защищенные соединения. На основе SSL 3.0 был
+разработан TLS. Сейчас, когда говорят об SSL имеют ввиду TLS. TLS - основа безопасности в Интернете.&lt;/p&gt;
+&lt;p&gt;Как только клиент и сервер решили общаться по протоколу SSL, первое что они делают - процедура
+установления соединения (рукопожатие - handshake).&lt;/p&gt;
+&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;Общие понятия&lt;/h2&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h3&gt;Число&lt;/h3&gt;
+&lt;p&gt;Все данные, представляемые в протоколе записываются в прямом порядке байт. То есть&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;value = (byte[0] &amp;lt;&amp;lt; 8*(n-1)) | (byte[1] &amp;lt;&amp;lt; 8*(n-2)) | ... | byte[n-1];
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h3&gt;Вектор&lt;/h3&gt;
+&lt;p&gt;Запись вида&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;T T&amp;#39;[n];
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;означает определение нового типа T', который является вектором значений типа T фиксированной длины
+n. При этом n - &lt;strong&gt;количество байт&lt;/strong&gt;, занимаемых новым типом T'.&lt;/p&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Ещё раз повторюсь - КОЛИЧЕСТВО БАЙТ! Причем логично, что n должно быть кратно размеру T.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Пример:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;opaque Datum[3]; /* Три байта, не интерпретируемые протоколом */
+Datum Data[9]; /* 9-байтный вектор значений типа Datum.*/
+
+/*
+На C эта запись выглядела бы так:
+
+typedef opaque[3] Datum;
+Datum Data[3];
+*/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;!-- *** --&gt;
+&lt;p&gt;Существует такое понятие как &lt;em&gt;вектор переменной длины&lt;/em&gt;. Определение нового типа T' - вектор
+переменной длины от K до N байт, содержащий значения типа T.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;T T&amp;#39;&amp;lt;K..N&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;При кодировании таких векторов дополнительно приписывается его текущая длина. Записывается она в
+виде числа из M байт, где M - число байт, достаточных для хранения числа, отражающего максимальную
+длину вектора в байтах. Например:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;opaque mandatory&amp;lt;300..400&amp;gt;;
+ /* вектор не менее 300, но не более 400 байт. Длина записывается числом в 2 байта (достаточно для
+ хранения числа 400.*/
+uint16 longer&amp;lt;0..800&amp;gt;
+ /* вектор чисел типа uint16 с максимальной длиной в 800 байт (то есть может содержать не более
+ 400 элементов типа uint16. Может быть пустым. Длина записывается числом в 2 байта.*/
+&lt;/pre&gt;&lt;/div&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Как и с вектором фиксированной длины, реальная длина должна быть делителем размера T. То есть
+не может существовать 17-байтного вектора чисел uint16.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Базовый тип данных - uint8. Определены также&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;uint8 uint16[2];
+uint8 uint24[3];
+uint8 uint32[4];
+uint8 uint64[8];
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;В случае представления целого числа в виде вектора байт он представляется как без знаковое целое без
+лидирующего ноля.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h3&gt;Перечисление&lt;/h3&gt;
+&lt;p&gt;Аналогично языку си:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { e1(v1), e2(v2), ..., en(vn) [[, (k)]] } Te;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Соответственно объем, занимаемый одним значением типа &amp;quot;перечисление&amp;quot;, равен числу байт, необходимых
+для хранения максимального значения перечисления.&lt;/p&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Для задания конкретного числа байт, необходимого для хранения перечисления и служит
+необязательный параметр n в определении.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Пример:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { red(3), green(23), blue(1) } Color;
+
+Color color = Color.blue;
+Color color = blue;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Для перечислений, которые никогда не интерпретируются своими значениями последние можно опустить.
+Например:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum{ low, medium, high } Amount;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id5"&gt;
+&lt;h3&gt;Структура&lt;/h3&gt;
+&lt;p&gt;Аналогично языку си:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        T1 t1;
+        T2 t2;
+        ...
+        Tn tn;
+} [[T]];
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id6"&gt;
+&lt;h3&gt;Вариант&lt;/h3&gt;
+&lt;p&gt;Поля структуры могут варьироваться в соответствии с каким-либо перечислимым типом.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { e1, e2, ..., ek } E;
+struct P
+        T1 t1;
+        T2 t2;
+        ...
+        Tn tn;
+        select (E) {
+                case e1: Te1;
+                case e2: Te2;
+                case e3: case e4: Te3;
+                ...
+                case en: Ten;
+        } [[fv]];
+} [[Tv]];
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Например, мы можем определить структуру транспорт с полями &amp;quot;скорость движения&amp;quot; и &amp;quot;количество мест&amp;quot;. Если
+это автомобиль, то структура будет содержать поле &amp;quot;объем двигателя&amp;quot;, а для велосипеда определим
+&amp;quot;количество скоростей&amp;quot;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { auto, bicycle } TransportType;
+
+struct Transport {
+        int16 speed;
+        int8  seats;
+        select (TransportType) {
+                case auto:
+                        int8 engine_capacity;
+                case bicycle:
+                        int8 gears_count;
+        }
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;в отличии от си перечисления срабатывают одновременно только если они пустые (нет
+необходимости в конструкции подобной break)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id7"&gt;
+&lt;h2&gt;Кодирование криптографических опреаций&lt;/h2&gt;
+&lt;div class="section" id="id8"&gt;
+&lt;h3&gt;Цифровая подпись&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        SignatureAndHashAlgorithm algorithm;
+        opaque signature&amp;lt;0..2^16-1&amp;gt;;
+} DigitallySigned;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="tls-tls-record"&gt;
+&lt;h2&gt;Протокол TLS записи (TLS Record)&lt;/h2&gt;
+&lt;p&gt;Протокол TLS записи является многоуровневым. На каждом уровне сообщения могут иметь поля длины,
+описания и содержимого (контента).&lt;/p&gt;
+&lt;p&gt;На вход протокола подаются сообщения, он формирует из них блоки,
+упаковывает (опционально), добавляет имитовставку, шифрует и передает результат. Полученные данные
+расшифровываются, проверяются, распаковываются, собираются и доставляются клиенту на более высокий
+уровень.&lt;/p&gt;
+&lt;p&gt;Протокол TLS записи используют более сложные протоколы, в зависимости от типа содержимого различают
+следующие:
+* протокол установления соединения (&lt;em&gt;handshake protocol&lt;/em&gt;)
+* протокол тревоги (&lt;em&gt;alert protocol&lt;/em&gt;)
+* протокол изменения параметров шифрования (&lt;em&gt;change cipher spec protocol&lt;/em&gt;)
+* протокол данных приложения (&lt;em&gt;application data protocol&lt;/em&gt;)&lt;/p&gt;
+&lt;p&gt;Существует процедура описания новых типов содержимого и регистрации их (посредством IANA) в реестре
+типов содержимого, в результате чего TLS является расширяемым. Если тип содержимого неизвестен, в
+обязательном порядке отправляется сигнал unexpected_message.&lt;/p&gt;
+&lt;p&gt;При проектировании протокола, основывающегося на TLS разработчик должен четко понимать от чего TLS
+защищает, а от чего нет. К примеру, тип и длина записи не защищены шифрованием. Если эта информация
+должна быть спрятана, об этом должен позаботиться разработчик.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id9"&gt;
+&lt;h2&gt;Хеш-код идентификации сообщений и псевдослучайная функция&lt;/h2&gt;
+&lt;p&gt;TODO: стр. 14&lt;/p&gt;
+&lt;p&gt;Как упоминалось выше, на уровне TLS записи используется имитовставка для защиты целостности
+сообщений. В качестве имитовставки в алгоритмах, описанных RFC-5246 используется HMAC
+(хеш-имитовставка). Дополнительно, необходима конструкция, которая дополняла бы ключи до блоков,
+достаточных для генерации ключа или валидации?!&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id10"&gt;
+&lt;h2&gt;Состояния соединения&lt;/h2&gt;
+&lt;p&gt;Состояние TLS соединения определяет алгоритм сжатия, шифрования, имитовставки, а также параметры
+алгоритмов - ключ имитовставки и ключи шифрования как на запись, так и на чтение. Выделяют 4
+состояния соединения:&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;current_write&lt;/li&gt;
+&lt;li&gt;current_read&lt;/li&gt;
+&lt;li&gt;pending_write&lt;/li&gt;
+&lt;li&gt;pending_read&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Обработка всех сообщений производится в текущих состояниях (первые два). Параметры ожидающих
+состояний (последние два) могут быть установлены с помощью протокола установления соединения (handshake
+protcol), а затем по протоколу изменения параметров шифрования ожидающее состояние может заместить
+текущее, которое в свою очередь очищается.&lt;/p&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Не позволяется делать замещение текущего состояния ожидаемым, если ожидаемое не было
+инициализировано соответствующими параметрами.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Параметры TLS соединения:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p class="first"&gt;connection end (оконечная точка соединения)
+Является ли сущность клиентом или сервером в данном соединении.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { server, client } ConnectionEnd;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;PRF algorithm (псевдослучайная функция)
+Алгоритм, используемый для генерации ключей из главного ключа (master key).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum{ tls_prf_sha256 } PRFAlgorithm;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;bulk encryption algorithm (алгоритм шифрования)
+Спецификация включает в себя размер ключа, является ли шифрование блочными или AEAD, размер блока
+шифра (если имеется), и длины явного и неявного инициализирующих векторов.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { null, rc4, 3des, aes } BulkCipherAlgorithm;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;MAC algorithm (алгоритм имитовставки)
+Спецификация включает размер значения, возвращаемого алгоритмом.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { stream, block, aead } CipherType;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;compression algorithm (алгоритм сжатия)
+Спецификация включает всю информацию, необходимую для сжатия&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { null(0), (255) } CompressionMethod;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;master secret
+48-байтный ключ, вырабатываемый членами соединения&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;client random
+32-байтное значение, вырабатываемое клиентом&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;server random
+32-байтное значение, вырабатываемое сервером&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        ConnectionEnd       entity;
+        PRFAlgorithm        prf_algorithm;
+        BulkCipherAlgorithm bulk_cipher_algorithm;
+        CipherType          cipher_type;
+        uint8               enc_key_length;
+        uint8               block_length;
+        uint8               fixed_iv_length;
+        uint8               record_iv_length;
+        MACAlgorithm        mac_algorithm;
+        uint8               mac_length;
+        uint8               mac_key_length;
+        CompressionMethod   compression_algorithm;
+        opaque              master_secret[48];
+        opaque              client_random[32];
+        opaque              server_random[32];
+} SecurityParameters;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;На уровне записи, используя параметры, генерируются (алгоритм генерации описан далее)&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;ключ имитовставки клиента на запись&lt;/li&gt;
+&lt;li&gt;ключ имитовставки сервера на запись&lt;/li&gt;
+&lt;li&gt;ключ шифрования клиента на запись&lt;/li&gt;
+&lt;li&gt;ключ шифрования сервера на запись&lt;/li&gt;
+&lt;li&gt;инициализирующий вектор клиента на запись&lt;/li&gt;
+&lt;li&gt;инициализирующий вектор сервера на запись&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Клиентские параметры на запись используются сервером при получении и обработке сообщений и наоборот,
+соответственно.&lt;/p&gt;
+&lt;p&gt;После генерации ключей и установления параметров, состояния соединения могут стать текущими
+состояниями. Эти текущие состояния &lt;strong&gt;ОБЯЗАНЫ&lt;/strong&gt; обновляться для каждой обработанной записи.&lt;/p&gt;
+&lt;p&gt;Элементы состояния соединения:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;compression state (состояние сжатия)&lt;/li&gt;
+&lt;li&gt;cipher state (состояние шифрования)&lt;/li&gt;
+&lt;li&gt;MAC key (ключ имитовставки)&lt;/li&gt;
+&lt;li&gt;sequence number (номер)
+Состояния соединения нумеруются (чтение и запись отдельно). Номер устанавливается нулевым, когда
+состояние соединения становится активным. Номера имеют тип uint16. С каждой записью номер
+увеличивается на 1.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id11"&gt;
+&lt;h2&gt;Фрагментация&lt;/h2&gt;
+&lt;p&gt;Уровень записи получает данные от более высоких уровней в непустых блоках заданного размера.&lt;/p&gt;
+&lt;p&gt;Уровень записи фрагментирует блоки в TLSPlaintext записи (см. ниже). Размер записи не может
+превышать 2^14 байт. Границы сообщения клиента не сохраняются. То есть в одной записи может
+содержаться несколько сообщений или наоборот в нескольких записях может быть одно сообщение.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        uint8 major;
+        uint8 minor;
+} ProtocolVersion;
+
+enum {
+        change_cipher_spec(20),
+        alert(21),
+        handshake(22),
+        application_data(23),
+        (255)
+} ContentType;
+
+struct {
+        ContentType type;
+        ProtocolVersion version; /*** TLS 1.2 uses {3,3} version ***/
+        uint16 length;
+        opaque fragment[TLSPlaintext.length];
+} TLSPlaintext;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Для содержимого типа установление соединения (handshake), тревоги (alert), изменение параметров
+шифрования (change cipher spec) TLS записи не могут быть нулевой длины, а для данных (application
+data) могут (например для усложнения анализа трафика).&lt;/p&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Записи разных типов могут перемешиваться. Данные (application data), как
+правило, имеют меньший приоритет. Тем не менее записи &lt;strong&gt;обязаны&lt;/strong&gt; отправляться по сети в том
+же порядке, в котором они проходят уровень TLS record. Получатель должен получить и
+обработать перемешанные записи с данными только после завершения установления соединения.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id12"&gt;
+&lt;h2&gt;Сжатие и распаковка данных&lt;/h2&gt;
+&lt;p&gt;Все записи сжимаются и распаковываются в соответствии с алгоритмом, определенным в текущем
+состоянии. Алгоритм сжатия и распаковки используется всегда, просто иногда он определен как
+&lt;cite&gt;CompressionMethod.null&lt;/cite&gt;. Алгоритм сжатия переводит &lt;cite&gt;TLSPlaintext&lt;/cite&gt; запись в &lt;cite&gt;TLSCompressed&lt;/cite&gt;
+структуру. Алгоритм сжатия TLS описан в RFC-2749.&lt;/p&gt;
+&lt;p&gt;Должно использоваться сжатие без потерь, не увеличивающее длину содержимого более чем на 1024 байт.
+Если при распаковке получился фрагмент, длина которого больше 2^14 байт (больше максимально
+возможного), то функция распаковки должна сообщить об ошибке.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        ContentType type; /*** как и TLSPlaintext ***/
+        ProtocolVersion version; /*** как и в TLSPlaintext ***/
+        uint16 length; /*** не больше 2^14 + 1024 ***/
+        opaque fragment[TLSCompressed.length];
+} TLSCompressed;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;В случае с &lt;cite&gt;CompressionMethod.null&lt;/cite&gt; структуры TLSPlaintext и TLSCompressed совпадают.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id13"&gt;
+&lt;h2&gt;Защита записей&lt;/h2&gt;
+&lt;p&gt;Функции шифрования и имитовставки преобразуют TLSCompressed структуру в TLSCiphertext. Функции
+расшифрования осуществляют обратную операцию. Имитовставка имеет номер для обнаружения пропущенных
+или повторяющихся сообщений.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        ContentType type;
+        ProtocolVersion version;
+        uint16 length; /*** не превышет 2^14 + 2048 ***/
+        select (SecurityParameters.cipher_type) {
+                case stream: GenericStreamCipher;
+                case block:  GenericBlockCipher;
+                case aead:   GenericAEADCipher;
+        } fragment; /*** зашифрованный TLSCompressed.fragment ***/
+} TLSCiphertext;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="id14"&gt;
+&lt;h3&gt;Пустой или стандартный потоковый шифр&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;stream-ciphered struct {
+        opaque Content[TLSCompressed.length];
+        opaque MAC[SecurityParameters.mac_length];
+} GenericStreamCipher;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Имитовставка генерируется следующим образом:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;  MAC(MAC_write_key, seq_num
+          + TLSCompressed.type
+          + TLSCompressed.version
+          + TLSCompressed.length
+          + TLSCompressed.fragment
+  );
+
+&amp;quot;+&amp;quot; - это конкатенация
+&lt;/pre&gt;&lt;/div&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Имитовставка вычисляется до шифрования. Потоковый шифр шифрует блок, включая MAC.
+TODO:&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id15"&gt;
+&lt;h3&gt;Блочное шифрование&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        /*** вектор инициализации ***/
+        opaque IV(SecurityParameters.record_iv_length];
+        block-ciphered struct {
+                opaque content[TLSCompressed.length];
+                opaque MAC[SecurityParameters.mac_length];
+                uint8 padding[GenericBlockCipher.padding_length];
+                uint8 padding_length;
+        };
+} GenericBlockCipher;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="padding"&gt;
+&lt;h4&gt;padding&lt;/h4&gt;
+&lt;blockquote&gt;
+Дополнение plaintext до длины, кратной длине блока блочного шифра. Дополнение не может быть
+длинее 255 байт. Можно делать дополнение более длинным, чем это необходимо (но не длинее
+255) для предотвращение атак на протокол, основанных на анализе длин сообщений.&lt;/blockquote&gt;
+&lt;/div&gt;
+&lt;div class="section" id="padding-length"&gt;
+&lt;h4&gt;padding_length&lt;/h4&gt;
+&lt;blockquote&gt;
+Длина блока padding. Составляет ровно 1 байт.&lt;/blockquote&gt;
+&lt;p&gt;Пусть, например, размер блока равен 8, длина содержимого 61 байт, а имитовставка имеет размер 20
+байт, тогда то, что должно шифроваться имеет длину 81 байт и 1 байт отводится на длину дополнения.
+Таким образом дополнение должно состоять минимум из 8*11 - (81 + 1) = 6 байт. Оно может быть и
+больше: 6 + 8 байт, 6 + 8 + 8 байт, ..., 254 байта. Тогда последние 8 байт (для минимального
+дополнения) GenericBlockCipher будут&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;0x## 0x06 0x06 0x06 0x06 0x06 0x06 0x06
+
+0x## - последний байт имитовставки
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="aead"&gt;
+&lt;h3&gt;AEAD шифры&lt;/h3&gt;
+&lt;p&gt;Аутентифицирующее шифрование (см. RFC-5116 Authenticated Encryption with Associated Data) - форма шифрования при
+которой в дополнение к обеспечению конфиденциальности открытого текста, предоставляется возможность
+проверки целостности и подлинности. Authenticated Encryption with Associated Data (AEAD) шифрование
+предоставляет возможность проверки целостности и подлинности некоторых дополнительных данных
+(также называемых дополнительные подлинные данные), которые не зашифрованы.&lt;/p&gt;
+&lt;p&gt;Многие приложения для обеспечения целостности используют имитовставку, а для обеспечения
+конфиденциальности какой-то алгоритм шифрования. При этом используется два независимых ключа. Идея
+AEAD состоит в том, чтобы заменить этот подход единым алгоритмом.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        opaque nonce_explicit[SecurityParameters.record_iv_length];
+        aead-ciphered struct {
+                opaque content[TLSCompressed.length];
+        };
+} GenericAEADCipher;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;дополнительные подлинные данные определяются следующим образом:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;additional_data = seq_num + TLSCompressed.type + TLSCompressed.version +
+                TLSCompressed.length;
+
+&amp;quot;+&amp;quot; - это конкатенация
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id16"&gt;
+&lt;h2&gt;Генерация ключа&lt;/h2&gt;
+&lt;p&gt;Главный ключ раскрывается в последовательность байт, которая разделяется на клиентский ключ на
+запись, серверный ключ на запись а также клиентский и серверный ключи имитовставки на запись.
+Некоторые AEAD шифры могут дополнительно нуждаться в клиентском и серверном инициализирующих
+векторах.&lt;/p&gt;
+&lt;p&gt;раскрытие в последовательность байт:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;key_block = PRF(SecurityParameters.master_secret,
+        &amp;quot;key expansion&amp;quot;,
+        SecurityParameters.server_random +
+        SecurityParameters.client_random);
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;разделение:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;client_write_MAC_key[SecurityParameters.mac_key_length];
+server_write_MAC_key[SecurityParameters.mac_key_length];
+client_write_key[SecurityParameters.enc_key_length];
+server_write_key[SecurityParameters.enc_key_length];
+client_write_IV[SecurityParameters.fixed_iv_length];
+server_write_IV[SecurityParameters.enc_key_length];
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="handshaking-protocols"&gt;
+&lt;h2&gt;Протоколы установления соединения (handshaking protocols)&lt;/h2&gt;
+&lt;p&gt;Существует 3 подпротокола по которым стороны вырабатывают соглашения относительно параметров (security
+parameters) соединения на уровне записи для аутентификации себя, вырабатывания начальных
+параметров и сообщений об ошибках.&lt;/p&gt;
+&lt;p&gt;В процессе установления соединения узлы вырабатывают сессию, состоящую из следующих элементов:&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;идентификатор сессии&lt;/li&gt;
+&lt;li&gt;сертификаты сторон&lt;/li&gt;
+&lt;li&gt;метод сжатия&lt;/li&gt;
+&lt;li&gt;параметры алгоритма шифрования&lt;/li&gt;
+&lt;li&gt;главный ключ&lt;/li&gt;
+&lt;li&gt;восстанавливаемость&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Эти элементы далее могут быть использованы для составления параметров протокола TLS записи. С
+помощью данной сессии можно устанавливать множество TLS соединений.&lt;/p&gt;
+&lt;div class="section" id="id17"&gt;
+&lt;h3&gt;Протокол изменения параметров шифрования&lt;/h3&gt;
+&lt;p&gt;Протокол состоит из одного сообщения, которое шифруется и сжимается по текущему (не &lt;em&gt;ожидаемому&lt;/em&gt;, а
+текущему) состоянию. Сообщение состоит из одного байта 0x01.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        enum { change_cipher_spec(1), (255) } type;
+} ChangeCipherSpec;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Сообщение ChangeCipherSpec посылается как клиентом, так и сервером. Получатель данного сообщения
+должен заменить текущее состояние чтения ожидаемым состоянием чтения, а отправитель заменяет
+ожидаемое состояние записи текущим состоянием записи.&lt;/p&gt;
+&lt;p&gt;Сообщение ChangeCipherSpec посылается в процессе установления соединения после того как параметры
+безопасности согласованы, но до посылки подтверждающего сообщения &lt;cite&gt;Finished&lt;/cite&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id18"&gt;
+&lt;h3&gt;Протокол тревоги&lt;/h3&gt;
+&lt;p&gt;Одним из типов содержимого является тип тревоги. Сообщение тревоги содержит важность сообщения и
+описание. Сообщение важности fatal незамедлительно прерывает соединение. В данном случае может
+происходить какое-то общение между узлами, но идентификатор сессии становится недействительным.
+Таким образом, сессия не может использоваться для установления новых соединений. Сообщение тревоги
+шифруется и сжимается, как и остальные.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { warning(1), fatal(2), (255) } AlertLevel;
+
+enum {
+        close_notify(0),
+        unexpected_message(10),
+        bad_record_mac(20),
+        decryption_failed_RESERVED(21),
+        record_overflow(22),
+        decompression_failure(30),
+        handshake_failure(40),
+        no_certificate_RESERVED(41),
+        bad_certificate(42),
+        unsupported_certificate(43),
+        certificate_revoked(44),
+        certificate_expired(45),
+        certificate_unknown(46),
+        illegal_parameter(47),
+        unknown_ca(48),
+        access_denied(49),
+        decode_error(50),
+        decrypt_error(51),
+        export_restriction_RESERVED(60),
+        protocol_version(70),
+        insufficient_security(71),
+        internal_error(80),
+        user_canceled(90),
+        no_renegotiation(100),
+        unsupported_extension(110),
+        (255)
+} AlertDescription;
+
+struct {
+        AlertLevel level;
+        AlertDescription description;
+} Alert;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id19"&gt;
+&lt;h3&gt;Закрывающие сообщения тревоги&lt;/h3&gt;
+&lt;p&gt;Любая сторона может завершить соединение. Для этого она должна послать &lt;cite&gt;close_notify&lt;/cite&gt;.
+Сообщение &lt;cite&gt;close_notify&lt;/cite&gt; говорит о том, что отправитель больше не будет посылать сообщений.
+Перед закрытием соединения (если не происходило каких-то критических ошибок) закрывающая сторона в
+обязательном порядке должна послать &lt;cite&gt;close_notify&lt;/cite&gt;, получив &lt;cite&gt;close_notify&lt;/cite&gt; необходимо послать его в
+ответ, хотя закрывающая сторона вовсе не должна его дожидаться.&lt;/p&gt;
+&lt;p&gt;При получении сообщения тревоги с критической ошибкой соединение закрывается. При получении
+сообщений типа warning соединение не должно закрываться. Если всё-таки его необходимо по какой-лдибо
+причине закрыть, необходимо послать сообщение о критической ошибке. Таким образом сообщения
+&lt;cite&gt;warning&lt;/cite&gt; - не очень-то полезная штука и редко посылаются.&lt;/p&gt;
+&lt;p&gt;Определены следующие сообщения об ошибках:&lt;/p&gt;
+&lt;p&gt;TODO:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p class="first"&gt;unexpected_message&lt;/p&gt;
+&lt;p&gt;An inappropriate message was received. This alert is always fatal and should never be observed in communication between proper implementations.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;bad_record_mac&lt;/p&gt;
+&lt;p&gt;This alert is returned if a record is received with an incorrect MAC. This alert also MUST be returned if an alert is sent because a TLSCiphertext decrypted in an invalid way: either it wasn’t an even multiple of the block length, or its padding values, when checked, weren’t correct. This message is always fatal and should never be observed in communication between proper implementations (except when messages were corrupted in the network).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;decryption_failed_RESERVED&lt;/p&gt;
+&lt;p&gt;This alert was used in some earlier versions of TLS, and may have permitted certain attacks against the CBC mode [CBCATT]. It MUST NOT be sent by compliant implementations.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;record_overflow&lt;/p&gt;
+&lt;p&gt;A TLSCiphertext record was received that had a length more than 2^14+2048 bytes, or a record decrypted to a TLSCompressed record with more than 2^14+1024 bytes. This message is always fatal and should never be observed in communication between proper implementations (except when messages were corrupted in the network).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;decompression_failure&lt;/p&gt;
+&lt;p&gt;The decompression function received improper input (e.g., data that would expand to excessive length). This message is always fatal and should never be observed in communication between proper implementations.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;handshake_failure&lt;/p&gt;
+&lt;p&gt;Reception of a handshake_failure alert message indicates that the sender was unable to negotiate an acceptable set of security parameters given the options available. This is a&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;no_certificate_RESERVED&lt;/p&gt;
+&lt;p&gt;This alert was used in SSLv3 but not any version of TLS. NOT be sent by compliant implementations. It MUST NOT be sent by compliant implementations.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;bad_certificate&lt;/p&gt;
+&lt;p&gt;A certificate was corrupt, contained signatures that did not verify correctly, etc.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;unsupported_certificate&lt;/p&gt;
+&lt;p&gt;A certificate was of an unsupported type.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;certificate_revoked&lt;/p&gt;
+&lt;p&gt;A certificate was revoked by its signer.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;certificate_expired&lt;/p&gt;
+&lt;p&gt;A certificate has expired or is not currently valid.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;certificate_unknown&lt;/p&gt;
+&lt;p&gt;Some other (unspecified) issue arose in processing the certificate, rendering it unacceptable. illegal_parameter A field in the handshake was out of range or inconsistent with other fields. This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;unknown_ca&lt;/p&gt;
+&lt;p&gt;A valid certificate chain or partial chain was received, but the certificate was not accepted because the CA certificate could not be located or couldn’t be matched with a known, trusted CA. This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;access_denied&lt;/p&gt;
+&lt;p&gt;A valid certificate was received, but when access control was applied, the sender decided not to proceed with negotiation. This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;decode_error&lt;/p&gt;
+&lt;p&gt;A message could not be decoded because some field was out of the specified range or the length of the message was incorrect. This message is always fatal and should never be observed in communication between proper implementations (except when messages were corrupted in the network).&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;decrypt_error&lt;/p&gt;
+&lt;p&gt;A handshake cryptographic operation failed, including being unable to correctly verify a signature or validate a Finished message. This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;export_restriction_RESERVED&lt;/p&gt;
+&lt;p&gt;This alert was used in some earlier versions of TLS. be sent by compliant implementations. It MUST NOT be sent by compliant implementations.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;protocol_version&lt;/p&gt;
+&lt;p&gt;The protocol version the client has attempted to negotiate is recognized but not supported. (For example, old protocol versions might be avoided for security reasons.) This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;insufficient_security&lt;/p&gt;
+&lt;p&gt;Returned instead of handshake_failure when a negotiation has failed specifically because the server requires ciphers more secure than those supported by the client. This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;internal_error&lt;/p&gt;
+&lt;p&gt;An internal error unrelated to the peer or the correctness of the protocol (such as a memory allocation failure) makes it impossible to continue. This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;user_canceled&lt;/p&gt;
+&lt;p&gt;This handshake is being canceled for some reason unrelated to a protocol failure. If the user cancels an operation after the handshake is complete, just closing the connection by sending a close_notify is more appropriate. This alert should be followed by a close_notify. This message is generally a warning.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;no_renegotiation&lt;/p&gt;
+&lt;p&gt;Sent by the client in response to a hello request or by the server in response to a client hello after initial handshaking. Either of these would normally lead to renegotiation; when that is not appropriate, the recipient should respond with this alert. At that point, the original requester can decide whether to proceed with the connection. One case where this would be appropriate is where a server has spawned a process to satisfy a request; the process might receive security parameters (key length, authentication, etc.) at startup, and it might be difficult to communicate changes to these parameters after that point. This message is always a warning.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;unsupported_extension&lt;/p&gt;
+&lt;p&gt;sent by clients that receive an extended server hello containing an extension that they did not put in the corresponding client hello. This message is always fatal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Добавление новых ошибок производится через IANA.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id20"&gt;
+&lt;h2&gt;Протокол установления соединения (детально)&lt;/h2&gt;
+&lt;p&gt;Что происходит во время установления соединения&lt;/p&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;Обмениваемся hello сообщениями для согласования алгоритмов, обмена случайными значениями и
+проверки возобновляемости сессии.&lt;/li&gt;
+&lt;li&gt;Обмениваемся необходимыми параметрами шифрования, вырабатываем premaster ключ&lt;/li&gt;
+&lt;li&gt;Обмениваемся сертификатами и информацией аутентификации&lt;/li&gt;
+&lt;li&gt;Генерируем общий ключ из premaster и обмениваемся случайными значениями&lt;/li&gt;
+&lt;li&gt;Применяем параметры к уровню записи (TLS Record)&lt;/li&gt;
+&lt;li&gt;Проверяем, что клиент и сервер получили одинаковые параметры безопасности и установление
+соединения произошло успешно.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Как происходит установление соединения&lt;/p&gt;
+&lt;p&gt;Клиент шлёт сообщение &lt;cite&gt;ClientHello&lt;/cite&gt;, на который сервер должен ответить сообщением &lt;cite&gt;ServerHello&lt;/cite&gt; (либо на
+стороне сервера возникает критическая ошибка и соединение обрывается). При этом устанавливаются
+следующие атрибуты: версия протокола, идентификатор сессии, набор шифров и методы сжатия.
+Дополнительно генерируются два случайных значения &lt;cite&gt;ClientHello.random&lt;/cite&gt; и &lt;cite&gt;ServerHello.random&lt;/cite&gt;.&lt;/p&gt;
+&lt;p&gt;Следом за сообщениями hello сервер шлёт сертификат (сообщение Crtificate), если необходимо
+подтвердить подлинность сервера. Дополнительно может быть послано ServerKeyExchange сообщение (если
+у сервера нет сертификата или его сертификат может быть использован только для подписи). Если сервер
+прошёл проверку подлинности, он может запросить сертификат клиента (если этого требуется в выбранной
+системе шифрования). Далее сервер посылает сообщение &lt;cite&gt;ServerHelloDone&lt;/cite&gt;. Это сигнализирует о том, что
+этап обмена hello-сообщениями завершён. Если у клиента был запрошен сертификат, он должен его
+послать. Затем клиент посылает сообщение &lt;cite&gt;ClientKeyExchange&lt;/cite&gt; (содержимое сообщения зависит от
+выбранного алгоритма шифрования). Если клиент послал сертификат с возможностью цифровой подписи, то
+он также плсылает подписанной сообщение &lt;cite&gt;CertificateVerify&lt;/cite&gt;, чтобы показать, что у него имеется
+закрытый ключ для подписи.&lt;/p&gt;
+&lt;p&gt;Далее клиент шлет &lt;cite&gt;ChangeCipherSpec&lt;/cite&gt; сообщение и подменяет текущий шифр ожидаемым, после чего
+незамедлительно шлёт &lt;cite&gt;Finished&lt;/cite&gt; сообщение зашифрованное новым шифром. В ответ сервер пошлёт своё
+сообщение &lt;cite&gt;ChangeCipherSpec&lt;/cite&gt;, меняет шифр и шлёт &lt;cite&gt;Finished&lt;/cite&gt;. С этого момента установление соединения
+закончено и можно обмениваться данными.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Client                        Server
+
+ClientHello        --------&amp;gt;
+                              ServerHello
+                              Certificate*
+                              ServerKeyExchange*
+                              CertificateRequest*
+                   &amp;lt;--------  ServerHelloDone
+Certificate*
+ClientKeyExchange
+CertificateVerify*
+[ChangeCipherSpec]
+Finished           --------&amp;gt;
+                              [ChangeCipherSpec]
+                   &amp;lt;--------  Finished
+Application Data   &amp;lt;-------&amp;gt;  Application Data
+
+* - опционально
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Если клиент с сервером решают продолжить предыдущую сессию или клонировать существующую (чобы не
+согласовывать новые параметры безопасности), то обмен сообщениями будет строится следующим образом:&lt;/p&gt;
+&lt;p&gt;Клиент шлет ClientHello, используя идентификатор сессии, которую хотел бы продолжить. Сервер
+проверяет свой кэш сессий в поисках нужной. Если сессия найдена, то сервер пытается установить
+соединение с помощью данной сессии, он пошлёт ServerHello с тем же идентификатором сессии, они
+меняют шифры посредством &lt;cite&gt;ChangeCipherSpec&lt;/cite&gt; сообщений и обмениваются &lt;cite&gt;Finished&lt;/cite&gt;. Если же сессия
+отсутствует в кэше сервера, то производится полная процедура установления соединения.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Client                        Server
+
+ClientHello        --------&amp;gt;
+                              ServerHello
+                              [ChangeCipherSpec]
+                   &amp;lt;--------  Finished
+[ChangeCipherSpec]
+Finished           --------&amp;gt;
+Application Data   &amp;lt;-------&amp;gt;  Application Data
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Протокол установления соединения на более низком уровне использует протокол TLS записи для передачи
+сообщений.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum {
+        hello_request(0),
+        client_hello(1),
+        server_hello(2),
+        certificate(11),
+        server_key_exchange (12),
+        certificate_request(13),
+        server_hello_done(14),
+        certificate_verify(15),
+        client_key_exchange(16),
+        finished(20), (255)
+} HandshakeType;
+
+struct {
+        HandshakeType msg_type;
+        uint24 length;
+        select (HandshakeType) {
+                case hello_request:       HelloRequest;
+                case client_hello:        ClientHello;
+                case server_hello:        ServerHello;
+                case certificate:         Certificate;
+                case server_key_exchange: ServerKeyExchange;
+                case certificate_request: CertificateRequest;
+                case server_hello_done:   ServerHelloDone;
+                case certificate_verify:  CertificateVerify;
+                case client_key_exchange: ClientKeyExchange;
+                case finished:            Finished;
+        } body;
+} Handshake;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="hellorequest"&gt;
+&lt;h3&gt;HelloRequest&lt;/h3&gt;
+&lt;p&gt;Сообщение &lt;cite&gt;HelloRequest&lt;/cite&gt; может быть послано сервером в &lt;strong&gt;любой&lt;/strong&gt; момент. Клиент не обязан отвечать,
+(а может ответить и &lt;cite&gt;no_renegatiation&lt;/cite&gt; сообщением тревоги), но сервер в таком случае в праве разорвать
+соединение. Послав &lt;cite&gt;HelloRequest&lt;/cite&gt; сервер должен дождаться какого-то результата процедуры
+установления соединения.&lt;/p&gt;
+&lt;p&gt;Структура сообщения:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {} HelloRequest;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="clienthello"&gt;
+&lt;h3&gt;ClientHello&lt;/h3&gt;
+&lt;p&gt;Структура сообщения:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        ProtocolVersion client_version;
+        Random random;
+        SessionID session_id;
+        CipherSuite cipher_suites&amp;lt;2..2^16-2&amp;gt;;
+        CompressionMethod compression_methods&amp;lt;1..2^8-1&amp;gt;;
+        select (extensions_present) {
+                case false:
+                        struct {};
+                case true:
+                        Extension extensions&amp;lt;0..2^16-1&amp;gt;;
+        };
+} ClientHello;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="random"&gt;
+&lt;h4&gt;Random&lt;/h4&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        uint32 gmt_unix_time;
+        opaque random_bytes[28];
+} Random;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;&lt;cite&gt;gmt_unix_time&lt;/cite&gt; - дата и время  в стандартном UNIX-времени (секунды с начала эпохи). TLS не
+определяет, что часы должны идти правильно. Хотя приложение на более высоком уровне может
+учитывать этот параметр.&lt;/li&gt;
+&lt;li&gt;&lt;cite&gt;random_bytes&lt;/cite&gt; - 28 байт, сгенерированных генератором случайных чисел.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+&lt;div class="section" id="sessionid"&gt;
+&lt;h4&gt;SessionID&lt;/h4&gt;
+&lt;p&gt;Если не пусто, то продолжить сессию. Если пусто - начать новую.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;opaque SessionID&amp;lt;0..32&amp;gt;;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id21"&gt;
+&lt;h4&gt;Набор шифрования&lt;/h4&gt;
+&lt;p&gt;Комбинация криптоалгоритмов, поддерживаемых клиентом в порядке желательности для клиента. Каждый
+&amp;quot;набор шифрования&amp;quot; содержит алгоритм распределения ключей, алгоритм шифрования (включая длину
+закрытого ключа), алгоритм имитовставки и псевдослучайную функцию. Сервер выберет подходящий набор,
+либо вернет критическую ошибку.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;uint8 CipherSuite[2];
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Возможные варианты:&lt;/p&gt;
+&lt;p&gt;Без шифрования (может использоваться только как инициализирующее значение).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite TLS_NULL_WITH_NULL_NULL = { 0x00,0x00 };
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Для серверов, поддерживающих RSA (должен быть сертификат):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite   TLS_RSA_WITH_NULL_MD5                ={  0x00, 0x01  };
+CipherSuite   TLS_RSA_WITH_NULL_SHA                ={  0x00, 0x02  };
+CipherSuite   TLS_RSA_WITH_NULL_SHA256             ={  0x00, 0x3B  };
+CipherSuite   TLS_RSA_WITH_RC4_128_MD5             ={  0x00, 0x04  };
+CipherSuite   TLS_RSA_WITH_RC4_128_SHA             ={  0x00, 0x05  };
+CipherSuite   TLS_RSA_WITH_3DES_EDE_CBC_SHA        ={  0x00, 0x0A  };
+CipherSuite   TLS_RSA_WITH_AES_128_CBC_SHA         ={  0x00, 0x2F  };
+CipherSuite   TLS_RSA_WITH_AES_256_CBC_SHA         ={  0x00, 0x35  };
+CipherSuite   TLS_RSA_WITH_AES_128_CBC_SHA256      ={  0x00, 0x3C  };
+CipherSuite   TLS_RSA_WITH_AES_256_CBC_SHA256      ={  0x00, 0x3D  };
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Диффи-Хэллман (у сервера должен быть серктификат, у клиента он тоже может быть запрошен).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite   TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x0D   };
+CipherSuite   TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x10   };
+CipherSuite   TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA    ={   0x00, 0x13   };
+CipherSuite   TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA    ={   0x00, 0x16   };
+CipherSuite   TLS_DH_DSS_WITH_AES_128_CBC_SHA      ={   0x00, 0x30   };
+CipherSuite   TLS_DH_RSA_WITH_AES_128_CBC_SHA      ={   0x00, 0x31   };
+CipherSuite   TLS_DHE_DSS_WITH_AES_128_CBC_SHA     ={   0x00, 0x32   };
+CipherSuite   TLS_DHE_RSA_WITH_AES_128_CBC_SHA     ={   0x00, 0x33   };
+CipherSuite   TLS_DH_DSS_WITH_AES_256_CBC_SHA      ={   0x00, 0x36   };
+CipherSuite   TLS_DH_RSA_WITH_AES_256_CBC_SHA      ={   0x00, 0x37   };
+CipherSuite   TLS_DHE_DSS_WITH_AES_256_CBC_SHA     ={   0x00, 0x38   };
+CipherSuite   TLS_DHE_RSA_WITH_AES_256_CBC_SHA     ={   0x00, 0x39   };
+CipherSuite   TLS_DH_DSS_WITH_AES_128_CBC_SHA256   ={   0x00, 0x3E   };
+CipherSuite   TLS_DH_RSA_WITH_AES_128_CBC_SHA256   ={   0x00, 0x3F   };
+CipherSuite   TLS_DHE_DSS_WITH_AES_128_CBC_SHA256  ={   0x00, 0x40   };
+CipherSuite   TLS_DHE_RSA_WITH_AES_128_CBC_SHA256  ={   0x00, 0x67   };
+CipherSuite   TLS_DH_DSS_WITH_AES_256_CBC_SHA256   ={   0x00, 0x68   };
+CipherSuite   TLS_DH_RSA_WITH_AES_256_CBC_SHA256   ={   0x00, 0x69   };
+CipherSuite   TLS_DHE_DSS_WITH_AES_256_CBC_SHA256  ={   0x00, 0x6A   };
+CipherSuite   TLS_DHE_RSA_WITH_AES_256_CBC_SHA256  ={   0x00, 0x6B   };
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Диффи-Хэллман (анонимно)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite  TLS_DH_anon_WITH_RC4_128_MD5         =  {  0x00, 0x18  };
+CipherSuite  TLS_DH_anon_WITH_3DES_EDE_CBC_SHA    =  {  0x00, 0x1B  };
+CipherSuite  TLS_DH_anon_WITH_AES_128_CBC_SHA     =  {  0x00, 0x34  };
+CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA     =  {  0x00, 0x3A  };
+CipherSuite  TLS_DH_anon_WITH_AES_128_CBC_SHA256  =  {  0x00, 0x6C  };
+CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;{ 0x00, 0x1C } и { 0x00, 0x1D } заезервированы, во избежание коллизий с SSL.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id22"&gt;
+&lt;h4&gt;Метод сжатия&lt;/h4&gt;
+&lt;p&gt;Обязательно должен поддерживаться режим без сжатия.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;enum { null(0), (255) } CompressionMethod;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="serverhello"&gt;
+&lt;h3&gt;ServerHello&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+        ProtocolVersion server_version;
+        Random random;
+        SessionID session_id;
+        CipherSuite cipher_suite;
+        CompressionMethod compression_mehtod;
+        select (extensions_present ) {
+                case false:
+                        struct {};
+                case true:
+                        Extension extemsions&amp;lt;0..2^16-1&amp;gt;;
+        };
+} ServerHello;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;В принципе, понятно как заполняется указанная структура. Некоторые замечания:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p class="first"&gt;session_id&lt;/p&gt;
+&lt;p&gt;Если сервер вернёт нулевой &lt;cite&gt;session_id&lt;/cite&gt;, это будет означать, что сессия не может быть продолжена.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;cipher_suite, compression_mehtod&lt;/p&gt;
+&lt;p&gt;Сервер должен выбрать один из предоставленных клиентом.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Дочитав до этого момента можно уже что-то &amp;quot;пощупать&amp;quot; - см. SSL-практика.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Tue, 14 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-14:sec/tls.html</guid><category>ssl</category><category>tls</category><category>security</category><category>cryptography</category></item></channel></rss>

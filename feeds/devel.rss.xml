@@ -1,0 +1,716 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/devel.rss.xml" rel="self"></atom:link><lastBuildDate>Thu, 26 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Анализ CFLOW трафика</title><link>http://blog.hoxnox.com/devel/cflow-analysis.html</link><description>&lt;p&gt;Допустим имеется pcap файл, содержащий CFLOW трафик. Нам необходимо
+получить информацию об анонсируемых шаблонах (какие, в каком фрейме) и о
+данных (сколько DataSet'ов, сколько Flow).&lt;/p&gt;
+&lt;p&gt;Для этих целей реализован постдиссектор (см. в конце).&lt;/p&gt;
+&lt;p&gt;Пример запуска:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;tshark -q -d&amp;quot;udp.port==8819,cflow&amp;quot; -X lua_script:./misc/cflow.analyze.lua -r build/20140326.analisys/merged.pcap
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Существует важная особенность при анализе информации на уровне flow.
+tshark начинает понимать как правильно разбирать DataSet'ы только после
+того, как поймает анонс соответствующего шаблона. Соответственно все
+пакеты до фрейма с шаблонами будут пропущены. Для решения этой проблемы
+можно прогнать pcap-файл через анализатор, получить номер фрейма с
+анонсами шаблонов, выделить этот фрейм:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;tshark -Y&amp;quot;frame.number==4320&amp;quot; -r dump.pcap -w templates.pcap
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;и подсоединить в начало:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mergecap -a templates.pcap dump.pcap -w merged.pcap
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Второй тонкий момент. Если обратить внимание на lua-скрипт, то можно
+заметить, что ВСЕ flow должны быть перечислимы по какому-либо полю. То
+есть надо найти такое поле, которое встречалось бы и содержало значение
+у всех наборов данных. В коде ниже - это поля &lt;code&gt;cflow.firewall_event&lt;/code&gt;,
+&lt;code&gt;cflow.observation_time_milliseconds&lt;/code&gt;. Это необходимо для корректной
+обработки данных в цикле получения всех flow.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;do&lt;/span&gt;
+    &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cflow analyzer loaded&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;frame_num_extractor&lt;/span&gt;       &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;frame.number&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;src_ip_extractor&lt;/span&gt;          &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ip.src&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;src_port_extractor&lt;/span&gt;        &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;udp.srcport&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowset_id_extractor&lt;/span&gt;      &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cflow.flowset_id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowset_len_extractor&lt;/span&gt;     &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cflow.flowset_length&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;template_id_extractor&lt;/span&gt;     &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cflow.template_id&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;template_fcount_extractor&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cflow.template_field_count&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="o"&gt;--&lt;/span&gt; &lt;span class="nx"&gt;choose&lt;/span&gt; &lt;span class="nx"&gt;correct&lt;/span&gt; &lt;span class="nx"&gt;inumerate&lt;/span&gt; &lt;span class="nx"&gt;field&lt;/span&gt; &lt;span class="nx"&gt;here&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_fw_event_extractor&lt;/span&gt;   &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cflow.firewall_event&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_obs_time_extractor&lt;/span&gt;   &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Field&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;cflow.observation_time_milliseconds&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;fw_events&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowsets&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;templates&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;bytes_total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_count_total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowset_count_total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+
+    &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;init_listener&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;tap&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;Listener&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;new&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;udp&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;tap&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;packet&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;pinfo&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;tvb&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;udp&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;frame_num&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;tonumber&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;tostring&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;frame_num_extractor&lt;/span&gt;&lt;span class="p"&gt;()))&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;src_ip&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;src_ip_extractor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;src_port&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;src_port_extractor&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowset_ids&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;flowset_id_extractor&lt;/span&gt;&lt;span class="p"&gt;()}&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowset_lens&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;flowset_len_extractor&lt;/span&gt;&lt;span class="p"&gt;()}&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowset_offsets&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;flowset_ids&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                &lt;span class="nx"&gt;flowset_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flowset_ids&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="kr"&gt;int&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+                &lt;span class="nx"&gt;flowset_len&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flowset_lens&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="kr"&gt;int&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+                &lt;span class="nx"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;insert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;flowset_offsets&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;flowset_ids&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;()})&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;flowset_id&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nx"&gt;nil&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                        &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+                        &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flowset_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+                        &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flow_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+                        &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;bytes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+                    &lt;span class="nx"&gt;end&lt;/span&gt;
+                    &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;bytes&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;bytes&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;flowset_len&lt;/span&gt;
+                    &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flowset_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flowset_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flowset_count&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+                    &lt;span class="nx"&gt;flowset_count_total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flowset_count_total&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+                    &lt;span class="nx"&gt;bytes_total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;bytes_total&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="nx"&gt;flowset_len&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+            &lt;span class="nx"&gt;end&lt;/span&gt;
+
+            &lt;span class="nx"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;sort&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;flowset_offsets&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="nx"&gt;a&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;b&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="nx"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_fw_events&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;flow_fw_event_extractor&lt;/span&gt;&lt;span class="p"&gt;()}&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_obs_times&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;flow_obs_time_extractor&lt;/span&gt;&lt;span class="p"&gt;()}&lt;/span&gt;
+            &lt;span class="nx"&gt;flow_count_total&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flow_count_total&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;flow_obs_times&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;flow_fw_events&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_fw_event&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flow_fw_events&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="kr"&gt;int&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_offset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flow_fw_events&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;offset&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;template_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;
+                &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;n&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;ipairs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;flowset_offsets&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;flow_offset&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;2&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                        &lt;span class="k"&gt;break&lt;/span&gt;
+                    &lt;span class="nx"&gt;end&lt;/span&gt;
+                    &lt;span class="nx"&gt;template_id&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+                &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;template_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flow_count&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;template_id&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flow_count&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;not&lt;/span&gt; &lt;span class="nx"&gt;fw_events&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flow_fw_event&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                    &lt;span class="nx"&gt;fw_events&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flow_fw_event&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+                    &lt;span class="nx"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;insert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;fw_events&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flow_fw_event&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;template_id&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="k"&gt;else&lt;/span&gt;
+                    &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;has_elem&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;val&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;tab&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                        &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;ipairs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;tab&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="nx"&gt;val&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                                &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                            &lt;span class="nx"&gt;end&lt;/span&gt;
+                        &lt;span class="nx"&gt;end&lt;/span&gt;
+                        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
+                    &lt;span class="nx"&gt;end&lt;/span&gt;
+                    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;not&lt;/span&gt; &lt;span class="nx"&gt;has_elem&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;template_id&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;fw_events&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flow_fw_event&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                        &lt;span class="nx"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;insert&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;fw_events&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;flow_fw_event&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;template_id&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                    &lt;span class="nx"&gt;end&lt;/span&gt;
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+            &lt;span class="nx"&gt;end&lt;/span&gt;
+
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;template_ids&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;template_id_extractor&lt;/span&gt;&lt;span class="p"&gt;()}&lt;/span&gt;
+            &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;template_fcounts&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="nx"&gt;template_fcount_extractor&lt;/span&gt;&lt;span class="p"&gt;()}&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="nx"&gt;template_ids&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                &lt;span class="nx"&gt;template_id&lt;/span&gt;     &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;template_ids&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="kr"&gt;int&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+                &lt;span class="nx"&gt;template_fcount&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;template_fcounts&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;i&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;range&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="kr"&gt;int&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;template_id_str&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;tostring&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;template_id&lt;/span&gt;&lt;span class="p"&gt;)..&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;(&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;..&lt;/span&gt;&lt;span class="nx"&gt;tostring&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;template_fcount&lt;/span&gt;&lt;span class="p"&gt;)..&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;)&amp;quot;&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;not&lt;/span&gt; &lt;span class="nx"&gt;templates&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;template_id_str&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                    &lt;span class="nx"&gt;templates&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;template_id_str&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{}&lt;/span&gt;
+                    &lt;span class="nx"&gt;templates&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;template_id_str&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fcount&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;template_fcount&lt;/span&gt; 
+                    &lt;span class="nx"&gt;templates&lt;/span&gt;&lt;span class="cp"&gt;[&lt;/span&gt;&lt;span class="nx"&gt;template_id_str&lt;/span&gt;&lt;span class="cp"&gt;]&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;frame&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;frame_num&lt;/span&gt;
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+            &lt;span class="nx"&gt;end&lt;/span&gt;
+
+        &lt;span class="nx"&gt;end&lt;/span&gt;
+        &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;tap&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;draw&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;\nTemplates meet (id, fields count, frame number):&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;pairs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;templates&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;frame&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="nx"&gt;end&lt;/span&gt;
+            &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;\nData stats (template, datasets total, flows total, bytes total):&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;pairs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;flowsets&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flow_count_with_pct&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;0(0%)&amp;quot;&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;flowset_count_with_pct&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;0(0%)&amp;quot;&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;bytes_with_pct&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;0(0%)&amp;quot;&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;flow_count_total&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                    &lt;span class="nx"&gt;flow_count_with_pct&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;%d(%d%%)&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flow_count&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flow_count&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;flow_count_total&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;flowset_count_with_pct&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                    &lt;span class="nx"&gt;flowset_count_with_pct&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;%d(%d%%)&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flowset_count&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;flowset_count&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;flowset_count_total&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;bytes_with_pct&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
+                    &lt;span class="nx"&gt;bytes_with_pct&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;%d(%d%%)&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;bytes&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;bytes&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="mi"&gt;100&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nx"&gt;bytes_total&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; 
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+                &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;flowset_count_with_pct&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;flow_count_with_pct&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;bytes_with_pct&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="nx"&gt;end&lt;/span&gt;
+            &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;\nFW_EVENTS:&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;pairs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;fw_events&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                &lt;span class="nx"&gt;local&lt;/span&gt; &lt;span class="nx"&gt;out&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;k&lt;/span&gt; &lt;span class="p"&gt;..&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;: &amp;quot;&lt;/span&gt;
+                &lt;span class="k"&gt;for&lt;/span&gt; &lt;span class="nx"&gt;kk&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;vv&lt;/span&gt; &lt;span class="k"&gt;in&lt;/span&gt; &lt;span class="nx"&gt;ipairs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;v&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;do&lt;/span&gt;
+                    &lt;span class="nx"&gt;out&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;out&lt;/span&gt; &lt;span class="p"&gt;..&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot; &amp;quot;&lt;/span&gt; &lt;span class="p"&gt;..&lt;/span&gt; &lt;span class="nx"&gt;vv&lt;/span&gt;
+                &lt;span class="nx"&gt;end&lt;/span&gt;
+                &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;out&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="nx"&gt;end&lt;/span&gt;
+            &lt;span class="nx"&gt;print&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;format&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;\nTotal datasets: %d, flows: %d, data bytes: %d&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;flowset_count_total&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;flow_count_total&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nx"&gt;bytes_total&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+        &lt;span class="nx"&gt;end&lt;/span&gt;
+    &lt;span class="nx"&gt;end&lt;/span&gt;
+    &lt;span class="nx"&gt;init_listener&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="nx"&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 26 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-26:devel/cflow-analysis.html</guid><category>cflow</category><category>devel</category><category>lua</category><category>tshark</category><category>pcap</category></item><item><title>Концепция Web User Interface</title><link>http://blog.hoxnox.com/devel/webui-concept.html</link><description>&lt;p&gt;Самым простым интерфейсом взаимодействия пользователя с приложением
+является командная строка. Приложение принимает на вход определённые
+параметры, приложение возвращает результат в стандартный вывод. Если
+пользователь впервые сталкивается с приложением, он должен будет изучить
+все возможные варианты&lt;/p&gt;
+&lt;p&gt;Пользователь вводит URL приложения, ему отвечает nginx. В ответе есть
+поле для ввода данных. По нажатию на "submit" сервер должен запустить
+приложение. Это можно сделать с помощью cgi, fcgi или же в&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 05 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-05:devel/webui-concept.html</guid><category>web</category><category>microservices</category><category>http</category></item><item><title>Немного подробней об SNMP</title><link>http://blog.hoxnox.com/devel/snmp-ext.html</link><description>&lt;p&gt;SNMP - простой протокол сетевого управления. Он включает следующие
+элементы: некоторое количество узлов, способных отвечать на запросы
+(агенты), как минимум один генератор команд (менеджер) и протокол, с
+помощью которого они взаимодействуют. На данный момент актуальна версия
+3, в которую были добавлены алгоритмы аутентификации с целью
+предотвращения модификации данных и подмены отправителя.&lt;/p&gt;
+&lt;p&gt;Тип SNMP сообщения определяет PDU (Protocol Data Unit определен в
+&lt;a href="http://tools.ietf.org/html/rfc3416"&gt;RFC-3416&lt;/a&gt;). PDU обхединяются в классы:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Read class (GetRequest, GetNextRequest, GetBulkRequest)&lt;/li&gt;
+&lt;li&gt;Write class (SetRequest)&lt;/li&gt;
+&lt;li&gt;Response class (Response, Report)&lt;/li&gt;
+&lt;li&gt;Notification class (Trapv2, InformRequest)&lt;/li&gt;
+&lt;li&gt;Internal class (Report для внутренних целей)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Кроме того, SNMP сообщения можно классифицировать по наличию
+подтверждения (для GetRequest, GetNextRequest, GetBulkRequest,
+SetRequest и InformRequest оно есть, а для Report, Trapv2 и GetResponse
+- нет)&lt;/p&gt;
+&lt;h3&gt;Управляющая информация&lt;/h3&gt;
+&lt;p&gt;Управляющая информация - это набор управляемых объектов, располагающихся
+в виртуальном хранилище MIB (Management Information Base). Наборы
+определяются в MIB модулях. Существует специальная нотация, позволяющая
+определять объекты, модули и другие элементы управляющей информации. Ее
+называют SNMP data definition language. Язык представляет из себя
+адаптированное подмножество ASN.1 и определен в STD 58, RFCs
+&lt;a href="http://tools.ietf.org/html/rfc2578"&gt;2578&lt;/a&gt;, &lt;a href="http://tools.ietf.org/html/rfc2579"&gt;2579&lt;/a&gt;, &lt;a href="http://tools.ietf.org/html/rfc2580"&gt;2580&lt;/a&gt;. Структура управляющей
+информации включает в себя определение модулей, объектов и уведомлений.
+Соответствующие макросы ASN.1: MODULE-IDENTITY, OBJECT-TYPE,
+NOTIFICATION-TYPE.
+&lt;a href="http://tools.ietf.org/html/rfc2578"&gt;RFC-2578&lt;/a&gt; определяет основные типы данных (Integer32, enumerated
+integers, Unsigned32, Gauge32, Counter32, Counter64, TimeTicks, INTEGER,
+OCTET STRING, OBJECT IDENTIFIER, IpAddress, Opaque, BITS) и следующие
+конструкции:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;IMPORTS позволяет указывать элементы, используемые в MIB модуле,
+  но определенные в другом MIB модуле&lt;/li&gt;
+&lt;li&gt;MODULE-IDENTITY позволяет указывать описание и административную
+  информацию для MIB модуля (контакты, история изменений)&lt;/li&gt;
+&lt;li&gt;OBJECT-IDENTITY для указания OID значений&lt;/li&gt;
+&lt;li&gt;OBJECT-TYPE для указания типа данных, статуса и семантики объектов&lt;/li&gt;
+&lt;li&gt;SEQUENCE для перечислимых типов&lt;/li&gt;
+&lt;li&gt;NOTIFICATION-TYPE определяет событие уведомления&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;При проектировании MIB модуля часто необходимо определить семантику для
+множества объектов с одинаковым поведением. Это реализуется введением
+нового типа на основе базового. Каждый новый тип имеет свое имя и сужает
+базовый тип. Эти новые типы называют текстовыми соглашениями (textual
+conventions). Определены в &lt;a href="http://tools.ietf.org/html/rfc2579"&gt;RFC-2579&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;То как все это уложено в транспортный уровень описывает
+&lt;a href="http://tools.ietf.org/html/rfc3417"&gt;RFC-3417&lt;/a&gt;. Архитектуру описывает &lt;a href="http://tools.ietf.org/html/rfc3411"&gt;RFC-3411&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Структура типовых SNMP сущностей отражена в
+&lt;a href="http://tools.ietf.org/html/rfc3411"&gt;RFC3411&lt;/a&gt; - пункт 3.1. Рассмотрим
+типичного агента:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;+------------------------------+
+|           Network            |
++------------------------------+
+   ^       ^              ^
+   |       |              |
+   v       v              v
++-----+ +-----+       +-------+
+| UDP | | IPX | . . . | other |
++-----+ +-----+       +-------+              (traditional SNMP agent)
++-------------------------------------------------------------------+
+|              ^                                                    |
+|              |        +---------------------+  +----------------+ |
+|              |        | Message Processing  |  | Security       | |
+| Dispatcher   v        | Subsystem           |  | Subsystem      | |
+| +-------------------+ |     +------------+  |  |                | |
+| | Transport         | |  +-&amp;gt;| v1MP     * |&amp;lt;---&amp;gt;| +------------+ | |
+| | Mapping           | |  |  +------------+  |  | | Other      | | |
+| | (e.g., RFC 3417)  | |  |  +------------+  |  | | Security   | | |
+| |                   | |  +-&amp;gt;| v2cMP    * |&amp;lt;---&amp;gt;| | Model      | | |
+| | Message           | |  |  +------------+  |  | +------------+ | |
+| | Dispatcher  &amp;lt;---------&amp;gt;|  +------------+  |  | +------------+ | |
+| |                   | |  +-&amp;gt;| v3MP     * |&amp;lt;---&amp;gt;| | User-based | | |
+| |                   | |  |  +------------+  |  | | Security   | | |
+| | PDU Dispatcher    | |  |  +------------+  |  | | Model      | | |
+| +-------------------+ |  +-&amp;gt;| otherMP  * |&amp;lt;---&amp;gt;| +------------+ | |
+|              ^        |     +------------+  |  |                | |
+|              |        +---------------------+  +----------------+ |
+|              v                                                    |
+|      +-------+-------------------------+---------------+          |
+|      ^                                 ^               ^          |
+|      |                                 |               |          |
+|      v                                 v               v          |
+| +-------------+   +---------+   +--------------+  +-------------+ |
+| |   COMMAND   |   | ACCESS  |   | NOTIFICATION |  |    PROXY    | |
+| |  RESPONDER  |&amp;lt;-&amp;gt;| CONTROL |&amp;lt;-&amp;gt;|  ORIGINATOR  |  |  FORWARDER  | |
+| | application |   |         |   | applications |  | application | |
+| +-------------+   +---------+   +--------------+  +-------------+ |
+|      ^                                 ^                          |
+|      |                                 |                          |
+|      v                                 v                          |
+| +----------------------------------------------+                  |
+| |             MIB instrumentation              |      SNMP entity |
++-------------------------------------------------------------------+
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Получив сообщение Dispatcher определяет версию протокола и передает на
+MessageProcessingSubsystem. В зависимости от &lt;a href="http://tools.ietf.org/html/rfc3416"&gt;PDU&lt;/a&gt; запрос передается
+одному из приложений, которое исполняет управляющую информацию,
+определенную в MIB.&lt;/p&gt;
+&lt;p&gt;Сценарий выполнения запроса агентом:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;Command               Dispatcher            Message          Security
+Responder                 |                 Processing          Model
+|                         |                 Model                   |
+|                         |                    |                    |
+| registerContextEngineID |                    |                    |
+|------------------------&amp;gt;|                    |                    |
+|&amp;lt;------------------------|              |     |                    |
+|                         | Receive SNMP |     |                    |
+:                         | Message      |     |                    |
+:                         | from Network |     |                    |
+:                         |&amp;lt;-------------+     |                    |
+:                         |                    |                    |
+:                         |prepareDataElements |                    |
+:                         |-------------------&amp;gt;|                    |
+:                         |                    | processIncomingMsg |
+:                         |                    |-------------------&amp;gt;|
+:                         |                    |                    |
+:                         |                    |&amp;lt;-------------------|
+:                         |                    |                    |
+:                         |&amp;lt;-------------------|                    |
+|     processPdu          |                    |                    |
+|&amp;lt;------------------------|                    |                    |
+|                         |                    |                    |
+:                         :                    :                    :
+:                         :                    :                    :
+|    returnResponsePdu    |                    |                    |
+|------------------------&amp;gt;|                    |                    |
+:                         | prepareResponseMsg |                    |
+:                         |-------------------&amp;gt;|                    |
+:                         |                    |generateResponseMsg |
+:                         |                    |-------------------&amp;gt;|
+:                         |                    |                    |
+:                         |                    |&amp;lt;-------------------|
+:                         |                    |                    |
+:                         |&amp;lt;-------------------|                    |
+:                         |                    |                    |
+:                         |--------------+     |                    |
+:                         | Send SNMP    |     |                    |
+:                         | Message      |     |                    |
+:                         | to Network   |     |                    |
+:                         |              v     |                    |
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Управляющая информация расположена на SNMP сущности, в которой
+приложение Command Responder может манипулировать несколькими 
+контекстами. Данное приложение использует contextEngineID.&lt;/p&gt;
+&lt;p&gt;SNMP контекст - это набор управляющей информации. Элемент управляющей
+информации может находится более чем в одном контексте. SNMP сущность
+потенциально может иметь доступ более чем к одному контексту.&lt;/p&gt;
+&lt;p&gt;Обычно имеется несколько сущностей одного типа управляющей информации.
+Для идентификации каждой отдельной сущности необходимо иметь
+contextName, contextEngineID, тип и конкретный элемент.&lt;/p&gt;
+&lt;p&gt;Рассмотрим, к примеру, тип управляемого объекта - описание интерфейса
+ifDescr. Для того, чтобы идентифицировать первый индерфейс на устройстве
+X, необходимо задать snmpEngineID SNMP сущности, которая имеет доступ к
+управляющей информации на устройстве X, название контекста (устройство
+X), тип управляемого объекта (ifDescr) и конкретный элемент (1).&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 11 Oct 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-10-11:devel/snmp-ext.html</guid><category>snmp</category><category>pdu</category><category>rfc</category></item><item><title>SNMP</title><link>http://blog.hoxnox.com/devel/snmp.html</link><description>&lt;p&gt;&lt;strong&gt;SNMP&lt;/strong&gt; - протокол, позволяющий по сети управлять различными устройствами и
+системами. Кроме того можно получать различные данные, как в режиме
+запрос/ответ, так и в режиме уведомления.&lt;/p&gt;
+&lt;p&gt;Не смотря на свое название &lt;code&gt;SNMP&lt;/code&gt; не так уж прост. Для понимания всех
+тонкостей стандарта, необходимо прочитать множество стандартов и RFC.
+Необходимый минимум можно найти на
+&lt;a href="http://ru.wikipedia.org/wiki/SNMP"&gt;википедии&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Рассмотрим простейшее применение стандарта на примере. Допустим на
+каких-то серверах работают элементы системы. На одном сервере может
+работать несколько элементов. Хотелось бы мониторить
+некоторые ключевые параметры системы. На мониторе
+устанавливается &lt;em&gt;менеджер SNMP&lt;/em&gt;, а на хостах - &lt;em&gt;агенты SNMP&lt;/em&gt;. На каждом
+из агенов располагается база данных основных параметров (&lt;code&gt;MIB&lt;/code&gt;). &lt;code&gt;MIB&lt;/code&gt;
+представляет из себя набор переменных, характеризующих состояние объекта
+управления. Эти переменные могут отражать такие параметры, как
+количество пакетов, обработанных устройством, состояние его интерфейсов,
+время функционирования устройства и т.п. Переменные идентифицируются с
+помощью &lt;a href="http://en.wikipedia.org/wiki/Object_identifier"&gt;OID&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;SNMP&lt;/code&gt; как непосредственно сетевой протокол предоставляет только набор
+команд для работы с переменными &lt;code&gt;MIB&lt;/code&gt;. Этот набор включает такие операции
+как&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;get-request&lt;/li&gt;
+&lt;li&gt;set-request&lt;/li&gt;
+&lt;li&gt;get-next-request&lt;/li&gt;
+&lt;li&gt;get-bulk-request&lt;/li&gt;
+&lt;li&gt;response&lt;/li&gt;
+&lt;li&gt;trap&lt;/li&gt;
+&lt;li&gt;inform-request&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;При изменении некоторых переменных устройство может производить какие-то
+действия.&lt;/p&gt;
+&lt;p&gt;Протокол версий 1 и 2 не содержал инструментов аутентификации и
+шифрования запросов. В версии 3 существенно улучшили безопасность. Но
+это сильно усложнило реализацию.&lt;/p&gt;
+&lt;h2&gt;SNMP и zabbix&lt;/h2&gt;
+&lt;p&gt;Zabbix поддерживает SNMP. Он может выступать в качестве менеджера SNMP.
+Проще говоря приложение можно наделить методами SNMP агента, тогда
+zabbix сможет получать от него данные и управлять им. На хабре есть
+&lt;a href="http://habrahabr.ru/post/195622/"&gt;пример использования snmp в zabbix&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;SNMP в языках программирования&lt;/h2&gt;
+&lt;p&gt;Есть реализации для популярных языков:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="http://habrahabr.ru/post/39643/"&gt;java&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://pysnmp.sourceforge.net/"&gt;python&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="http://www.net-snmp.org/"&gt;C/C++&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Как мы уже говорили, агент управляет базой MIB. Кроме того, на него
+возложены функции по авторизации и шифрованию. Управляемая система
+должна лишь считывать и устанавливать данные базы. Часто общие для всех
+агентов служебные функции (такие как управление сообщениями,
+авторизация, шифрование, ответы на запросы о состоянии железа и
+операционной системы) выделяют в отдельный сервер, тем
+самым облегчая агенты внутри системы. &lt;a href="http://www.net-snmp.org/"&gt;Net-snmp&lt;/a&gt; - это
+раз отдельный сервер. Свои переменные можно реализовать несколькими
+способами - mib-module, subagent ... Тогда как &lt;a href="http://www.agentpp.com"&gt;agent++&lt;/a&gt;
+позволяет относительно быстро реализовать полноценного агента внутри
+системы.&lt;/p&gt;
+&lt;p&gt;Net-snmp и agent++ довольно мутно лицензированы, но судя по ответам в
+списках рассылки, их можно использовать в коммерческих проектах почти
+без ограничений.&lt;/p&gt;
+&lt;h2&gt;Agent++&lt;/h2&gt;
+&lt;p&gt;&lt;a href="http://www.net-snmp.org/"&gt;Net-snmp&lt;/a&gt; описана более детально и собрала вокруг себя неплохое
+сообщество. Имеется &lt;a href="http://www.net-snmp.org/wiki/"&gt;wiki&lt;/a&gt;. 
+&lt;a href="http://www.agentpp.com"&gt;Agent++&lt;/a&gt; почти не содержит документации, но позволяет
+реализовать полноценного агента непосредственно внутри системы. На
+основе agent++ напишем пример приложения, которое на запрос
+объекта 1.3.6.1.3.100.2.1.0 будет отвечать на &lt;a href="http://ru.wikipedia.org/wiki/%D0%90%D0%B2%D1%82%D0%BE%D1%81%D1%82%D0%BE%D0%BF%D0%BE%D0%BC_%D0%BF%D0%BE_%D0%B3%D0%B0%D0%BB%D0%B0%D0%BA%D1%82%D0%B8%D0%BA%D0%B5_(%D1%81%D0%B5%D1%80%D0%B8%D1%8F_%D1%80%D0%BE%D0%BC%D0%B0%D0%BD%D0%BE%D0%B2)"&gt;главный вопрос
+жизни&lt;/a&gt;
+ - 42.&lt;/p&gt;
+&lt;h3&gt;Установка&lt;/h3&gt;
+&lt;p&gt;Agent++ включает в себя несколько частей. Основные - [snmp++][http://www.agentpp.com/doc_snmp++3.x/index.html] и
+&lt;a href="http://www.agentpp.com/doc3.x/classes.html"&gt;agent++&lt;/a&gt;. Для того, чтобы
+их полноценно использовать (SNMPv3) понадобятся также pthreads, rt,
+crypt и ssl. А для сборки &lt;code&gt;snmp++&lt;/code&gt; нужны еще и autotools (pkgconfig,
+automake, autoconf). Причем для CentOS 6.4 придется обновить autoconf c
+&lt;a href="ftp://rpmfind.net/linux/sourceforge/r/ra/ramonelinux/Rel_0.98/releases/x86_64/packages/autoconf-2.69-7.ram0.98.x86_64.rpm"&gt;rpmfind&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Сборка snmp++:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo yum install pkconfig automake autoconf make gcc gcc-g++ libtool openssl-devel
+wget http://www.agentpp.com/snmp++-v3.0.0.tar.gz
+tar -zxvf snmp++-v3.0.0.tar.gz
+cd snmp++
+autoreconf -i --force
+./configure --enable-static --disable-shared --disable-debug --prefix=/usr
+make
+sudo make install
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Для того, чтобы agent++ правильно искал библиотеки необходимо в lib64
+делать ссылки:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;`find /usr/lib -name &amp;#39;*snmp*&amp;#39; | awk &amp;#39;{name=$0; gsub(/\/usr\/lib\//,&amp;quot;&amp;quot;,name); printf(&amp;quot;ln %s %s\n&amp;quot;, $0, name)}&amp;#39;`
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Сборка agent++:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;./configure --enable-static --disable-shared --disable-debug --prefix=/usr
+make
+sudo make install
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Для gentoo &lt;a href="https://github.com/hoxnox/hoxnox-portage-overlay"&gt;я сделал
+ebuild'ы&lt;/a&gt;. Надо бы и
+для RHEL/CentOS rpm-ы написать...&lt;/p&gt;
+&lt;p&gt;Код примера расположен на
+&lt;a href="https://github.com/hoxnox/snmp-agent-example"&gt;github&lt;/a&gt;. Агент должен
+ответить на Get запрос. Его можно послать с помощью утилиты &lt;code&gt;snmpget&lt;/code&gt; пакета
+&lt;code&gt;net-snmp-utils&lt;/code&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;snmpget -v3 -a MD5 -u MD5 -l authNoPriv -A MD5UserAuthPassword  127.0.0.1:4160 1.3.6.1.3.100.2.1.0
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;или snmpGet из snmp++:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;snmpGet 127.0.0.1 1.3.6.1.3.100.2.1.0 -v3 -sl2 -snMD5 -authMD5 -uaMD5UserAuthPassword -P4160
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 10 Oct 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-10-10:devel/snmp.html</guid><category>zabbix</category><category>snmp</category><category>agent++</category></item><item><title>ODBC</title><link>http://blog.hoxnox.com/devel/odbc.html</link><description>&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;Введение&lt;/h2&gt;
+&lt;p&gt;Для тех кто не в курсе, ODBC позволяет абстрагироваться от интерфейса конкретной СУБД. Это некоторая
+прослойка, в которой вы можете настроить источник данных, дать ему имя и общаться с ним на уровне
+ODBC API. При замене движка СУБД вы меняете лишь файлы настройки ODBC, не меняя исходный код
+программы.&lt;/p&gt;
+&lt;p&gt;Основа ODBC нативный проект Windows, хотя его родитель CLI (Call Layer Interface) - открытый и
+ведется XOpen. Под *nix системы существует реализация unixODBC. Для общения с ODBC на языке C++
+существует libodbc++.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h2&gt;Установка&lt;/h2&gt;
+&lt;p&gt;В Windows всё должно работать из коробки. Рассмотрим установку в gentoo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av unixODBC
+sudo emerge -av libodbc++
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;С PostgreSQL драйвером некоторые трудности... В портежах по умолчанию он отсутствует, а в дефолтных
+оверлеях старьё. Поэтому пришлось накорябать свой (git://github.com/hoxnox/hoxnox-portage-overlay.git).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;quot;dev-db/psqlodbc ~amd64&amp;quot; | sudo tee -a /etc/portage/package.keywords
+sudo emerge -av psqlodbc
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h2&gt;Настройка ODBC&lt;/h2&gt;
+&lt;p&gt;Существует GUI утилиты (unixODBC-GUI-Qt), но нормально собрать их из оверлея qt или из исходников у
+меня не получилось. Поэтому вручную поправим конфиги (/etc/unixODBC/odbcinst.ini и
+/etc/unixODBC/odbc.ini) соответственно:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;[ODBC]
+Trace=yes
+TraceFile=/tmp/odbc_log.txt
+
+[PostgreSQL]
+driver=/usr/lib/psqlodbcw.so
+setup=/usr/lib/psqlodbcw.so
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;[Test]
+driver=PostgreSQL
+Servername=localhost
+Username=postgres
+Password=********
+Port=5432
+Database=test
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="c"&gt;
+&lt;h2&gt;Пример на C++&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;odbc++/drivermanager.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;odbc++/connection.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;odbc++/preparedstatement.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;odbc++/resultset.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;iostream&amp;gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;odbc&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;//Get the Driver manager&lt;/span&gt;
+    &lt;span class="n"&gt;DriverManager&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;dm&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="c1"&gt;//Open the connection, specifiying the DSN.&lt;/span&gt;
+    &lt;span class="n"&gt;Connection&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dm&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;getConnection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;DSN=Test;uid=postgresql;pwd=*********&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="c1"&gt;//Create the Query&lt;/span&gt;
+    &lt;span class="n"&gt;PreparedStatement&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;prepareStatement&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+                 &lt;span class="n"&gt;ODBCXX_STRING_CONST&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;SELECT ip FROM ip LIMIT 5&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+    &lt;span class="n"&gt;ResultSet&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="c1"&gt;//Execute the Query&lt;/span&gt;
+    &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;execute&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="c1"&gt;//Get initial ResultSet&lt;/span&gt;
+    &lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;getResultSet&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;next&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="c1"&gt;//Extract column information&lt;/span&gt;
+        &lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Column (ip): &amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;getInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;ip&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="c1"&gt;//Clean everything&lt;/span&gt;
+    &lt;span class="k"&gt;delete&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;delete&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;delete&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;!-- /***/ --&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h2&gt;Производительность&lt;/h2&gt;
+&lt;p&gt;TODO:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id5"&gt;
+&lt;h2&gt;Полезные ссылки&lt;/h2&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;unixODBC : &lt;a class="reference external" href="http://www.unixodbc.org/"&gt;http://www.unixodbc.org/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;libodbc++ reference : &lt;a class="reference external" href="http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html"&gt;http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kim Merder &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 28 Sep 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-09-28:devel/odbc.html</guid><category>database</category><category>odbc</category><category>c++</category></item><item><title>Об организации проектов C++</title><link>http://blog.hoxnox.com/devel/repo_org.html</link><description>&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;Структура репоризитория и проекта&lt;/h2&gt;
+&lt;p&gt;Все C/C++ проекты храняться в едином репозитории, работа которого опирается на систему контроля
+версий git. Каждый проект представляет собой git-репозиторий (как правило bare).&lt;/p&gt;
+&lt;p&gt;Для работы над конкретным проектом его необходимо склонировать, а по завершении работы, слить
+изменения в основной репозиторий. В процессе работы изменения, внесенные другими членами команды,
+подтягиваются из основного репозитория. В исключительных случаях изменения могут подтягиваться
+непосредственно от членов команды, но злоупотреблять этим не стоит.&lt;/p&gt;
+&lt;p&gt;Каждый C/С++ проект, как правило, включает в себя&lt;/p&gt;
+&lt;ol class="arabic"&gt;
+&lt;li&gt;&lt;p class="first"&gt;Исходники (.c, .cpp, .h, .hpp, ...)&lt;/p&gt;
+&lt;p&gt;Директория src&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Инструкции по сборке (файлы Makefile, CMakeLists.txt)&lt;/p&gt;
+&lt;p&gt;Файлы CMakeLists.txt, Makefile, ... в корне проекта, возможно дополнительные диреткории (например
+cmake со скриптами, расширяющими функциональность cmake))&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Публичные заголовочные файлы (для проектов-библиотек)&lt;/p&gt;
+&lt;p&gt;Директория include&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Документацию&lt;/p&gt;
+&lt;p&gt;Исходники и скрипты для генерации документации располагаются в директории doc.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Ресурсы&lt;/p&gt;
+&lt;p&gt;Директория res&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;p class="first"&gt;Тесты&lt;/p&gt;
+&lt;p&gt;Директория test&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h2&gt;Подпроекты&lt;/h2&gt;
+&lt;p&gt;Существует два способа организации подпроектов средствами &lt;cite&gt;git&lt;/cite&gt;. Первый - с помощью
+подмодулей. Второй - с помощью ветвлений и удаленных репозиториев. В первом случае информация о
+подпроектах инкапсулирована в отдельных репозиториях (по 1 на каждый проект), а файлы подпроектов
+располагаются в специальных поддерикториях суперпроекта. Во втором случае файлы подпроекта являются
+неотъемлемой частью дерева суперпроекта, а манипуляция подпроектами осуществляется с помощью
+ветвлений.&lt;/p&gt;
+&lt;p&gt;Основные различия встают во весь рост при клонировании суперпроекта. В случае с ветвлениями,
+пользователь, клонирующий суперпроект, может и не подозревать о наличии подпроектов в нём. Выделение
+подпроекта опционально. При использовании подмодулей клонирующий должен четко понимать, что проект
+имеет зависимости и аккуратно к ним относится. В качестве &amp;quot;печеньки&amp;quot; клонирующий получает менее
+нагруженный репозиторий.&lt;/p&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h3&gt;Рассмотрим оба способа на примере.&lt;/h3&gt;
+&lt;p&gt;Допустим мы работали над библиотекой &lt;cite&gt;core&lt;/cite&gt; и на определённом этапе работы получили следующее дерево
+проекта:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;.
+├── cmake
+│   └── nx_lib.cmake
+├── doc
+│   ├── pages
+│   │   ├── index.hpp
+│   │   └── readme.md
+│   └── doxygen
+├── include
+│   └── core
+│       ├── base.hpp
+│       ├── core.hpp
+│       └── data.hpp
+├── src
+│   ├── base.cpp
+│   ├── _base_impl.cpp
+│   ├── _base_impl.hpp
+│   ├── core.cpp
+│   └── data.cpp
+├── test
+│   ├── tests
+│   │   ├── tbase.hpp
+│   │   ├── tcore.hpp
+│   │   └── tdata.hpp
+│   └── test.cpp
+└── CMakeLists.txt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Далее мы создали проект &lt;cite&gt;a&lt;/cite&gt;, использующий &lt;cite&gt;core&lt;/cite&gt; как библиотеку, причём мы бы хотели включить &lt;cite&gt;core&lt;/cite&gt;
+в &lt;cite&gt;a&lt;/cite&gt; как подпроект.&lt;/p&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h4&gt;Ветвление и удалённые репозитории&lt;/h4&gt;
+&lt;p&gt;Добавляем в проект &lt;cite&gt;a&lt;/cite&gt; новую ветку, содержимое которой - клон проекта &lt;cite&gt;core&lt;/cite&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git remote add core /repo/core.git
+git fetch core
+git checkout -b core@rmt core/master
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Мы использовали суффикс &lt;cite&gt;&amp;#64;rmt&lt;/cite&gt;, чтобы пометить ветку-подпроект и отличать её от обычных веток. В
+нашей текущей дериктории находится проект &lt;cite&gt;core&lt;/cite&gt;. Теперь в проекте &lt;cite&gt;a&lt;/cite&gt;, в директорию &lt;cite&gt;core&lt;/cite&gt; допишем
+файлы проекта &lt;cite&gt;core&lt;/cite&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git checkout master
+git read-tree --prefix=core -u core@rmt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Вот собственно и все. Теперь в суперпроекте &lt;cite&gt;a&lt;/cite&gt; есть директория с подпроектом &lt;cite&gt;core&lt;/cite&gt;. Причем фалы этой
+директории находятся под версионным контролем проекта &lt;cite&gt;а&lt;/cite&gt;. Если проект &lt;cite&gt;core&lt;/cite&gt; изменился, мы можем
+влить изменения следующим образом:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git checkout core@rmt
+git pull
+git checkout master
+git merge --squash -s subtree --no-commit core@rmt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Допустим вы ушли в отпуск, а по возвращении обнаружили, что коллега работал над проектом &lt;cite&gt;a&lt;/cite&gt;, не
+подозревая, что есть подпроект &lt;cite&gt;core&lt;/cite&gt;. В итоге в директории &lt;cite&gt;core&lt;/cite&gt; проекта &lt;cite&gt;a&lt;/cite&gt; появились некоторые
+изменения, которые вы бы хотели слить в подпроект &lt;cite&gt;core&lt;/cite&gt;. Все что нужно - слить изменения в ветку
+&lt;a class="reference external" href="mailto:core&amp;#64;rmt"&gt;core&amp;#64;rmt&lt;/a&gt; и отправить изменения. Существует одна загвоздка - не существует коммита, который бы
+указывал на директорию &lt;cite&gt;core&lt;/cite&gt;. Его придется создать низкоуровневой командой &lt;cite&gt;commit-tree&lt;/cite&gt;. Этот
+&amp;quot;оторванный&amp;quot; коммит в последующем примкнет к истории в ветке &lt;cite&gt;core&amp;#64;rmt&lt;/cite&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;$&amp;gt;echo &amp;quot;core-changes&amp;quot; | git commit-tree HEAD:core
+485a320dae49bc6b08c4b5d363d0674b1369b2a6
+$&amp;gt;git checkout core@rmt
+$&amp;gt;git merge 485a32
+$&amp;gt;git push core core@rmt:master
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Еще одна частая ситуация - разделяемые подпроекты. Допустим теперь мы работаем над проектом &lt;cite&gt;super&lt;/cite&gt;,
+который зависит от подпроекта &lt;cite&gt;core&lt;/cite&gt;. Мы уже знаем как действовать...&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git remote add core /repo/core.git
+git fetch core
+git checkout -b core@rmt core/master
+git checkout master
+git read-tree --prefix=core -u core@rmt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Теперь мы хотели бы добавить подпроект &lt;cite&gt;a&lt;/cite&gt;, но так, чтобы зависимость &lt;cite&gt;a&lt;/cite&gt; от &lt;cite&gt;core&lt;/cite&gt; не
+дублировалась, но подпроекты &lt;cite&gt;a&lt;/cite&gt; и &lt;cite&gt;core&lt;/cite&gt; сохраняли возможность
+подтягивать изменения и отправлять. Сначала добавим подпроект &lt;cite&gt;a&lt;/cite&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git remote add core /repo/core.git
+git fetch core
+git checkout -b core@rmt core/master
+git checkout master
+git read-tree --prefix=core -u core@rmt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Пользуясь тем, что в отличии от подмодулей, вся информация о подпроектах инкапсулирована в
+подветках, а не в файлах, заменяем папку &lt;cite&gt;core&lt;/cite&gt; подпроекта &lt;cite&gt;a&lt;/cite&gt; на симлинк и сообщаем git, чтобы он
+игнорил данный путь.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git reset a/core/*
+git rm -r a/core
+ln -s ../core a/core
+git add a/core
+echo &amp;quot;a/core&amp;quot; &amp;gt;&amp;gt; .gitignore
+git add .gitignore
+git commit -m&amp;quot;add a as subproject&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Очень важно в ветке &lt;a class="reference external" href="mailto:a&amp;#64;rmt"&gt;a&amp;#64;rmt&lt;/a&gt; также заменить директорию core на символическую ссылку. Иначе когда-нибудь
+случайно поменяете какой-нибудь файл в папке core и не сможете сменить ветку на master, так как
+имеются изменения, которые нельзя закоммитить так как они игнорятся.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git checkout a@rmt
+rm -r core
+ln -s ../core core
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;И напоследок следует упомянуть маленькую, но очень важную деталь. При таком подходе подпроекты не
+обязаны располагаться в отдельной папке, что позволяет подпроектам быть совсем маленькими. Пусть к
+примеру имеется очередная реализация строки в C++:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;$&amp;gt;ls -la string
+.git string.cpp  string.hpp
+$&amp;gt;cd proj/src
+git remote add string /repo/string
+git fetch string
+git checkout -b string@rmt string/master
+git checkout master
+git read-tree --prefix= -u string@rmt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Потрясающе! Мы добавили файлы в дерево проекта, но при этом можем управлять ими как подпроектом с
+помощью ветки &lt;cite&gt;string&amp;#64;rmt&lt;/cite&gt;!&lt;/p&gt;
+&lt;p&gt;И напоследок вернёмся к нашему &lt;cite&gt;super&lt;/cite&gt;. Все подпроекты в нём - это ветки с суффиксом &lt;cite&gt;&amp;#64;rmt&lt;/cite&gt;:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;$&amp;gt;git branch | grep @rmt
+  a@rmt
+  core@rmt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Изменения в подпроекте &lt;cite&gt;core&lt;/cite&gt; можно получить так:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git diff-tree -p HEAD:core core@rmt
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Изменения в удаленном подпроекте &lt;cite&gt;core&lt;/cite&gt; можно получить так:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;git diff-tree -p HEAD:core core/master
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id5"&gt;
+&lt;h4&gt;Подмодули&lt;/h4&gt;
+&lt;p&gt;TODO:&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 20 Sep 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-09-20:devel/repo_org.html</guid><category>git</category><category>management</category></item></channel></rss>
