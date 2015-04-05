@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>Визуализация записанного ранее HTTP трафика - NX</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="../sec/http_restoring.html">
+
+        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+        <meta name="keywords" content="http,pcap,traffic,xplico,forensic analysis" />
+        <meta name="description" content="В проблеме &#34;визуализации&#34; собранного трафика необходимо решить две задачи: Классификация трафика &#34;проигрывание&#34; трафика заданного типа в соответствующем приложении Анализ публикаций в Интернете wireshark + ncat http://aerokid240.blogspot.ru/2009/12/replaying-captured-web-traffic-using.html Fiddler AutoResponder (http://114r16.blogspot.ru/2012/08/replaying-session-with-fiddler.html) perl утилита http://patrick.net/sprocket/rwt.html ..." />
+
+    <!-- Enable latex plugin -->
+
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="../theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="../theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="../theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="../theme/css/style.css" type="text/css"/>
+
+        <link href="../feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX ATOM Feed"/>
+
+
+        <link href="../feeds/sec.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX sec ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="../" class="navbar-brand">
+NX            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="../category/admin.html">Admin</a>
+                        </li>
+                        <li >
+                            <a href="../category/blog.html">Blog</a>
+                        </li>
+                        <li >
+                            <a href="../category/chsheets.html">Chsheets</a>
+                        </li>
+                        <li >
+                            <a href="../category/cxx.html">Cxx</a>
+                        </li>
+                        <li >
+                            <a href="../category/devel.html">Devel</a>
+                        </li>
+                        <li >
+                            <a href="../category/gentoo.html">Gentoo</a>
+                        </li>
+                        <li >
+                            <a href="../category/inet.html">Inet</a>
+                        </li>
+                        <li >
+                            <a href="../category/other.html">Other</a>
+                        </li>
+                        <li >
+                            <a href="../category/parallel.html">Parallel</a>
+                        </li>
+                        <li class="active">
+                            <a href="../category/sec.html">Sec</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="../archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="../sec/http_restoring.html"
+                       rel="bookmark"
+                       title="Permalink to Визуализация записанного ранее HTTP трафика">
+                        Визуализация записанного ранее HTTP трафика
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2015-02-18T00:00:00+03:00"> Ср 18 Февраль 2015</time>
+    </span>
+
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="../tag/http.html">http</a>
+        /
+	<a href="../tag/pcap.html">pcap</a>
+        /
+	<a href="../tag/traffic.html">traffic</a>
+        /
+	<a href="../tag/xplico.html">xplico</a>
+        /
+	<a href="../tag/forensic-analysis.html">forensic analysis</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>В проблеме "визуализации" собранного трафика необходимо решить две
+задачи:</p>
+<ol>
+<li>Классификация трафика</li>
+<li>"проигрывание" трафика заданного типа в соответствующем приложении</li>
+</ol>
+<h2>Анализ публикаций в Интернете</h2>
+<ul>
+<li>wireshark + ncat http://aerokid240.blogspot.ru/2009/12/replaying-captured-web-traffic-using.html</li>
+<li>Fiddler AutoResponder (http://114r16.blogspot.ru/2012/08/replaying-session-with-fiddler.html)</li>
+<li>perl утилита http://patrick.net/sprocket/rwt.html</li>
+<li>обсуждение https://www.mail-archive.com/tcpreplay-users@lists.sourceforge.net/msg00658.html</li>
+<li>etherape - интересная штука для визуалиации трафика (http://en.wikipedia.org/wiki/EtherApe)</li>
+<li>web page replay - https://github.com/chromium/web-page-replay</li>
+<li>на основе MITM - http://mitmproxy.org/doc/</li>
+<li>Загадочная TCPopera (обрывочная информация, доклады и презентации на просторах гугла)</li>
+<li>NetScout (типа готовое решение) http://www.netscout.com/Pages/default.aspx</li>
+<li>Load/Replay с проксированием, используемые в основном для репродукции багов: Loadster (http://www.loadsterperformance.com/documentation/tutorial), Selenium (http://docs.seleniumhq.org/), solex (http://solex.sourceforge.net/), WaRR (https://code.google.com/p/warr/)</li>
+<li>В рамках задачи session replay (предполагается наличие специального ПО на сервере или клиенте): http://en.wikipedia.org/wiki/Session_replay</li>
+<li>XPlico http://www.xplico.org</li>
+</ul>
+<h2>http трафик</h2>
+<p>Сегодня HTTP - это стандарт де-факто в веб-программировании. Как
+следствие веб-трафик - это не только браузерный серфинг, но и, к
+примеру, мобильные приложения. По данным исследователей на 2013 год,
+мобильный трафик составляет около 10%. Будем считать, что задача
+отсеивания только браузерного трафика решена на этапе классификации.</p>
+<p>Веб трафик представляет собой ряд HTTP запросов и ответов, происходящих
+в определенный промежуток времени. Как только пользователь открывает
+страницу браузера выполняется множество HTTP запросов. Каждый запрос
+относится к определенному веб-объекту, такому как видео, картинка, HTML
+файл, флеш файл, яваскрипт и проч. Можно выделить <strong>основной запрос
+пользователя</strong>, и целый ряд запросов, которые браузер выполнил
+самостоятельно. Основной запрос, как правило возвращает HTML или XML,
+который содержит ряд встроенных веб-объектов, каждый из которых
+оборачивается очередным HTTP вызовом. Цель номер один - определить в
+трафике основные запросы. Затем понять какие HTTP запросы были вызваны
+подгрузкой встроенных объектов.</p>
+<h3>Выделение основных запросов</h3>
+<p>Посмотрим на запросы, полученные в итоге простой последовательности
+действий - открыть страницу ya.ru, ввести для поиска слово test и
+перейти по ссылке на Википедию. Записанный трафик - файл
+<code>wikipedia_request.pcap</code>, выделенные HTTP заголовки сложены в
+<code>wikipedia_request.parsed</code>. Получилось 18 запросов.</p>
+<p>Мы знаем, что основными запросами являются - ввод адреса ya.ru, submit в
+форме поиска и клик по ссылке на Википедию. Если расчертить все HTTP
+запросы в виде графа, в котором HTTP заголовоки являются вершинами, а ребро от
+вершины A к вершине B существует тогда и только тогда, когда в вершине B
+имеется поле Referer, значение которого совпадает со значением URL
+вершины A (восстанавливается из Host и GET), то получится картинка,
+представленная в <code>wikipedia_request.png</code>. Четко видно три основных
+источника, соответствующих основным запросам. <strong>Таким образом, подсчитывая
+ссылки и учитывая время, прошедшее между запросами, можно с определенной
+уверенностью восстанавливать активность пользователя.</strong> Затем, используя
+графы ссылок, можно понять какие встроенные объекты были запрошены
+браузером пользователя автоматически, отыскать их "следы" в HTML
+странице, полученной в ответ на соответствующий основной запрос,
+осуществить их перезапись, указав локальный источник и направить данный
+HTML в браузер.</p>
+<h4>Проблемы</h4>
+<p>Существует целый океан проблем, с которым можно столкнуться, используя
+приведенную выше эвристику. Ниже будут приведены примеры граблей на
+которые очень легко наступить. В первом приближении не стоит
+зацикливаться на всех сложностях. Надо реализовать простейший вариант
+обработки, рабочий прототип, а затем решать проблемы по мере их
+поступления.</p>
+<h5>Параноики</h5>
+<p>Некоторые пользователи используют специальное ПО для ослабления "слежки" за
+ними со стороны ИТ-гигантов. Ярким примером является расширения для
+браузеров от EFF - "Privacy badger" (https://www.eff.org/privacybadger).
+Такое ПО вырезает из запросов ряд полей, в том числе "referer". К
+счастью таких пользователей мало.</p>
+<h5>Фантомные запросы</h5>
+<p>С первой мы столкнулись прямо в примере -
+внимательный читатель отметит, что на изображении вершина
+<code>yandex.ru/yandsearch?text=test</code> помечена красным. Дело в том, что это
+так называемая "фантомная" вершина - не существует пользовательского GET
+запроса <code>GET /yandsearch?text=test</code> к хосту yandex.ru. Таким образом у
+11 ответов указан referer, не соответствующий пользовательскому запросу.
+Поисковый запрос выглядел так: </p>
+<div class="highlight"><pre>GET /jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/ HTTP/1.1
+Host: clck.yandex.ru
+Referer: http://ya.ru/
+</pre></div>
+
+
+<p>Не ассоциировав фантомный запрос с реальным мы не смогли "подцепить" его
+к ветке <code>http://ya.ru</code>. Простого способа такой ассоциации не существует,
+тем не менее, учитывая временную линию и приняв фантомный запрос за
+основной - получаем довольно точную картину активности пользователя. К
+сожалению во многих случаях на такое способен только квалифицированный
+специалист.</p>
+<h5>Чрезвычайная сложность веб-приложений</h5>
+<p>Основной HTML и встроенные объекты в современных веб-приложениях очень
+тесно переплетены. Часто данные подаются в браузер отдельными JSON
+объектами, которые преобразуются активными скриптами (JavaScript, Flash,
+Java applet) к нужному виду.</p>
+<h5>Кеш браузера</h5>
+<p>Как правило пользовательский браузер кеширует огромное количество
+данных, таких как css, javascript, favicon, некоторые изображения. В
+результате для рендеринга очередного запроса ему достаточно получить
+данные из кеша, не обращаясь к удаленным серверам. В результате чего,
+анализируя трафик, мы не получим ряд очень важных для отображения
+элементов. В такой ситуации необходимо самим выполнить соответствующие
+запросы. К сожалению это может демаскировать оператора, поэтому решение
+о загрузке тех или иных данных из сети должен принимать он. Можно лишь
+стараться максимально упростить его выбор - что загружать, а что нет.</p>
+<h5>meta Refresh</h5>
+<p>Существует специальный тег meta с атрибутом http-equiv. Баузеры
+преобразовывают значение этого атрибута, заданное с помощью
+content, в формат заголовка ответа HTTP и обрабатывают их, как будто они
+прибыли непосредственно от сервера. Таким образом в ситуации <code>meta
+http-equiv="Refresh"</code>, браузер получает правильный двухсотый ответ с
+контентом, но тут же запрашивает другую страницу, которую и покажет
+пользователю.</p>
+<div class="highlight"><pre>&lt;meta http-equiv=&quot;Refresh&quot; content=&quot;0;URL=forum/index.php&quot;&gt;
+</pre></div>
+
+
+<h4>Алгоритм построения пользовательского "трейса"</h4>
+<p>На вход подается pcap файл с трафиком за определенный период времени.
+Выделяются и нумеруются сессии запрос-ответ. Все тела ответов
+сохраняются за соответствующим номером. Все запросы выстраиваются в граф
+отношений на основе значений поля referer.
+Рассматриваем только фантомные вершины и вершины, ответом для
+которых был HTML (ответ на основной запрос пользователя просто обязан
+быть в формате HTML). Из этих вершин выделяем <strong>основные запросы</strong> по
+количеству запросов-referer и времени между запросами (оно должно быть
+не меньше определенно заданного заранее значения). Отметим, что
+реферером основного запроса (если он есть) может быть только основной
+запрос. Все оставшиеся запросы должны соответствовать какому-либо
+основному.</p>
+<h3>Отображение основного зарпоса со встроенными объектами</h3>
+<p>Следующей задачей является отображение отдельно взятого основного
+запроса вместе с его встроенными объектами так, как видел его
+пользователь. Задачу можно решить двумя способами.</p>
+<p>Первый - открыть
+основную страницу в браузере, перехватить все сопутствующие запросы и
+ответить на них трафиком из анализируемого файла.
+Такой выше механизм
+реализован в приложении <a href="http://www.xplico.org">XPlico.</a>.
+Интересно то, каким образом реализована данная функциональность. Так как
+приложение имеет web-интерфейс и запускается с HTTP-сервера, этот же
+сервер может выступать в качестве http-proxy. Пользователь, запуская
+браузер для приложения xplico указывает этот же адрес в качестве
+http-proxy. Таким образом, когда пользователь открывает сохраненную
+страницу, запросы браузера на загрузку встроенного содержимого
+направляются через xplico, что позволяет ему отвечать уже имеющимся в
+pcap трафиком.</p>
+<p>Второй подход - заменить все встроенные объекты непосредственно в HTML
+коде основной страницы. При решении этой задачи первое, что необходимо
+сделать - создать отображение пар (запрос, ответ) из pcap файла на
+ссылки, полученные из атрибута <code>src</code> всех тегов и атрибута <code>href</code> тега
+<code>link</code>. В результате разбора трафика для каждой пары (запрос, ответ)
+создается контент-файл, в который записываются данные из ответа.
+Подменив все ссылки на имена файлов, мы получим локальную копию
+страницы.</p>
+<h4>Проблемы</h4>
+<ol>
+<li>Разница в браузерах.</li>
+</ol>
+<p>Пользователь может просматривать страницу в
+   одном браузере, а оператор в другом. За счет блоков вида:</p>
+<div class="highlight"><pre>&lt;!--[if gte ie 9]&gt;
+...
+&lt;!--&gt;
+</pre></div>
+
+
+<p>браузер пользователя будет запрашивать блоки javascript и css,
+  характерные для него. В свою очередь браузер оператора не подхватит
+  эти куски, так как у него, возможно, срабо:тает другой <code>if</code> блок,
+  требующий загрузки других объектов. К сожалению из-за
+  <a href="http://en.wikipedia.org/wiki/Browser_wars">войны браузеров</a>
+  веб-мастера все чаще используют такой подход.</p>
+<p>Примером может служить популярный новостной портал
+  <a href="http://lenta.ru">lenta.ru</a>. Восстановленный трафик, который был
+  записан для Firefox-31.0, некорректно отображается в Chromium-30.</p>
+<ol>
+<li>Битый pcap.</li>
+</ol>
+<p>Хорошо видно на примере семпла rbcru.pcap. При загрузке файла
+   <code>http://s.rbk.ru/rbc_static/fp_v4/skin/not-so-default-pack.css?1398866344</code>
+   libpcap пропустил несколько пакетов. В итоге полученный css хоть и
+   выглядел вполне нормальным, но не содержал описаний ключевых классов.
+   В результате чего страница у оператора отрендерится неверно. Для
+   того, чтобы получить орининал можно заменить 7.css на его полную
+   версию - not-so-default-pack.css.</p>
+<p><img alt="broken css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDADUlKC8oITUvKy88OTU/UIVXUElJUKN1e2GFwarLyL6qurfV8P//1eL/5re6////////////zv//////////////2wBDATk8PFBGUJ1XV53/3Lrc////////////////////////////////////////////////////////////////////wgARCADZAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAfSQoAAAAAAAAAAAAAAAAAAAAIQApQQoAAAAAAAAAAAAAAAAAAAABDJSlBlIAAAAAAAAAAAAAAAAAAAAAAQ2tBwZwkQVYlXQBAAAUgAIUFBCFKQoMlAKQQpEqgEPS3QckygpEs1utqAAAAAAAAAAAAAAAAAAAIUGADYAABCSW0RIbUAAAAAAAAAAAAAACFBkyU0UAhQQQokIbUAAAAAAAAAAAAAACFBgApoAgBDiU0UqbUAAAAAAAAAAAAAACFBkgNFBk5QBioWMErqekAAAAAAAAAAAAAAAhQYIDoAYPPHMpqrHMhK1HvoAAAAAAAAAAAAAACFBghSmgQ4xwKZKDINHuoAAAAAAAAAAAAAACFBghSmgYPJGq2AACnoAAAAAAAAAAAAAAAIUEBClBk5gAAApohQaBQAAAAAAAAAAACFBkAhopDIAAKQAAFIU0CFAIUAAAhSFBCgAhQZAKUEMRQQoAABKohQAhSFBCgEKQAFAAKClBghoGgQwUhSFMmgQoBAAUEABSAAAoIACkKbIUGSkBoAyCkAAAAKQpAUhSFIClAAAAABAAUGSApoAyCFBQAAAAAAAAAAAAAAACFBQZABSkIAAAAAAAUoAAAAAAAAAAAIUGCFKaBkyAUgAAKUAA0AAAAAAAAAAACFBkAoKQyUoAAAAKAAAAAAAAAAAAACFBAUAEMgoIAAACgAA0AAAAAAAAAACFBgFKUAhQAAAAAAAAAAAAAAAAAACFBghSlKAAAAAAAAAAAAAAAAAAAACFBkApQAAAAAAAAAAAAAAAAAAAACFBkAgNgAAAAAAAAAAAAAAAAAAAAhQZAANAAAAAAAAAAAAAAAAAAAAAhQQoAAAAAAAAAAAAAAAAAAAAAAIU//E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" title="Рендер со сломанным css" />
+   <img alt="normal_css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCADpAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAepQAAAAAAAAAAAAAAAAAAAAAQgKUhQAAAAAAAAAAAAAAAAAAAAADIKUgQAAAAAAAAAAAAAAAAAAAAACEKaWHFmkBSAoAICkBSApAUAEBQACApCkBYlAUENHVqEABSRqgAAAAABCA0AAAQgKUAAhIApDVCFIACghQADMltAhogAAAAAABQAAAAAACFICA0ACFABACGjBQAAAAAACgFAAAAAAICApQCAgORQUpsAAAAAAAhoAAAAAAAAgMg0UEOUCmaEgZrR2KQoAABCgEKQoBQAAAAACAAApDlHOhREISqekAAFBCkKAQpCgFAAAAAAICApQQ5RiqQRSEB6KAAAAAAAAoKAAAAAACAyDRQQ4A0AAAdSAAAAAAAA0AAAAAAACAgNAAwAAAAbMgpCgEKAAAQ0AAAAAAACAyUFKDIIUoAKCAAAAhQQoABQAAAAAACAgBoAgIUAhoAgAAAAAABQAAAAAQAFIACGgAAAAAAAAAAAAAAAAAAAACFIQAAoIACgAAAAAAAAAAAAAAAAAFICApQCAhQAQFBAUENAAAAAAAAAAAAhSAhQUAgAIUAhQACApQAAAAAAAAAAACAyAaKDJQAAAAUAAAAAAAAAAAAAAAgAAKDIKACFAIUFAAAAAAAAAAAAAAIAACggAAAAIUhQAAUAAAAAAAAAAAgMgpSkIUAhQUAAAAAAAAAAAAAAhAUFIAQpQAAAAAAAAAAAAAAAAAAAACFIQAApQAAAAAAAAAAAAAAAAAAAACAhoAAAAAAAAAAAAAAAAAAAAAAAgABQAAAAAAAAAAAAAAAAAAAAACAyUFKAAAAAAAAAAAAAAAAAAAAACAgBSgAAAAAAAAAAAAAAAAAAAAAhQAAAAAAAAAAAAAAAA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" title="Нормальный рендер" /></p>
+<ol>
+<li>Фреймы.</li>
+</ol>
+<p>Фреймы популярная технология, позволяющая иметь полноценный HTML
+   документ в другом HTML документе. Представленный способ выборки
+   пользовательских запросов будет считать фрейм таковым. В простейшем
+   случае он встроится в страницу, полученную ранее. Достаточно лишь не
+   считать пользовательскими документы, встроенные в другие. К сожалению
+   мы сталкиваемся с необходимостью следить за порядком получения
+   страниц, что может создать трудности при многопоточной обработке.</p>
+<ol>
+<li>Сложный java-script.</li>
+</ol>
+<p>Как мы уже отмечали, современные web-приложения представляют собой
+   сложные java-script приложение. браузер может подргужать из Интернета
+   объекты, встраивая их в определенные части тела документа, в
+   результате интерпретации каких-то функций java-script. Хорошим
+   примером может служить заглавная страница <a href="http://fox.com">fox</a>.</p>
+<h3>Встраивание объектов</h3>
+<p>Необходимо, чтобы результат разбора pcap был одним файлом. Надо
+попытаться все встроенные объекты хранить прямо в пользовательском html.
+Существует несколько стандартизованных схем: <a href="http://tools.ietf.org/html/rfc2397" title="RFC 2397">RFC2397</a>, 
+<a href="http://tools.ietf.org/html/rfc2392" title="RFC 2392">RFC2392</a>. Мы воспользуемся <a href="http://tools.ietf.org/html/rfc2397" title="RFC 2397">RFC2397</a> и заменим все соответствующие
+встоенным объектам URL. Данный способ является самым простым и
+достаточно эффективным, но при наличии "тяжелых" объектов браузер может
+некорректно отображать получившуюся страницу. К примеру, chromium на
+некоторых примерах при скроллинге стирает изображения:</p>
+<p><img alt="wiping" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCAEPAfQDAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/9oADAMBAAIQAxAAAAHtGagBooJCoAAAAAAAAAUoAAAAAAAAAAAjz1k6Rlc2ZAPXFM0AKUEgSszUCk1ZpAAIUoAAAAAAAAAAAAAAJHCoalyExYUeuAICFBQvOayaTVhJLloumbcgAUSgAAAAAAAAAAAAAWzhVLGVJmhD1RgAhqoQSyb63naAAA5zUN3IAApQAAAAAAAAAACQBCnKuSdJdLELEwnpWAEKZC5m+t52gAAAOU1DdyBSgoAAAAAAAAAABIgBTjZgq6imaSDuoxVAKc5vrcItAAAAczE30uBQUEKCFAKAAAAAAAAABHGspFhqJQ0naUSgBJcr1uZFoAAADBDM30uIUoAAAAIUAAAAAAAFAjjWQQgBU9MsIADnN9LigtAAAAZBzm+twIUEKCFIUEKAAAAAAACFEYrIABkHoiEBAYm+twBaAAAAhDM1q5oAAAAAAAAAKAAAAAI5lXSAAQ0QzQFMzfS4Ei0AAABzKZmtJqwQ0AAAAAAAAAAAAABHFbFq2UCIaBmhTRym+twJFoAAADmUzNaTVkAKAUAAAAAAAAAAACMLkHSxCpENkJQAxN9bgSLQAAAHMpib3cDQBQAAAAAAAAAAAABHFR0sAAS6SGaENEmqmrJFoAAAADlN9bgAAAAAAAAAAAAAAAI4rZdXOqgKYzd2CUALHNvrcSLQAAAAxKXdyAAAAAAAAAAAAAAAEYWA2gEC1KAADDQ0zaAAAAhzm+twAAAAAAAAAAAAAAAJFMggAKClAAAOTemd2CSwi1LZSHLPTrrnQAAAAAAAAAAAAAAASAqFBQAIAAAA5t5gtTVyIsliw63FSAAoICgAAAAAAAAAAAAVCgoAEAAAAcZvdmVkABW0hmXpcAQAoAKAAAAAAAAAAQsQtKhS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" title="Chromium wiping" /></p>
+<p>Internet Explorer 8, распространяющийся в составе Windows 7 вообще не
+умеет работать по <a href="http://tools.ietf.org/html/rfc2397" title="RFC 2397">RFC2397</a>, но уже Internet Explorer 11 справляется.</p>
+<p>Встроенный документ может в свою очередь может содержать встроенные документы.
+Важно встраивать объекты в нужном порядке. К примеру, если С встроен в
+B, а B в свою очередь встроен в A, необходимо сначала C встроить в B и
+только потом B встроить в A. Для определения порядка встраивания
+необходимо сначала строить направленный граф отношений. Кроме того
+необходимо следить за тем, чтобы встроенные объекты не образовывали
+циклы. С другой стороны, наш граф имеет строго предопределенную
+структуру, что позволяет не углубляться в [задачу обхода
+ориентированного графа][grap_walk]. Мы точно знаем с какой вершины
+необходимо начать обход. Далее можем производить рекурсивное
+встраивание, лишь следя за отсутствием циклов.</p>
+<p>Все проверенные браузеры Firefox 30.0, Chromium 35.0, Internet Explorer
+11 нормально разбирают по крайней мере дважды вложенные документы. Для
+проверки можно попытаться открыть следующий документ:</p>
+<div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;script </span><span class="na">type=</span><span class="s">&quot;application/javascript&quot;</span> <span class="na">src=</span><span class="s">&quot;data:application/javascript;base64,ZnVuY3Rpb24gZml4X2NvbnRlbnQoKQp7Cgl2YXIgbmFtZV9pbnB1dCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjb250ZW50JykKCW5hbWVfaW5wdXQuaW5uZXJIVE1MID0gIjxpbWcgc3JjPSdkYXRhOmltYWdlL2dpZjtiYXNlNjQsUjBsR09EbGhNZ0FlQU1aY0FBQUFBQU1EQXdVRkJRWUdCZ2NIQndnSUNBb0tDZ3NMQ3c0T0RoQVFFQkVSRVJJU0VoTVRFeFVWRlJZV0Zod2NIQjRlSGg4Zkh5QWdJQ0VoSVNJaUlpUWtKQ2NuSnlnb0tDa3BLU29xS2l3c0xDNHVMakV4TVRJeU1qMDlQVUJBUUVSRVJFeE1URkZSVVZKU1VsTlRVMWxaV1ZwYVdseGNYRjVlWG1Sa1pHVmxaV2hvYUd4c2JHMXRiWGg0ZUlxS2lvNk9qcENRa0pLU2twaVltSm1abWFDZ29LV2xwYkt5c3JPenM3Mjl2YjYrdnNEQXdNSEJ3Y0xDd3NiR3hzakl5TXpNek03T3p0UFQwOVhWMWRmWDE5bloyZURnNE9MaTR1VGs1T1hsNWVibTV1Zm41K25wNmV2cjYrenM3TzN0N2U3dTd1L3Y3L0R3OFBIeDhmUHo4L1QwOVBYMTlmYjI5dmYzOS9uNStmdjcrLzM5L2YvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3lINUJBRUtBSDhBTEFBQUFBQXlBQjRBQUFmK2dGeUNnNFNGaG9lSWlZcUxqSTJPajVDUmtwT1VsWmFYbUptYW01eWRucCtnbkFDakFBVVVMVStkQUl5cmdsaEVLaUNxcklWUEJvSkZKQXNJSWsyQ0FEWWNCQTRuVG9NMEVnSVZNNjFjelluTldFVXJzbHdiT2xkU0xDbS9HVGxVU1NZbGdqZ1NPMVE3RWMzUGlLU2tEMGVHVXcrL1FZTk1ESUllT0lNM3pRaTBCR1VaRWdLRklDTWpHb3dLOEdzTG9WWUtvZ3lDMHN4Q3dFRkxFZ2o2NEFLSkZpeXQyRUdVS0lnaUpIWks4bkU1UUVVUWo1Q0ZXdTBiaElQZG9tWURRM0Rqd2dHR0ZTQVlZRDRrTjZGSGxSNFQxckVpSllDQ0N5dUNnblFZQUVHRzBFSE5aa1JRRm1NQTFsQ0xmRndBcStpRUVDcy9OcndnbTZpR0JnTU9HR0E0WkV1M3J0MjdlUE95RFFRQU93PT0nLz4iCn0KCg==&quot;</span><span class="nt">&gt;&lt;/script&gt;</span>
+<span class="nt">&lt;/head&gt;</span>
+<span class="nt">&lt;body</span> <span class="na">onload=</span><span class="s">&quot;setTimeout(fix_content, 500)&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">&quot;content&quot;</span><span class="nt">&gt;</span> tick, tick, tick <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+
+
+<p>Блок base64 в нем - это HTML-документ типа application/javascript следующего вида:</p>
+<div class="highlight"><pre><span class="kd">function</span> <span class="nx">fix_content</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">name_input</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">)</span>
+    <span class="nx">name_input</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;img src=&#39;data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==&#39;/&gt;&quot;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>В котором в свою очередь блок base64 представляет собой image/gif
+изображение:</p>
+<p><img alt="bang" src="data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==" title="Bang!" /></p>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'sec/http_restoring';
+                var disqus_url = '../sec/http_restoring.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+                  <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                  </ul>
+                </li>
+
+
+
+                <li class="list-group-item"><a href="../"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group " id="tags">
+                        <li class="list-group-item tag-0">
+                            <a href="../tag/gentoo.html">
+                                gentoo
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-1">
+                            <a href="../tag/c.html">
+                                c++
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/snmp.html">
+                                snmp
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/fork.html">
+                                fork
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/xplico.html">
+                                xplico
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/http.html">
+                                http
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/cryptography.html">
+                                cryptography
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/internet.html">
+                                Internet
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/binpac.html">
+                                binpac
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/security.html">
+                                security
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/uml.html">
+                                UML
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/git.html">
+                                git
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/dns.html">
+                                DNS
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/system.html">
+                                system
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/tls.html">
+                                tls
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/exec.html">
+                                exec
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/posix_spawn.html">
+                                posix_spawn
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/ssl.html">
+                                ssl
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/pcap.html">
+                                pcap
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/wireshark.html">
+                                wireshark
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cxx.html">
+                                cxx
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/zabbix.html">
+                                zabbix
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/dig.html">
+                                dig
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/lirc.html">
+                                lirc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/database.html">
+                                database
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ospf.html">
+                                ospf
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/tshark.html">
+                                tshark
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/mitm.html">
+                                mitm
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/boost.html">
+                                boost
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/getnoo.html">
+                                getnoo
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/odbc.html">
+                                odbc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/nslookup.html">
+                                nslookup
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/bluetooth.html">
+                                bluetooth
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cups.html">
+                                cups
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/routing.html">
+                                routing
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/chrono.html">
+                                chrono
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/mc.html">
+                                mc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/dns-zone.html">
+                                DNS-zone
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ethernet.html">
+                                ethernet
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/microservices.html">
+                                microservices
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/time.html">
+                                time
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/traffic.html">
+                                traffic
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/qemu.html">
+                                qemu
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/etoken.html">
+                                etoken
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ipv4.html">
+                                IPv4
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/inet.html">
+                                inet
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/devel.html">
+                                devel
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/perl.html">
+                                perl
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/samba.html">
+                                samba
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/irtoy.html">
+                                irtoy
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/acpi.html">
+                                acpi
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/kyocera.html">
+                                kyocera
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/wifi.html">
+                                wifi
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/web-20.html">
+                                web 2.0
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/container.html">
+                                container
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/suspend.html">
+                                suspend
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/dc.html">
+                                DC
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cpan.html">
+                                cpan
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/enterprise.html">
+                                enterprise
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/hilti.html">
+                                hilti
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ads.html">
+                                ads
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/g-cpan.html">
+                                g-cpan
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/lua.html">
+                                lua
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/bose.html">
+                                bose
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/resume.html">
+                                resume
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/agent.html">
+                                agent++
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/rfc.html">
+                                rfc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/comments.html">
+                                comments
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/management.html">
+                                management
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/web.html">
+                                web
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/xbmc.html">
+                                xbmc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/pdu.html">
+                                pdu
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/printserver.html">
+                                printserver
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/blog.html">
+                                blog
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/protocol.html">
+                                protocol
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/bro.html">
+                                bro
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/route.html">
+                                route
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/linux.html">
+                                linux
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/algorithm.html">
+                                algorithm
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cflow.html">
+                                cflow
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/yac.html">
+                                YaC
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ubuntu.html">
+                                ubuntu
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ppd.html">
+                                ppd
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/tcp.html">
+                                tcp
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/forensic-analysis.html">
+                                forensic analysis
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/binpacpp.html">
+                                binpacpp
+                            </a>
+                        </li>
+                    </ul>
+                </li>    
+
+
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2015 Merder hoxnox Kim <hoxnox@gmail.com>
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="../theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="../theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="../theme/js/respond.min.js"></script>
+
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29479486-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+</body>
+</html>

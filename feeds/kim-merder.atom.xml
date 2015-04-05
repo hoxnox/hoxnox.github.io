@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://hoxnox.com/" rel="alternate"></link><link href="http://hoxnox.com/feeds/kim-merder.atom.xml" rel="self"></link><id>http://hoxnox.com/</id><updated>2012-09-28T00:00:00+04:00</updated><entry><title>ODBC</title><link href="http://hoxnox.com/devel/odbc.html" rel="alternate"></link><updated>2012-09-28T00:00:00+04:00</updated><author><name>Kim Merder &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-09-28:devel/odbc.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;Введение&lt;/h2&gt;
+&lt;p&gt;Для тех кто не в курсе, ODBC позволяет абстрагироваться от интерфейса конкретной СУБД. Это некоторая
+прослойка, в которой вы можете настроить источник данных, дать ему имя и общаться с ним на уровне
+ODBC API. При замене движка СУБД вы меняете лишь файлы настройки ODBC, не меняя исходный код
+программы.&lt;/p&gt;
+&lt;p&gt;Основа ODBC нативный проект Windows, хотя его родитель CLI (Call Layer Interface) - открытый и
+ведется XOpen. Под *nix системы существует реализация unixODBC. Для общения с ODBC на языке C++
+существует libodbc++.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h2&gt;Установка&lt;/h2&gt;
+&lt;p&gt;В Windows всё должно работать из коробки. Рассмотрим установку в gentoo.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av unixODBC
+sudo emerge -av libodbc++
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;С PostgreSQL драйвером некоторые трудности... В портежах по умолчанию он отсутствует, а в дефолтных
+оверлеях старьё. Поэтому пришлось накорябать свой (git://github.com/hoxnox/hoxnox-portage-overlay.git).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;quot;dev-db/psqlodbc ~amd64&amp;quot; | sudo tee -a /etc/portage/package.keywords
+sudo emerge -av psqlodbc
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id3"&gt;
+&lt;h2&gt;Настройка ODBC&lt;/h2&gt;
+&lt;p&gt;Существует GUI утилиты (unixODBC-GUI-Qt), но нормально собрать их из оверлея qt или из исходников у
+меня не получилось. Поэтому вручную поправим конфиги (/etc/unixODBC/odbcinst.ini и
+/etc/unixODBC/odbc.ini) соответственно:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;[ODBC]
+Trace=yes
+TraceFile=/tmp/odbc_log.txt
+
+[PostgreSQL]
+driver=/usr/lib/psqlodbcw.so
+setup=/usr/lib/psqlodbcw.so
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;[Test]
+driver=PostgreSQL
+Servername=localhost
+Username=postgres
+Password=********
+Port=5432
+Database=test
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="c"&gt;
+&lt;h2&gt;Пример на C++&lt;/h2&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;odbc++/drivermanager.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;odbc++/connection.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;odbc++/preparedstatement.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;odbc++/resultset.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include &amp;lt;iostream&amp;gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;odbc&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="c1"&gt;//Get the Driver manager&lt;/span&gt;
+    &lt;span class="n"&gt;DriverManager&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;dm&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="c1"&gt;//Open the connection, specifiying the DSN.&lt;/span&gt;
+    &lt;span class="n"&gt;Connection&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;dm&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;getConnection&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;DSN=Test;uid=postgresql;pwd=*********&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
+    &lt;span class="c1"&gt;//Create the Query&lt;/span&gt;
+    &lt;span class="n"&gt;PreparedStatement&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;prepareStatement&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+                 &lt;span class="n"&gt;ODBCXX_STRING_CONST&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;SELECT ip FROM ip LIMIT 5&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;));&lt;/span&gt;
+    &lt;span class="n"&gt;ResultSet&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="c1"&gt;//Execute the Query&lt;/span&gt;
+    &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;execute&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="c1"&gt;//Get initial ResultSet&lt;/span&gt;
+    &lt;span class="n"&gt;r&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;getResultSet&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="k"&gt;while&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;next&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="c1"&gt;//Extract column information&lt;/span&gt;
+        &lt;span class="n"&gt;cout&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Column (ip): &amp;quot;&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;getInt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;ip&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class="n"&gt;endl&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+
+    &lt;span class="c1"&gt;//Clean everything&lt;/span&gt;
+    &lt;span class="k"&gt;delete&lt;/span&gt; &lt;span class="n"&gt;r&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;delete&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;delete&lt;/span&gt; &lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;!-- /***/ --&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h2&gt;Производительность&lt;/h2&gt;
+&lt;p&gt;TODO:&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id5"&gt;
+&lt;h2&gt;Полезные ссылки&lt;/h2&gt;
+&lt;ol class="arabic simple"&gt;
+&lt;li&gt;unixODBC : &lt;a class="reference external" href="http://www.unixodbc.org/"&gt;http://www.unixodbc.org/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;libodbc++ reference : &lt;a class="reference external" href="http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html"&gt;http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/div&gt;
+</summary><category term="database"></category><category term="odbc"></category><category term="c++"></category></entry></feed>

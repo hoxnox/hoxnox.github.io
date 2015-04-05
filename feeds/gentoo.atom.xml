@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://hoxnox.com/" rel="alternate"></link><link href="http://hoxnox.com/feeds/gentoo.atom.xml" rel="self"></link><id>http://hoxnox.com/</id><updated>2015-03-20T00:00:00+03:00</updated><entry><title>Suspend по таймеру, resume по клавиатуре</title><link href="http://hoxnox.com/gentoo/suspend-resume.html" rel="alternate"></link><updated>2015-03-20T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2015-03-20:gentoo/suspend-resume.html</id><summary type="html">&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;BIOS машинки в S3 не должен отключать USB&lt;/li&gt;
+&lt;li&gt;Ядро должно быть настроено на работу с ACPI&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;В параметрах запуска grub должна быть правильно указана resume партиция:&lt;/p&gt;
+&lt;p&gt;linux /gentoo-3.18.3 root=/dev/sda5 resume=swap:/dev/sda1&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;USB не должен уходить в сон. Есть прекрасный &lt;a href="http://forums.gentoo.org/viewtopic-t-933934.html"&gt;скрипт&lt;/a&gt; на эту тему.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Для того, чтобы правильно уснуть по таймеру нам надо:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Пакет pm-utils&lt;/li&gt;
+&lt;li&gt;Утилита xautolock&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Дополняем .xintrc:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;xautolock -time 30 -locker &amp;quot;sudo pm-suspend&amp;quot; -detectsleep &amp;amp;
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="gentoo"></category><category term="suspend"></category><category term="acpi"></category><category term="resume"></category></entry><entry><title>G-CPAN</title><link href="http://hoxnox.com/gentoo/g-cpan.html" rel="alternate"></link><updated>2015-02-04T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2015-02-04:gentoo/g-cpan.html</id><summary type="html">&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
+я разбираюсь как свинья в апельсинах, тем не менее я знаю о
+существовании единого репозитория &lt;a href="http://www.cpan.org/"&gt;CPAN&lt;/a&gt;. В то же
+время я понимаю боль управления зависимостями и плюшки, которые нам
+приносят системы управления пакетами. В портах gentoo DBD-ODBC не
+оказалось. Гугление по данному вопросу наводит на проекты &lt;a href="http://wiki.gentoo.org/wiki/Project:Perl/g-cpan"&gt;g-cpan&lt;/a&gt; и
+&lt;a href="http://search.cpan.org/~bingos/CPANPLUS-0.9152/lib/CPANPLUS.pm"&gt;cpanplus&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Будем использовать g-cpan.&lt;/p&gt;
+&lt;p&gt;Ставим.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av --quiet g-cpan
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Создаём оверлей, в который g-cpan будет класть генерируемые ebuild.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo mkdir -p /usr/local/portage-overlays/gcpan/metadata
+echo &amp;#39;masters = gentoo&amp;#39; | sudo tee -a /usr/local/portage-overlays/gcpan/metadata/layout.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Добавляем переменные окружения:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;#39;PORTDIR_OVERLAY=&amp;quot;/usr/local/portage-overlays/gcpan &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PORTDIR_OVERLAY&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&amp;#39; | sudo tee -a /etc/portage/make.conf
+echo &amp;#39;GCPAN_OVERLAY=/usr/local/portage-overlays/gcpan&amp;#39; | sudo tee -a /etc/portage/make.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Не знаю уж почему, но мой g-cpan не захотел выгребать эти переменные из
+make.conf, пришлось указать через переменные окружения:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo PORTDIR=/usr/portage PORTDIR_OVERLAY=/usr/local/portage-overlays/gcpan GCPAN_OVERLAY=/usr/local/portage-overlays/gcpan g-cpan -gv DBD::ODBC
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Как водится с первого раза не получилось. Сказав, что есть зависимость
+от DBI, который должен быть собран, g-cpan остановился. Ок, поставим DBI
+вручную:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av --quiet -1 DBI
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Вот теперь получилось. В оверлее gcpan появились &lt;code&gt;perl-gcpan/DBD-ODBC&lt;/code&gt; и
+&lt;code&gt;perl-gcpan/Test-Version&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Добавляем в /etc/portage/package.keywords.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;# required by perl-gcpan/Test-Version-1.004001::x-gcpan
+# required by perl-gcpan/DBD-ODBC-1.50::x-gcpan
+# required by DBD-ODBC (argument)
+=dev-lang/io-2011.09.12-r2 ~amd64
+# required by perl-gcpan/Test-Version-1.004001::x-gcpan
+# required by perl-gcpan/DBD-ODBC-1.50::x-gcpan
+# required by DBD-ODBC (argument)
+=dev-perl/File-Find-Rule-Perl-1.130.0 ~amd64
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Устанавливаем DBD-ODBC.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo einstall -av --quiet DBD-ODBC
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Стойте! Нам же нужна версия с Юникодом. Для этого Makefile.PL должен
+быть передан параметр -u. Генерируемый G-CPAN ebuild наследует eclass
+perl-module. В исходнике видна переменная myconf, значение которой
+передаётся прямо Makefile.PL на этапе &lt;code&gt;src_configure()&lt;/code&gt;. Таким образом в
+полученном достаточно немножечко поменять полученный ebuild, чтобы
+передать параметр -u - добавить строчку&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;myconf=&amp;quot;-u&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;ul&gt;
+&lt;li&gt;???&lt;/li&gt;
+&lt;li&gt;???&lt;/li&gt;
+&lt;li&gt;PROFIT!!!&lt;/li&gt;
+&lt;/ul&gt;</summary><category term="gentoo"></category><category term="g-cpan"></category><category term="cpan"></category><category term="perl"></category></entry><entry><title>irtoy</title><link href="http://hoxnox.com/gentoo/irtoy.html" rel="alternate"></link><updated>2015-01-18T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2015-01-18:gentoo/irtoy.html</id><summary type="html">&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
+v2&lt;/a&gt;. Целый день убил
+на то, чтобы разобраться как завести эту штуку под LIRC'ом.&lt;/p&gt;
+&lt;p&gt;Чтобы работать с девайсом в ядре должна быть поддержка CONFIG_USB_ACM.&lt;/p&gt;
+&lt;p&gt;Первое что необходимо сделать - обновить прошивку до свежей версии. Для
+этих целей используется &lt;a href="https://diolan.com/pic-bootloader"&gt;Diolan
+bootloader&lt;/a&gt;. Официальная инструкция
+есть на &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_firmware_update"&gt;сайте производителя игрушки&lt;/a&gt;.
+Чтобы ввести девайс в
+состояние обслуживания надо или подать на него в консоль $ (этот способ,
+как и у всех у меня не сработал) или замкнуть контакты PGC и PGD. Чтобы
+прописать саму прошивку из Linux нужна утилита fw_update. Как показала
+практика не все fw_update одинаково полезны, а некоторые могут сделать
+кирпич из вашей игрушки. В итоге у меня всё получилось с версией,
+которую какой-то чувак
+&lt;a href="http://jesshaas.com/software/IRToy-fw_update.tar.gz"&gt;выложил&lt;/a&gt; в одном
+из
+&lt;a href="http://dangerousprototypes.com/forum/viewtopic.php?t=3697&amp;amp;p=37398#p37371"&gt;тредов&lt;/a&gt;
+формума Dangerous Prototypes. Стоит отметить, что устройство не особо
+реагировало на команды, отличные от&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo ./fw_update -e -w -v -m all -vid 0x04D8 -pid 0xFD0B -ix ../USBIRToy.v22.hex
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Теперь про LIRC. Производитель рекомендует использовать irman устройство
+в LIRC, но у меня с ним не срослось. Благо кто-то написал нормальный
+драйвер и даже &lt;a href="http://sourceforge.net/p/lirc/tickets/20/"&gt;заопрувил его в
+lirc&lt;/a&gt;. Так что в версии 0.9.2
+этот драйвер имеется под названием irtoy. А пока патчик 0.9.0-r5 и
+используем имя usb_irtoy. ebuild я добавил в свой
+&lt;a href="https://github.com/hoxnox/hoxnox-portage-overlay"&gt;репозиторий&lt;/a&gt;.
+Отдельно пускаю поносный луч в сторону Sony. Родной USB порт тупил и
+глючил из-за чего я потратил уйму времени выясняя в чем причина.&lt;/p&gt;
+&lt;p&gt;Далее по
+&lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy:_Configure_LIRC"&gt;инструкции&lt;/a&gt;
+обучаем LIRC нашему пульту. Много времени на это ушло, но в итоге
+получилось. Советую для названий клавишь использовать официальные (не
+использовать ключ irrecord -n). Их список можно получить командой&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;irrecord --list-namespace
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Копируем конфиг в /etc/lirc/lircf.conf. Не забываем дать
+вменяемое имя в поле name. Правим /etc/lirc/hardware.conf:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;REMOTE=&amp;quot;Custom&amp;quot;
+REMOTE_MODULES=&amp;quot;&amp;quot;
+REMOTE_DRIVER=&amp;quot;usb_irtoy&amp;quot;
+REMOTE_DEVICE=&amp;quot;/dev/ttyACM0&amp;quot;
+REMOTE_SOCKET=&amp;quot;&amp;quot;
+REMOTE_LIRCD_CONF=&amp;quot;&amp;quot;
+REMOTE_LIRCD_ARGS=&amp;quot;&amp;quot;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Запускаем lirc, и проверяем работоспособность:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;#sudo irw
+ffff001700000000 00 ok RemoteXXX.conf
+ffff001000000000 00 up RemoteXXX.conf
+ffff001100000000 00 down RemoteXXX.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Теперь можно настроить управляемое ПО. К примеру &lt;a href="http://forum.kodi.tv/showthread.php?tid=45972"&gt;по
+мануалу&lt;/a&gt; XBMC
+(.xbmc/userdata/Lircmap.conf):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;lircmap&amp;gt;&lt;/span&gt;
+  &lt;span class="nt"&gt;&amp;lt;remote&lt;/span&gt; &lt;span class="na"&gt;device=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;LG_AKB73615307&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;left&amp;gt;&lt;/span&gt;KEY_LEGT&lt;span class="nt"&gt;&amp;lt;/left&amp;gt;&lt;/span&gt;
+    &lt;span class="nt"&gt;&amp;lt;right&amp;gt;&lt;/span&gt;KEY_RIGHT&lt;span class="nt"&gt;&amp;lt;/right&amp;gt;&lt;/span&gt;
+    ...
+  &lt;span class="nt"&gt;&amp;lt;/remote&amp;gt;&lt;/span&gt;
+&lt;span class="nt"&gt;&amp;lt;/lircmap&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Кроме LIRC рекомендую проект
+&lt;a href="https://github.com/crleblanc/PyIrToy"&gt;PyIrToy&lt;/a&gt;. Позволяет легко из
+питона работать с игрушкой. Вот пример кода:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;serial&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;irtoy&lt;/span&gt;
+&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
+
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;serial&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;/dev/ttyACM0&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;serialDevice&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+    &lt;span class="n"&gt;toy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;irtoy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IrToy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;serialDevice&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;irCode&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;toy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;receive&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;irCode&lt;/span&gt;
+    &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;toy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transmit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;irCode&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="lirc"></category><category term="irtoy"></category><category term="xbmc"></category><category term="bose"></category></entry><entry><title>etoken в корпоративных сетях</title><link href="http://hoxnox.com/gentoo/etoken.html" rel="alternate"></link><updated>2014-09-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2014-09-01:gentoo/etoken.html</id><summary type="html">&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
+(работает через куку по SSL). Для красноглазых имеется openconnect (в
+генте есть в портежах).&lt;/p&gt;
+&lt;p&gt;Наш ключик:
+http://www.safenet-inc.com/products/data-protection/two-factor-authentication/etoken-pro/?aldn=true&lt;/p&gt;
+&lt;p&gt;Нам понядобятся драйвера:
+http://www.aladdin-rd.ru/support/downloads/21493/
+http://www.aladdin-rd.ru/support/downloads/29366/&lt;/p&gt;
+&lt;p&gt;Для гентов можно использовать оверлей товарища mva:
+http://gpo.zugaina.org/app-crypt/etoken-sac
+Нужен небольшой патч (25.02.2014 отписал автору, может поправит):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="gh"&gt;diff --git a/app-crypt/etoken-sac/etoken-sac-8.1.ebuild b/app-crypt/etoken-sac/etoken-sac-8.1.ebuild&lt;/span&gt;
+&lt;span class="gh"&gt;index 5ed5dae..622ee1d 100644&lt;/span&gt;
+&lt;span class="gd"&gt;--- a/app-crypt/etoken-sac/etoken-sac-8.1.ebuild&lt;/span&gt;
+&lt;span class="gi"&gt;+++ b/app-crypt/etoken-sac/etoken-sac-8.1.ebuild&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -29,7 +29,7 @@ REQUIRED_USE=&amp;quot;amd64? ( multilib )&amp;quot;&lt;/span&gt;
+ # TODO: minimal useflag (I can&amp;#39;t do it now, since
+ # it seems like I brake my token and it is uninitialized now)
+ RDEPEND=&amp;quot;&amp;gt;=sys-apps/pcsc-lite-1.4.99
+&lt;span class="gd"&gt;-   dev-libs/libusb:0&lt;/span&gt;
+&lt;span class="gi"&gt;+   virtual/libusb:0&lt;/span&gt;
+    sys-apps/dbus
+        media-libs/libpng:1.2
+        media-libs/fontconfig
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Вот более подробная инструкция:
+http://www.it-lines.ru/blogs/linux/nastrojka-etoken-v-gentoo-linux&lt;/p&gt;
+&lt;p&gt;Тут https://www.mayrhofer.eu.org/aladdin-etoken-under-linux товарищ
+рассказывает как можно с помощью opencs
+(https://www.opensc-project.org/opensc/wiki/AladdinEtokenPro#Linux) c
+этим делом общаться.&lt;/p&gt;</summary><category term="getnoo"></category><category term="etoken"></category><category term="enterprise"></category></entry><entry><title>Учим Midnight Commander запоминать последнюю директорию</title><link href="http://hoxnox.com/gentoo/mc_last_dir.html" rel="alternate"></link><updated>2012-08-03T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-08-03:gentoo/mc_last_dir.html</id><summary type="html">&lt;p&gt;Для этих целей существует опция -P, которая сообщает mc записать состояние перед выходом в заданный
+файл. Кроме того, в состав дистрибутива входит специальный скрипт mc-wrapper.sh, который
+автоматизирует процесс закрывания/открывания mc нужным образом.&lt;/p&gt;
+&lt;p&gt;В gentoo данный скрипт лежит в&lt;/p&gt;
+&lt;p&gt;..code-block:: none&lt;/p&gt;
+&lt;blockquote&gt;
+$ qlist mc | grep mc-wrapper
+/usr/libexec/mc/mc-wrapper.csh
+/usr/libexec/mc/mc-wrapper.sh&lt;/blockquote&gt;
+&lt;p&gt;Остается только создать нужный alias для bash:&lt;/p&gt;
+&lt;p&gt;..code-block:: none&lt;/p&gt;
+&lt;blockquote&gt;
+alias mc='. /usr/libexec/mc/mc-wrapper.sh'&lt;/blockquote&gt;
+</summary><category term="gentoo"></category><category term="mc"></category></entry><entry><title>Сеть</title><link href="http://hoxnox.com/gentoo/net.html" rel="alternate"></link><updated>2012-02-23T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-02-23:gentoo/net.html</id><summary type="html">&lt;p&gt;Без сети в Gentoo-desktop катастрофически тяжело. Поэтому еще до того, как я начну настройку и
+установку программного обеспечения, сразу после получения более-менее работающего &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;собственноручно
+собранного ядра&lt;/a&gt;, настраиваем сеть.&lt;/p&gt;
+&lt;p&gt;Начну с общего. Для начала пропишу адреса &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DNS"&gt;DNS&lt;/a&gt; серверов, которые буду использовать. Для этого имеется
+/etc/resolv.conf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;nameserver&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.8.4.4&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+nameserver&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.8.8.8&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="ethernet"&gt;
+&lt;h2&gt;Ethernet&lt;/h2&gt;
+&lt;p&gt;Начнем с простого - Ethernet. Предположим, что все необходимые опции в ядре имеются (если нет -
+гуглим настройку нашей сетевой карточки), то есть ifconfig показывает нам eth0 интерфейс. Далее всё
+просто, если в вашей сети имеется &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP"&gt;dhcp&lt;/a&gt;, то всё должно заработать из коробки. Максимум придётся
+включить eth0 интерфейс:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ifconfig eth0 up
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Если &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP"&gt;dhcp&lt;/a&gt; отсутствует, задаём вручную IP и, возможно, &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/%D0%A8%D0%BB%D1%8E%D0%B7_%D0%BF%D0%BE_%D1%83%D0%BC%D0%BE%D0%BB%D1%87%D0%B0%D0%BD%D0%B8%D1%8E"&gt;шлюз по умолчанию&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ifconfig eth0 192.168.1.2
+route add default gw 192.168.1.1
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="wifi"&gt;
+&lt;h2&gt;WiFi&lt;/h2&gt;
+&lt;p&gt;Добавляю опции в настройки ядра, чтобы оно могло определить мою wifi-карточку:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;dl class="docutils"&gt;
+&lt;dt&gt;Device Drivers --&amp;gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;dl class="first last docutils"&gt;
+&lt;dt&gt;[*] Network device support --&amp;gt;&lt;/dt&gt;
+&lt;dd&gt;&lt;dl class="first last docutils"&gt;
+&lt;dt&gt;[*] Wireless LAN&lt;/dt&gt;
+&lt;dd&gt;&amp;lt;M&amp;gt; Intel Wireless WiFi Next Gen AGN  - Wireless-N/Advanced-N/Ultimate-N (iwlagn)&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/dd&gt;
+&lt;/dl&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Ставлю &lt;a class="reference external" href="http://hostap.epitest.fi/wpa_supplicant/"&gt;wpa_supplicant&lt;/a&gt;. Необходимо его настроить. Подробней о настройке wpa_supplicant можно
+почитать на &lt;a class="reference external" href="http://hostap.epitest.fi/gitweb/gitweb.cgi?p=hostap.git;a=blob_plain;f=wpa_supplicant/wpa_supplicant.conf"&gt;официальном сайте&lt;/a&gt;. В моём случае это простейший WEP со статическим паролем&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# /etc/wpa_supplicant/wpa_supplicant.conf&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+ctrl_interface=/var/run/wpa_supplicant&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="c"&gt;# ограничим доступ к настройкам WPA только для root&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+ctrl_interface_group=0&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="c"&gt;# пусть wpa_supplicant заботится о сканировании и выборе точки доступа&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+ap_scan=1&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="c"&gt;# подключение с общим ключом WEP (не WPA, не IEEE #802.1X)&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+network={&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;ssid=&amp;quot;JASSY-NET&amp;quot;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;key_mgmt=NONE&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;wep_key0=simple_static_password&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;wep_tx_keyidx=0&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="w"&gt;  &lt;/span&gt;priority=5&lt;span class="w"&gt;&lt;/span&gt;
+}&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Как и в большинстве роутеров, в моем имеется &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP"&gt;dhcp&lt;/a&gt;. Буду использовать его, для этого корректируем
+/etc/conf.d/net.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;#/etc/conf.d/net&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;span class="c"&gt;#Wireless&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+module=&amp;quot;wpa_supplicant&amp;quot;&lt;span class="w"&gt;&lt;/span&gt;
+config_wlan0=&amp;quot;dhcp&amp;quot;&lt;span class="w"&gt;&lt;/span&gt;
+dhcp_wlan0=&amp;quot;nodns&amp;quot;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;В самом начале я указал какие DNS сервера буду использовать и не хочу, чтобы точка навязывала
+свои, о чём говорит опция &lt;em&gt;dhcp_wlan0&lt;/em&gt;.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Создаём скрипт инициализации и добавляем его в автозапуск&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; /etc/init.d
+cp net.lo net.wlan0
+rc-update add net.wlan0 default
+&lt;/pre&gt;&lt;/div&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Существует небольшая проблема. Скрипт rc запускает интерфейс wlan0, но не дожидается, пока он будет
+инициализирован, а продолжает цепочку загрузки. Таким образом, wlan0 уже поднят, но ему не
+назначен адрес и проч., то есть интернета нет, а службы зависящие от сети пытаются
+загрузится. Никакие параметры типа sleep_associate, wait_associate почему-то не помогают,
+поэтому все службы, которые должны грузится после сети удаляем из rc и прописываем в
+postup(). Следует учесть, что postup должен отрабатывать только для wlan0:&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;#/etc/conf.d/net&lt;/span&gt;
+&lt;span class="c"&gt;#Wireless&lt;/span&gt;
+&lt;span class="nv"&gt;module&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;wpa_supplicant&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;config_wlan0&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;dhcp&amp;quot;&lt;/span&gt;
+&lt;span class="nv"&gt;dhcp_wlan0&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;nodns&amp;quot;&lt;/span&gt;
+postup&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;IFVAR&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;lo&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="c"&gt;# prevent lo long wail&lt;/span&gt;
+                /etc/init.d/ntp-client start
+        &lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Можно запускать&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;/etc/init.d/net.wlan0 start
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id4"&gt;
+&lt;h2&gt;Интернет с мобильного телефона&lt;/h2&gt;
+&lt;p&gt;Настройка bluetooth - тема для &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;отдельного разговора&lt;/a&gt;. Если вкратце, необходимо настроить поддержку
+железа в ядре. Настроить &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/RFCOMM"&gt;rfcomm&lt;/a&gt;, поставить &lt;a class="reference external" href="http://ppp.samba.org/"&gt;pppd&lt;/a&gt;, написать &lt;a class="reference external" href="http://sysoev.ru/pppd/connect.html"&gt;скрипт дозвона&lt;/a&gt;&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="gentoo"></category><category term="wifi"></category><category term="bluetooth"></category><category term="ethernet"></category></entry><entry><title>Плавный переход с Ubuntu на Gentoo</title><link href="http://hoxnox.com/gentoo/ubuntu-gentoo.html" rel="alternate"></link><updated>2012-02-22T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-02-22:gentoo/ubuntu-gentoo.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+&lt;h2&gt;Мотивация&lt;/h2&gt;
+&lt;p&gt;В своё время, когда я начинал свой путь в мир открытого ПО с FreeBSD, мне очень понравилась
+концепция &lt;em&gt;&amp;quot;собери все сам&amp;quot;&lt;/em&gt;, она позволяет вскрыть новые пласты знаний и получить драгоценный опыт.
+Перейдя, в своё время, на Ubuntu я был несколько разочарован. Все тонкости умело скрыты ребятами из
+Canonical, которые превратили Linux в настольную систему для домохозяек, почти что не толкающую к изучению
+чего-то нового. Сразу пришло решение поставить Gentoo (учитывая предыдущий опыт). Страх перед тем
+фактом, что система, во время &lt;em&gt;&amp;quot;учебы&amp;quot;&lt;/em&gt; будет находится в полу-рабочем состоянии останавливал от
+удаления Ubuntu с ноутбука. Кроме того, машинку периодически использует жена. Ставить Gentoo в
+виртуальную среду - половинчатое счастье. Решено поселить двух пингвинов на одной машинке. Причём
+сделать это надо таким образом, чтобы в один прекрасный момент можно было бы легко и не принужденно
+снести Ubuntu, оставшись с Gentoo. Это наталкивает нас на то, что пингвинам придется совместно
+использовать загрузочный раздел, подкачку и домашние директории, тем не менее иметь собственные
+ядра (chroot отпадает). Конечно же при таком тесном соседстве мы наткнёмся на некоторые грабли, но
+это временное решение, поэтому можно потерпеть...&lt;/p&gt;
+&lt;p&gt;Итак, засучив рукава, приступаем к реализации намеченного плана...&lt;/p&gt;
+&lt;/div&gt;
+&lt;div class="section" id="id2"&gt;
+&lt;h2&gt;Структура диска&lt;/h2&gt;
+&lt;p&gt;Начну с выделения места для нового пингвина. Загружаюсь с какого-нибудь загрузочного диска с
+Linux'ом на борту.
+Воспользовавшись любимым потрошителем разделов (у меня это &lt;a class="reference external" href="http://gparted.sourceforge.net"&gt;gparted&lt;/a&gt;), выделяю раздел под Gentoo и
+выношу домашние разделы. Следует отметить, что загрузочный раздел должен быть выделен
+&lt;a class="reference external" href="http://ru.wikipedia.org/wiki/%D0%A0%D0%B0%D0%B7%D0%B4%D0%B5%D0%BB_%D0%B4%D0%B8%D1%81%D0%BA%D0%B0#.D0.9F.D0.B5.D1.80.D0.B2.D0.B8.D1.87.D0.BD.D1.8B.D0.B9_.28.D0.BE.D1.81.D0.BD.D0.BE.D0.B2.D0.BD.D0.BE.D0.B9.29_.D1.80.D0.B0.D0.B7.D0.B4.D0.B5.D0.BB"&gt;основным&lt;/a&gt;. Остальные могут располагаться в расширенном.&lt;/p&gt;
+&lt;img alt="gparted screenshot" class="align-center" src="data:image/gif;base64,R0lGODlhBwP0AOf/AAACAAQBBwMEFBsCAh4BEywCBwgLKAIQQT8GAQAXWi0XBFAPAWIUAQEoehkpLz4jDxouR28dAAM0bSIzKQ48qzs9Oz0+QTw+RkE9WmI7DUg+PE08RD1AT0s9TZAxAT9AaHo5B1k+Plo+TmQ9QBNRhG1BPJU7CKE6AEtNSk1NUGlHPD1Ng3lEO1hOSVBNa01QXVxMWTtWWUlReWlNTWNQQjxXcDtUlARiw3tRTYxPPD5jpElhmIZXSphVOzJqmlJlbnFfVFRlgUppgzhpu1JmjVhofIBjUKBcPB95mUVyc5RgSYpkQ11vZphiPI1oKp1hTERxtqdhOjZ+aLBiOsFnEkp6xahrTcRlWT+E08xpQUyCxbVwSZ16MV2KfFWGw12HtTiUo6Z7W7Z9OMF5RWaKquxuPbZ+T6GFU+9wP/FyQFCT2XCQqKKJaViV0M+AQtGDIe93QvB3UvB5So6QjPR7P+95ZfN7TMeLVfB9a/CCes+RTfSITFmn5fKIWlGwrWKo27KXmHKk2J2em76XhMKYc4KlufGKjtGaYPiRSnattPCOpp2kw222qvSVc4es0cOjfLqliZixht6jXcKqbWa662XBtNenb7WukaiuuOWpN7OxgHi53/ulVpq3x/aketitiqi4tre1sPWommrK93/Ls7+5uPSsu7i+voLK8ee6beC7f8O/tZLL1LrCyI3M6sXAv7vHmfKx1+e/e/y7Zu7DTp7M5OPCmPq9is7Hu77KzZvYsuHGpMjKx/S9ydbKsujKiLnS6enOldLQzt/RoM7T2a3c7dnUy/zSfPPXZvPL8abj8b7f1fDWnMPd5dfZ1vjYkPDfsXf9/ffkfNri7eDi38buufLgzMrp8O7kvdbn7vzkpsDu/u3nxffskPfj+/Dq0ODs7ejr5+/r3O7t5Ofu8OP1u/vvsvfyp+3v6/nzovLw5d31/PDy7+/4t/7zw/jy8ff4ufL08fry/P72zeP6//T38/341f339vf69v/74/777O7+///+7vj/////9f7//CH+D2Rpc2sgcGFydGl0aW9ucwAsAAAAAAcD9AAACP4A2QkcSLCgwYMIEypcyLChw4cQI0qcSLGixYsYM2rcyLGjx48gQ4ocSbKkyZMoU6pcybKly5cwY8qcSbOmzZs4c+rcybOnz59AgwodSlOI0aNICUZbyrSp06dQo0qdSrWq1atYs2rdyrWr169gw4odS7as2bNo06pdy7at27dTFRqFRxde0oFw8+rdy7ev37+AAwseTLiw4cNQ5Qqpa/eoUsSQI0ueTLmy5cuYM2sOqxjpXYGbQ4seTbq06dOoU7ftLOTfv8V2Hy+9Qru2bdpNPevezbu379/AgwsfHjw38ePIkytf/ts48+fQo0ufTr269evYs2vfzp17U9auYf4LkR3ttvkrzrurX687Pfv36t3Dn0+/vv37+PPr33/0e0Lx4dE1Hl5MnXebfPwlCByCCja4G4MORijhhBRWaCF//iEE4GsCkmegbRBeuF+IIuZHYokopqjiiixGmOFBG37GTlO2ueYaiEwhxdiOPPbo449ABgmkjUQWaeSRSCZpI1LpCenkk08qKeWUVFYZXn85HgXlllx26eWXYIYp5phklmnmmT1aqeaabLbp5ptwJskkU3IJeKVRHtZGJI5L6Yjmn0PG+eacfWoJKJiCJkolodH4eeijkEYq6aSUVhqmophmqummazIK3muOETibnjby2aihlp7JaZWMOprqj/6rbtoqqq/WauutuOZKaay89uprm57+d9SdA4JWIKk31takroj+euSsczFbl7OCQgubtNhmq+22uFLr7be/BqvhsBzGJmp5yP5jqqvcBgnuklgWGi227wIb76nztqvvvvz2C2W9AAcMp7gwkitenrTtqWyW+fq7I8DWaiuwlRE7bPHFGEs88cYcy3lvnXYFaK6xoyZc6sLyXpsxPBDfy66uHUtZ8co012zzoTHnHDPBBsXY4bk1nowbwypn3LJRy9Kr87Mu03rz01BHHeXSVB8txIs92wkqnkCnu67TGFudtLRVFzmz1GinnXbZbHvLc0ExhkoyuiYnO3TKNotNtP7GbZ+t9t+Ar9z24L6+TRBSxCJ8hcJ341t02PX6DfPgkgdu+eXtEq75qoYPhPjWxc54bN3qoux43pE33fDkfav+OOawx57r5rRn2rlAnx/cNelfrw5mKnOUw9g5ZjDyJfDCw5rPIIH047brZiI/fPFbEmkLGfRIuXzzzyO9t+zglyl9XcQb7+X4P5bPb+3sV/uxsEaJHDqNXpv+8pfpeEBC8nR1wwAS7ehS/vY3JHcwAAvOo1blvDRA/sHDfwD8l2vycQIK7ENKBkRg9672vfB5EH/6cyAEA8ilBgZphPtq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" /&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;boot - загрузчик grub2 и ядра операционных систем&lt;/li&gt;
+&lt;li&gt;swap - раздел подкачки&lt;/li&gt;
+&lt;li&gt;ubuntu - место жительства Ubuntu&lt;/li&gt;
+&lt;li&gt;gentoo - место жительства Gentoo&lt;/li&gt;
+&lt;li&gt;home - домашние директории&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Следует разделять сам загрузчик и набор скриптов и приложений по его настройке. В разделе
+&lt;strong&gt;boot&lt;/strong&gt; должен быть расположен сам загрузчик, а пакеты для настройки у Ubuntu и Gentoo будут свои,
+так как, вообще говоря, у нас может не быть бинарной совместимости между этими системами.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class="section" id="ubuntu"&gt;
+&lt;h2&gt;Настройка Ubuntu&lt;/h2&gt;
+&lt;p&gt;Сначала настрою Ubutnu, чтобы она могла корректно работать в изменившихся условиях. Монтирую
+куда-нибудь ubutnu-раздел, правлю /etc/fstab и настройки grub2&lt;/p&gt;
+&lt;p&gt;Получаю UUID соответствующих разделов:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mkdir /mnt/ubutnu
+mount /dev/disk/by-label/ubuntu /mnt/ubutntu
+ls -l /dev/disk/by-uuid
+ls -l /dev/disk/by-label
+nano -w /mnt/ubuntu/fstab
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Вношу изменения в fstab:&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+# /etc/fstab: static file system information.
+# Note: using noatime (SSD)
+# &amp;lt;file system&amp;gt;                            &amp;lt;mount point&amp;gt;  &amp;lt;type&amp;gt;  &amp;lt;options&amp;gt;                  &amp;lt;dump&amp;gt;  &amp;lt;pass&amp;gt;
+proc                                       /proc          proc    nodev,noexec,nosuid        0       0
+UUID=aec1d4c6-8332-46b8-a024-244e5fa90df4  /boot          ext4    rw,noatime                 0       0
+UUID=e12efc8c-8057-4a14-bdf0-448e26437e77  /              ext4    errors=remount-ro,noatime  0       1
+UUID=85b9d2ba-32a8-4172-89b8-7714eaf04dfe  none           swap    sw                         0       0
+UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime                 0       1
+&lt;/pre&gt;
+&lt;p&gt;Монтирую /dev и /proc и chroot'юсь в Ubuntu&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mount -t proc none /mnt/ubuntu/proc
+mount --rbind /dev /mnt/ubuntu/dev
+chroot /mnt/ubuntu
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;В Ubuntu уже стоит grub2 (скрипты настройки). Монтирую boot раздел во временную директорию,
+устанавливаю в него загрузчик.&lt;/p&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Следует отметить, что данная операция изменяет MBR диска. Это значит, что если грузится с
+данного диска, будет запущен вновь установленный загрузчик.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;mkdir /media/boot
+mount /dev/disk/by-label/boot /media/boot
+grub-install --boot-directory&lt;span class="o"&gt;=&lt;/span&gt;/media/boot /dev/sda
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;В раздел boot копирую ядра, которые я бы хотел загружать. Папка /boot в Ubuntu мне уже не
+понадобится. Её можно удалить. На её место будет монтироваться boot раздел.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;cp /boot/vmlinuz-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
+   /boot/vmcoreinfo-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
+   /boot/System.map-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
+   /boot/initrd.img-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
+   /boot/abi-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
+   /boot/config-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
+   /boot/memtest86+.bin &lt;span class="se"&gt;\&lt;/span&gt;
+   /boot/memtest86+_multiboot.bin &lt;span class="se"&gt;\&lt;/span&gt;
+   /media/boot/
+mv /boot /boot.old
+mkdir /boot
+umount /media/boot
+mount /dev/disk/by-label/boot /boot
+&lt;/pre&gt;&lt;/div&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Не забываем проверить, наличие в /boot директории grub, с модулями, которые могут понадобится
+для успешной загрузки. Такие как модуль файловой системы и проч.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Пересоздаю файл конфигурации&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;update-grub
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Теперь перезагружаюсь в Ubuntu. В ней уже имеются настройки, которые я бы хотел перенести в
+Gentoo, работает сеть и вообще уютно.&lt;/p&gt;
+&lt;table class="docutils field-list" frame="void" rules="none"&gt;
+&lt;col class="field-name" /&gt;
+&lt;col class="field-body" /&gt;
+&lt;tbody valign="top"&gt;
+&lt;tr class="field"&gt;&lt;th class="field-name"&gt;note:&lt;/th&gt;&lt;td class="field-body"&gt;Если ваш домашний раздел зашифрован. Его следует переносить с помощью соответствующего
+скрипта &lt;strong&gt;ecryptfs-migrate-home&lt;/strong&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div class="section" id="gentoo"&gt;
+&lt;h2&gt;Установка Gentoo&lt;/h2&gt;
+&lt;p&gt;Процесс установки отлично описан в &lt;a class="reference external" href="http://www.gentoo.org/doc/ru/handbook/handbook-x86.xml?full=1"&gt;документации&lt;/a&gt;, нам надо лишь слегка видоизменить его.
+Скачиваю свежий дистрибутив Gentoo - &lt;a class="reference external" href="http://mirror.yandex.ru/gentoo-distfiles/releases/x86/current-stage3"&gt;stage3&lt;/a&gt; и распаковываю в gentoo раздел. Также скачиваем и
+распаковываем &lt;a class="reference external" href="http://mirror.yandex.ru/gentoo-distfiles/snapshots/portage-latest.tar.bz2"&gt;portage&lt;/a&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;tar xvjpf stage3-*.tar.bz2
+tar xvjf /mnt/gentoo/portage-latest.tar.bz2 -C /mnt/gentoo/usr
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Правим /mnt/gentoo/etc/fstab&lt;/p&gt;
+&lt;pre class="literal-block"&gt;
+# /etc/fstab: static file system information.
+# Note: using noatime (SSD)
+# &amp;lt;file system&amp;gt;                            &amp;lt;mount point&amp;gt;  &amp;lt;type&amp;gt;  &amp;lt;options&amp;gt;                    &amp;lt;dump&amp;gt;  &amp;lt;pass&amp;gt;
+proc                                       /proc          proc    nodev,noexec,nosuid,noatime  0       0
+UUID=aec1d4c6-8332-46b8-a024-244e5fa90df4  /boot          ext4    rw,noatime                   0       0
+UUID=fb1da555-69f3-48b5-9fd8-240f245ac995  /              ext4    errors=remount-ro,noatime    0       1
+UUID=85b9d2ba-32a8-4172-89b8-7714eaf04dfe  none           swap    sw,noatime                   0       0
+UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime                   0       1
+&lt;/pre&gt;
+&lt;p&gt;Вопрос пересборки ядра откладываю - он требует более пристального рассмотрения. Просто воспользуюсь
+рабочим ядром Ubuntu. В идеале надо бы переписать файлы конфигурации grub2, расположенные в
+/etc/grub.d Но пока что руки до этого не дошли. Просто вручную пишу конфигурацию /boot/grub/grub.cfg
+сохраняю копию где-нибудь, чтобы восстановить, если нагрянет update-grub. Ещё можно добавить нужные
+пункты загрузки в /etc/grub.d/40_custom.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# /boot/grub/grub.cfg&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/00_header ###&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -s &lt;span class="nv"&gt;$prefix&lt;/span&gt;/grubenv &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;have_grubenv&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;span class="nb"&gt;  &lt;/span&gt;load_env
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;${prev_saved_entry}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${prev_saved_entry}&amp;quot;&lt;/span&gt;
+  save_env saved_entry
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
+  save_env prev_saved_entry
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;boot_once&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+
+&lt;span class="k"&gt;function&lt;/span&gt; savedefault &lt;span class="o"&gt;{&lt;/span&gt;
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -z &lt;span class="s2"&gt;&amp;quot;${boot_once}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+    &lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${chosen}&amp;quot;&lt;/span&gt;
+    save_env saved_entry
+  &lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="o"&gt;}&lt;/span&gt;
+
+&lt;span class="k"&gt;function&lt;/span&gt; recordfail &lt;span class="o"&gt;{&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -n &lt;span class="s2"&gt;&amp;quot;${have_grubenv}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -z &lt;span class="s2"&gt;&amp;quot;${boot_once}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; save_env recordfail&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="o"&gt;}&lt;/span&gt;
+
+&lt;span class="k"&gt;function&lt;/span&gt; load_video &lt;span class="o"&gt;{&lt;/span&gt;
+  insmod vbe
+  insmod vga
+  insmod video_bochs
+  insmod video_cirrus
+&lt;span class="o"&gt;}&lt;/span&gt;
+
+insmod part_msdos
+insmod ext2
+&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos7)&amp;#39;&lt;/span&gt;
+search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root e12efc8c-8057-4a14-bdf0-448e26437e77
+&lt;span class="k"&gt;if&lt;/span&gt; loadfont /usr/share/grub/unicode.pf2 &lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;gfxmode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto
+  load_video
+  insmod gfxterm
+  insmod part_msdos
+  insmod ext2
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+  search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;locale_dir&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="nv"&gt;$root&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;/grub/locale
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ru_RU
+  insmod gettext
+&lt;span class="k"&gt;fi&lt;/span&gt;
+terminal_output gfxterm
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;${recordfail}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; 1 &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;-1
+&lt;span class="k"&gt;else&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;3
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/00_header ###&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/05_debian_theme ###&lt;/span&gt;
+&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;menu_color_normal&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;white/black
+&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;menu_color_highlight&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;black/light-gray
+&lt;span class="k"&gt;if&lt;/span&gt; background_color 44,0,30&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  clear
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/05_debian_theme ###&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/10_linux ###&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; 1 &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -e &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt;/gfxblacklist.txt &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; hwmatch &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt;/gfxblacklist.txt 3&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+      &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;match&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; 0 &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;keep
+      &lt;span class="k"&gt;else&lt;/span&gt;
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
+      &lt;span class="k"&gt;fi&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;
+      &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
+    &lt;span class="k"&gt;fi&lt;/span&gt;
+  &lt;span class="k"&gt;else&lt;/span&gt;
+    &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;keep
+  &lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="k"&gt;else&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="nb"&gt;export &lt;/span&gt;linux_gfx_mode
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;$linux_gfx_mode&amp;quot;&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; load_video&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
+menuentry &lt;span class="s1"&gt;&amp;#39;Ubuntu, с Linux 3.0.0-14-generic&amp;#39;&lt;/span&gt; --class ubuntu --class gnu-linux --class gnu --class os &lt;span class="o"&gt;{&lt;/span&gt;
+        recordfail
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;gfxpayload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$linux_gfx_mode&lt;/span&gt;
+        insmod gzio
+        insmod part_msdos
+        insmod ext2
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
+        linux   /vmlinuz-3.0.0-14-generic &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;UUID&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;e12efc8c-8057-4a14-bdf0-448e26437e77 ro   quiet splash vt.handoff&lt;span class="o"&gt;=&lt;/span&gt;7
+        initrd  /initrd.img-3.0.0-14-generic
+&lt;span class="o"&gt;}&lt;/span&gt;
+menuentry &lt;span class="s1"&gt;&amp;#39;Ubuntu, с Linux 3.0.0-14-generic (режим восстановления)&amp;#39;&lt;/span&gt; --class ubuntu --class gnu-linux --class gnu --class os &lt;span class="o"&gt;{&lt;/span&gt;
+        recordfail
+        insmod gzio
+        insmod part_msdos
+        insmod ext2
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
+        &lt;span class="nb"&gt;echo&lt;/span&gt;    &lt;span class="s1"&gt;&amp;#39;Загружается Linux 3.0.0-14-generic ...&amp;#39;&lt;/span&gt;
+        linux   /vmlinuz-3.0.0-14-generic &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;UUID&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;e12efc8c-8057-4a14-bdf0-448e26437e77 ro recovery nomodeset
+        &lt;span class="nb"&gt;echo&lt;/span&gt;    &lt;span class="s1"&gt;&amp;#39;Загружается начальный ramdisk ...&amp;#39;&lt;/span&gt;
+        initrd  /initrd.img-3.0.0-14-generic
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/10_linux ###&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/20_linux_xen ###&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/20_linux_xen ###&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/20_memtest86+ ###&lt;/span&gt;
+menuentry &lt;span class="s2"&gt;&amp;quot;Memory test (memtest86+)&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
+        insmod part_msdos
+        insmod ext2
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
+        linux16 /memtest86+.bin
+&lt;span class="o"&gt;}&lt;/span&gt;
+menuentry &lt;span class="s2"&gt;&amp;quot;Memory test (memtest86+, serial console 115200)&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
+        insmod part_msdos
+        insmod ext2
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
+        linux16 /memtest86+.bin &lt;span class="nv"&gt;console&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ttyS0,115200n8
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/20_memtest86+ ###&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/30_os-prober ###&lt;/span&gt;
+menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class gnu-linux --class gnu --class os &lt;span class="o"&gt;{&lt;/span&gt;
+        insmod part_msdos
+        insmod ext2
+        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        linux /gentoo-2.6.38-tuxonice &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/dev/sda6 &lt;span class="nv"&gt;resume&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;swap:/dev/sda1
+&lt;span class="o"&gt;}&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/30_os-prober ###&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/40_custom ###&lt;/span&gt;
+&lt;span class="c"&gt;# This file provides an easy way to add custom menu entries.  Simply type the&lt;/span&gt;
+&lt;span class="c"&gt;# menu entries you want to add after this comment.  Be careful not to change&lt;/span&gt;
+&lt;span class="c"&gt;# the &amp;#39;exec tail&amp;#39; line above.&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/40_custom ###&lt;/span&gt;
+
+&lt;span class="c"&gt;### BEGIN /etc/grub.d/41_custom ###&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -f  &lt;span class="nv"&gt;$prefix&lt;/span&gt;/custom.cfg &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;source&lt;/span&gt; &lt;span class="nv"&gt;$prefix&lt;/span&gt;/custom.cfg&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="c"&gt;### END /etc/grub.d/41_custom ###&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Перезагружаюсь в Gentoo. Welcome home. Теперь начинается самое интересное ...&lt;/p&gt;
+&lt;/div&gt;
+</summary><category term="ubuntu"></category><category term="gentoo"></category><category term="linux"></category></entry><entry><title>Wine</title><link href="http://hoxnox.com/gentoo/games.html" rel="alternate"></link><updated>2012-01-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-01-01:gentoo/games.html</id><summary type="html">&lt;h1&gt;wine&lt;/h1&gt;
+&lt;p&gt;Wine позволяет играться. Есть замечательный сайт
+[winehq][http://winehq.org], на котором можно найти особенности запуска
+той или иной игрушки под wine'ом. В том числе параметры системного
+реестра для повышения производительности.&lt;/p&gt;
+&lt;p&gt;Некоторые игры требуют специального архиватора для текстур (s3tc),
+который можно установить с пакетом &lt;code&gt;libtxc_dxtn&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Открытая реализация OpenGL - это mesa. С пакетом mesa-progs идет утилита
+glxinfo, с помощью нее можно узнать различные параметры:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;glxinfo | grep OpenGL
+&lt;/pre&gt;&lt;/div&gt;</summary></entry></feed>

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>IPv4 - NX</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+
+    <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+    <meta name="keywords" content="IPv4" />
+
+    <!-- Enable latex plugin -->
+
+
+    <!-- Open Graph tags -->
+        <meta property="og:site_name" content="NX" />
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="NX"/>
+        <meta property="og:url" content=".."/>
+        <meta property="og:description" content="NX"/>
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="../theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="../theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="../theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="../theme/css/style.css" type="text/css"/>
+
+        <link href="../feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX ATOM Feed"/>
+
+
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="../" class="navbar-brand">
+NX            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="../category/admin.html">Admin</a>
+                        </li>
+                        <li >
+                            <a href="../category/blog.html">Blog</a>
+                        </li>
+                        <li >
+                            <a href="../category/chsheets.html">Chsheets</a>
+                        </li>
+                        <li >
+                            <a href="../category/cxx.html">Cxx</a>
+                        </li>
+                        <li >
+                            <a href="../category/devel.html">Devel</a>
+                        </li>
+                        <li >
+                            <a href="../category/gentoo.html">Gentoo</a>
+                        </li>
+                        <li >
+                            <a href="../category/inet.html">Inet</a>
+                        </li>
+                        <li >
+                            <a href="../category/other.html">Other</a>
+                        </li>
+                        <li >
+                            <a href="../category/parallel.html">Parallel</a>
+                        </li>
+                        <li >
+                            <a href="../category/sec.html">Sec</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="../archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+            <article>
+                <h2><a href="../inet/ipv4.html">IPv4 адресация в интернете</a></h2>
+                <div class="summary"><p class="first last">О структуре IPv4 адреса, сетях, подсетях, масках и немного маршрутизации.</p>
+
+                    <a class="btn btn-default btn-xs" href="../inet/ipv4.html">more ...</a>
+                </div>
+            </article>
+            <hr/>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+                  <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                  </ul>
+                </li>
+
+
+
+                <li class="list-group-item"><a href="../"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group " id="tags">
+                        <li class="list-group-item tag-0">
+                            <a href="../tag/gentoo.html">
+                                gentoo
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-1">
+                            <a href="../tag/c.html">
+                                c++
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/snmp.html">
+                                snmp
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/fork.html">
+                                fork
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/xplico.html">
+                                xplico
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/http.html">
+                                http
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/cryptography.html">
+                                cryptography
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/internet.html">
+                                Internet
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/binpac.html">
+                                binpac
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/security.html">
+                                security
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/uml.html">
+                                UML
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/git.html">
+                                git
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/dns.html">
+                                DNS
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/system.html">
+                                system
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/tls.html">
+                                tls
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/exec.html">
+                                exec
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/posix_spawn.html">
+                                posix_spawn
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/ssl.html">
+                                ssl
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-2">
+                            <a href="../tag/pcap.html">
+                                pcap
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/wireshark.html">
+                                wireshark
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cxx.html">
+                                cxx
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/zabbix.html">
+                                zabbix
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/dig.html">
+                                dig
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/lirc.html">
+                                lirc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/database.html">
+                                database
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ospf.html">
+                                ospf
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/tshark.html">
+                                tshark
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/mitm.html">
+                                mitm
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/boost.html">
+                                boost
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/getnoo.html">
+                                getnoo
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/odbc.html">
+                                odbc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/nslookup.html">
+                                nslookup
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/bluetooth.html">
+                                bluetooth
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cups.html">
+                                cups
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/routing.html">
+                                routing
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/chrono.html">
+                                chrono
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/mc.html">
+                                mc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/dns-zone.html">
+                                DNS-zone
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ethernet.html">
+                                ethernet
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/microservices.html">
+                                microservices
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/time.html">
+                                time
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/traffic.html">
+                                traffic
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/qemu.html">
+                                qemu
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/etoken.html">
+                                etoken
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ipv4.html">
+                                IPv4
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/inet.html">
+                                inet
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/devel.html">
+                                devel
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/perl.html">
+                                perl
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/samba.html">
+                                samba
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/irtoy.html">
+                                irtoy
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/acpi.html">
+                                acpi
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/kyocera.html">
+                                kyocera
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/wifi.html">
+                                wifi
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/web-20.html">
+                                web 2.0
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/container.html">
+                                container
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/suspend.html">
+                                suspend
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/dc.html">
+                                DC
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cpan.html">
+                                cpan
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/enterprise.html">
+                                enterprise
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/hilti.html">
+                                hilti
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ads.html">
+                                ads
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/g-cpan.html">
+                                g-cpan
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/lua.html">
+                                lua
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/bose.html">
+                                bose
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/resume.html">
+                                resume
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/agent.html">
+                                agent++
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/rfc.html">
+                                rfc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/comments.html">
+                                comments
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/management.html">
+                                management
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/web.html">
+                                web
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/xbmc.html">
+                                xbmc
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/pdu.html">
+                                pdu
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/printserver.html">
+                                printserver
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/blog.html">
+                                blog
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/protocol.html">
+                                protocol
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/bro.html">
+                                bro
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/route.html">
+                                route
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/linux.html">
+                                linux
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/algorithm.html">
+                                algorithm
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/cflow.html">
+                                cflow
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/yac.html">
+                                YaC
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ubuntu.html">
+                                ubuntu
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/ppd.html">
+                                ppd
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/tcp.html">
+                                tcp
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/forensic-analysis.html">
+                                forensic analysis
+                            </a>
+                        </li>
+                        <li class="list-group-item tag-4">
+                            <a href="../tag/binpacpp.html">
+                                binpacpp
+                            </a>
+                        </li>
+                    </ul>
+                </li>    
+
+
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2012 Merder hoxnox Kim <hoxnox@gmail.com>
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="../theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="../theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="../theme/js/respond.min.js"></script>
+
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29479486-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+</body>
+</html>

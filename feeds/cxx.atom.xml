@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://hoxnox.com/" rel="alternate"></link><link href="http://hoxnox.com/feeds/cxx.atom.xml" rel="self"></link><id>http://hoxnox.com/</id><updated>2012-06-04T00:00:00+04:00</updated><entry><title>boost chrono</title><link href="http://hoxnox.com/cxx/boost.chrono.html" rel="alternate"></link><updated>2012-06-04T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-06-04:cxx/boost.chrono.html</id><summary type="html">&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;#include &amp;lt;boost/chrono.hpp&amp;gt;
+#include &amp;lt;cmath&amp;gt;
+
+int main()
+{
+        boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
+
+        for ( long i = 0; i &amp;lt; 10000000; ++i )
+        std::sqrt( 123.456L ); // burn some time
+
+        boost::chrono::duration&amp;lt;double&amp;gt; sec = boost::chrono::system_clock::now() - start;
+        std::cout &amp;lt;&amp;lt; &amp;quot;took &amp;quot; &amp;lt;&amp;lt; sec.count() &amp;lt;&amp;lt; &amp;quot; seconds\n&amp;quot;;
+        return 0;
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;div class="section" id="duration"&gt;
+&lt;h2&gt;Duration&lt;/h2&gt;
+&lt;p&gt;Класс duration в chrono представляет собой интервал времени. Параметризуя его получаем классы&lt;/p&gt;
+&lt;ul class="simple"&gt;
+&lt;li&gt;hours,&lt;/li&gt;
+&lt;li&gt;minutes&lt;/li&gt;
+&lt;li&gt;seconds&lt;/li&gt;
+&lt;li&gt;milliseconds&lt;/li&gt;
+&lt;li&gt;microseconds&lt;/li&gt;
+&lt;li&gt;nanoseconds&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/div&gt;
+</summary><category term="cxx"></category><category term="boost"></category><category term="chrono"></category><category term="time"></category></entry></feed>
