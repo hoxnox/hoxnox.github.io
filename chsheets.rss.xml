@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/chsheets.rss.xml" rel="self"></atom:link><lastBuildDate>Thu, 02 Aug 2012 00:00:00 +0400</lastBuildDate><item><title>git cheat sheet</title><link>http://blog.hoxnox.com/chsheets/git-en.html</link><description>&lt;ul&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/chsheets.rss.xml" rel="self"></atom:link><lastBuildDate>Thu, 02 Aug 2012 00:00:00 +0400</lastBuildDate><item><title>git cheat sheet</title><link>http://blog.hoxnox.com/chsheets/git-en.html</link><description>&lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;Change the origin of the repository&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Edit &lt;cite&gt;.git/config&lt;/cite&gt; file:&lt;/p&gt;

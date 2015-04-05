@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/all.rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 28 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 28 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
 in that case my wife's employer would agree to offset the costs. The
 second challenge - it must be integrated into home network. Every home

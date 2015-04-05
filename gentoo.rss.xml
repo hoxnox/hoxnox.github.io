@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/gentoo.rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 20 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Suspend по таймеру, resume по клавиатуре</title><link>http://blog.hoxnox.com/gentoo/suspend-resume.html</link><description>&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/gentoo.rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 20 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Suspend по таймеру, resume по клавиатуре</title><link>http://blog.hoxnox.com/gentoo/suspend-resume.html</link><description>&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;BIOS машинки в S3 не должен отключать USB&lt;/li&gt;
 &lt;li&gt;Ядро должно быть настроено на работу с ACPI&lt;/li&gt;

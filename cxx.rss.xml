@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/cxx.rss.xml" rel="self"></atom:link><lastBuildDate>Mon, 04 Jun 2012 00:00:00 +0400</lastBuildDate><item><title>boost chrono</title><link>http://blog.hoxnox.com/cxx/boost.chrono.html</link><description>&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/cxx.rss.xml" rel="self"></atom:link><lastBuildDate>Mon, 04 Jun 2012 00:00:00 +0400</lastBuildDate><item><title>boost chrono</title><link>http://blog.hoxnox.com/cxx/boost.chrono.html</link><description>&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;#include &amp;lt;boost/chrono.hpp&amp;gt;
 #include &amp;lt;cmath&amp;gt;
 

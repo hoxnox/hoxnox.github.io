@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/sec.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 03 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Анализ протоколов</title><link>http://blog.hoxnox.com/sec/proto-analisys.html</link><description>&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/sec.rss.xml" rel="self"></atom:link><lastBuildDate>Tue, 03 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Анализ протоколов</title><link>http://blog.hoxnox.com/sec/proto-analisys.html</link><description>&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
 разобраться в том, какой инструментарий может нам в этом помочь.
 Рассмотрим простую задачу - есть pcap файл с HTTP страфиком (см.
 &lt;a href="https://www.ietf.org/rfc/rfc2616.txt"&gt;RFC2616&lt;/a&gt;). Мы хотим получить все
