@@ -8,7 +8,7 @@ Windows could be able to use it. The cost of service important too, so I
 don't want to face with chip cartridges or something similar.
 Summarizing the requirements I stopped at Kyocera, HP and Brother. HP
 could suggest only simple models at that price, Brother's software
-frighted, so I have chose &lt;a href="http://www.kyoceradocumentsolutions.com.au/products/Pages/ProductDetail.aspx?ProdID=115&amp;amp;CatID=3"&gt;Kyocera p2135d&lt;/a&gt;,
+frighted, so I have chosen &lt;a href="http://www.kyoceradocumentsolutions.com.au/products/Pages/ProductDetail.aspx?ProdID=115&amp;amp;CatID=3"&gt;Kyocera p2135d&lt;/a&gt;,
 but It wasn't easy to connect it to my gentoo server.&lt;/p&gt;
 &lt;h2&gt;Cups tuning&lt;/h2&gt;
 &lt;p&gt;Thanks to Kyocera there is no problems with getting Linux software ---
@@ -2978,11 +2978,11 @@ int main()
     default_realm = example.com
 
 [realms]
-    OTDEL4.A = {
+    EXAMPLE.COM = {
     kdc = server.example.com
     }
 [domain_realms]
-    .OTDEL4.A = server.exampler.com
+    .EXAMPLE.COM = server.example.com
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;аутентификация в samba настраивается следующим образом&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;security = ADS
@@ -3640,7 +3640,7 @@ sysctl -w net.ipv4.tcp_tw_reuse=0
 &lt;p&gt;Эффективное программирование TCP/IP ( Йон Снейдер )
 &lt;a class="reference external" href="http://ru.fractalizer.ru/frpost_197"&gt;http://ru.fractalizer.ru/frpost_197&lt;/a&gt;/настройка-ядра-linux-для-поддержки-большо/&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://hoxnox.com/parallel/nnn.html" rel="alternate"></link><updated>2012-03-28T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-03-28:parallel/nnn.html</id><summary type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
+</summary><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://hoxnox.com/other/parallel_notes.html" rel="alternate"></link><updated>2012-03-28T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:hoxnox.com,2012-03-28:other/parallel_notes.html</id><summary type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
 &lt;table border="1" class="docutils"&gt;
 &lt;colgroup&gt;
 &lt;col width="36%" /&gt;
