@@ -2,7 +2,7 @@
 <html lang="ru"
 >
 <head>
-    <title>YaC - NX</title>
+    <title>WiFi access point with wpa_supplicant - NX</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -10,19 +10,15 @@
 
 
 
+<link rel="canonical" href="../gentoo/wifi-hotspot.html">
 
-    <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
-    <meta name="keywords" content="YaC" />
+        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+        <meta name="keywords" content="wpa_supplicant,gentoo,wifi hotspot,access point" />
+        <meta name="description" content="If you have Linux desktop connected to the Internet (wire, LTE modem) and it has a wifi card which is managed by wpa_supplicant, you can easily setup this computer as WiFi access point. You even don&#39;t need hostapd - just wpa_supplicant and dhcp server software. Follow these steps: wpa_supplicant should ..." />
 
     <!-- Enable latex plugin -->
 
 
-    <!-- Open Graph tags -->
-        <meta property="og:site_name" content="NX" />
-        <meta property="og:type" content="website"/>
-        <meta property="og:title" content="NX"/>
-        <meta property="og:url" content=".."/>
-        <meta property="og:description" content="NX"/>
 
 
     <!-- Bootstrap -->
@@ -38,6 +34,8 @@
               title="NX RSS Feed"/>
 
 
+        <link href="../feeds/gentoo.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX gentoo ATOM Feed"/>
 
 </head>
 <body>
@@ -71,7 +69,7 @@ NX            </a>
                         <li >
                             <a href="../category/devel.html">Devel</a>
                         </li>
-                        <li >
+                        <li class="active">
                             <a href="../category/gentoo.html">Gentoo</a>
                         </li>
                         <li >
@@ -96,21 +94,134 @@ NX            </a>
     <div class="row">
         <div class="col-sm-9">
 
-            <article>
-                <h2><a href="../devel/YaC.html">YaC 2014</a></h2>
-                <div class="summary"><p>30 октября 2014 года прошла конференция YaC-2014, организованная
-компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
-Security". Прослушал следующие доклады:</p>
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="../gentoo/wifi-hotspot.html"
+                       rel="bookmark"
+                       title="Permalink to WiFi access point with wpa_supplicant">
+                        WiFi access point with wpa_supplicant
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2015-05-01T00:00:00+03:00"> Пт 01 Май 2015</time>
+    </span>
+
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="../tag/wpa_supplicant.html">wpa_supplicant</a>
+        /
+	<a href="../tag/gentoo.html">gentoo</a>
+        /
+	<a href="../tag/wifi-hotspot.html">wifi hotspot</a>
+        /
+	<a href="../tag/access-point.html">access point</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>If you have Linux desktop connected to the Internet (wire, LTE modem)
+and it has a wifi card which is managed by <code>wpa_supplicant</code>, you can
+easily setup this computer as WiFi access point. You even don't need
+<a href="http://w1.fi/hostapd">hostapd</a> - just <code>wpa_supplicant</code> and dhcp server
+software.</p>
+<p>Follow these steps:</p>
 <ol>
 <li>
-<p>Презентация технологии распознавания речи от компании Яндекс. На
-   докладе представлен SpeechKit - публичный программный интерфейс
-   распознавания речи и сервис Cloud. Технология позволяет с 95%
-   точностью распознавать русскую речь для географических ...</p></li></ol>
-                    <a class="btn btn-default btn-xs" href="../devel/YaC.html">more ...</a>
-                </div>
-            </article>
-            <hr/>
+<p><code>wpa_supplicant</code> should be compiled with <code>ap</code> USE flag:</p>
+<div class="highlight"><pre>echo &#39;net-wireless/wpa_supplicant ap&#39; | sudo tee -a /etc/portage/package.use
+</pre></div>
+
+
+</li>
+<li>
+<p>Configure <code>wpa_supplicant.conf</code> as follows (<code>mode=2</code> is Access Point
+   mode, for more see <a href="http://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf">documentation</a>):</p>
+<div class="highlight"><pre>network={
+    ssid=&quot;AP-NAME&quot;
+    mode=2
+    key_mgmt=WPA-PSK
+    psk=&quot;password&quot;
+    frequency=2437
+}
+</pre></div>
+
+
+<p>You can choose right frequncy according to the <a href="http://en.wikipedia.org/wiki/List_of_WLAN_channels">table on
+wikipedia</a>.</p>
+</li>
+<li>
+<p>Install and setup DHCP server. I'm using <code>net-misc/dhcp</code> with
+   <code>server</code> USE flag:</p>
+<div class="highlight"><pre>echo &#39;net-misc/dhcp server&#39; | sudo tee -a /etc/portage/package.use
+</pre></div>
+
+
+</li>
+<li>
+<p>Configure <code>/etc/dhcp/dhcpd.conf</code></p>
+<div class="highlight"><pre>subnet 192.168.6.0 netmask 255.255.255.0 {
+  range 192.168.6.20 192.168.6.30;
+  option domain-name-servers 8.8.8.8;
+  option routers 192.168.6.1;
+  option broadcast-address 192.168.6.255;
+  default-lease-time 600;
+  max-lease-time 7200;
+}
+</pre></div>
+
+
+</li>
+<li>
+<p>Start wifi interface, controlled by <code>wpa_supplicant</code> and DHCP server:</p>
+<div class="highlight"><pre>sudo /etc/init.d/net.wifi start
+sudo ifconfig wifi 192.168.6.1/24
+sudo mkdir /var/run/dhcp
+sudo touch /var/lib/dhcp/dhcpcd.leases
+sudo /usr/sbin/dhcpd -f -user dhcp -group dhcp wifi
+</pre></div>
+
+
+</li>
+<li>
+<p>Setup forwarding. Suppose 192.168.4.2 wired to the Internet</p>
+<div class="highlight"><pre>sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168.4.2
+</pre></div>
+
+
+</li>
+</ol>
+<p>That's all! Now you can connect to your Access Point. All these </p>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="hypercomments_widget"></div>
+        <script type="text/javascript">
+        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        (function() {
+        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
+        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        })();
+        </script>
+
+    </section>
+        </article>
+    </section>
 
         </div>
         <div class="col-sm-3 well well-sm" id="sidebar">
@@ -591,7 +702,7 @@ Security". Прослушал следующие доклады:</p>
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2014 Merder hoxnox Kim <hoxnox@gmail.com>
+         <div class="col-xs-10">&copy; 2015 Merder hoxnox Kim <hoxnox@gmail.com>
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>

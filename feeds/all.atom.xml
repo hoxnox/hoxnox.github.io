@@ -1,5 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/all.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2015-03-28T00:00:00+03:00</updated><entry><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link href="http://blog.hoxnox.com/admin/kycera-cups.html" rel="alternate"></link><updated>2015-03-28T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</id><summary type="html">&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/all.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2015-05-01T00:00:00+03:00</updated><entry><title>WiFi access point with wpa_supplicant</title><link href="http://blog.hoxnox.com/gentoo/wifi-hotspot.html" rel="alternate"></link><updated>2015-05-01T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-05-01:gentoo/wifi-hotspot.html</id><summary type="html">&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
+and it has a wifi card which is managed by &lt;code&gt;wpa_supplicant&lt;/code&gt;, you can
+easily setup this computer as WiFi access point. You even don't need
+&lt;a href="http://w1.fi/hostapd"&gt;hostapd&lt;/a&gt; - just &lt;code&gt;wpa_supplicant&lt;/code&gt; and dhcp server
+software.&lt;/p&gt;
+&lt;p&gt;Follow these steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;wpa_supplicant&lt;/code&gt; should be compiled with &lt;code&gt;ap&lt;/code&gt; USE flag:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;#39;net-wireless/wpa_supplicant ap&amp;#39; | sudo tee -a /etc/portage/package.use
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Configure &lt;code&gt;wpa_supplicant.conf&lt;/code&gt; as follows (&lt;code&gt;mode=2&lt;/code&gt; is Access Point
+   mode, for more see &lt;a href="http://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf"&gt;documentation&lt;/a&gt;):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;network={
+    ssid=&amp;quot;AP-NAME&amp;quot;
+    mode=2
+    key_mgmt=WPA-PSK
+    psk=&amp;quot;password&amp;quot;
+    frequency=2437
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;You can choose right frequncy according to the &lt;a href="http://en.wikipedia.org/wiki/List_of_WLAN_channels"&gt;table on
+wikipedia&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install and setup DHCP server. I'm using &lt;code&gt;net-misc/dhcp&lt;/code&gt; with
+   &lt;code&gt;server&lt;/code&gt; USE flag:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;#39;net-misc/dhcp server&amp;#39; | sudo tee -a /etc/portage/package.use
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Configure &lt;code&gt;/etc/dhcp/dhcpd.conf&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;subnet 192.168.6.0 netmask 255.255.255.0 {
+  range 192.168.6.20 192.168.6.30;
+  option domain-name-servers 8.8.8.8;
+  option routers 192.168.6.1;
+  option broadcast-address 192.168.6.255;
+  default-lease-time 600;
+  max-lease-time 7200;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Start wifi interface, controlled by &lt;code&gt;wpa_supplicant&lt;/code&gt; and DHCP server:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo /etc/init.d/net.wifi start
+sudo ifconfig wifi 192.168.6.1/24
+sudo mkdir /var/run/dhcp
+sudo touch /var/lib/dhcp/dhcpcd.leases
+sudo /usr/sbin/dhcpd -f -user dhcp -group dhcp wifi
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Setup forwarding. Suppose 192.168.4.2 wired to the Internet&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo sysctl -w net.ipv4.ip_forward=1
+sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168.4.2
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;That's all! Now you can connect to your Access Point. All these &lt;/p&gt;</summary><category term="wpa_supplicant"></category><category term="gentoo"></category><category term="wifi hotspot"></category><category term="access point"></category></entry><entry><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link href="http://blog.hoxnox.com/admin/kycera-cups.html" rel="alternate"></link><updated>2015-03-28T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</id><summary type="html">&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
 in that case my wife's employer would agree to offset the costs. The
 second challenge - it must be integrated into home network. Every home
