@@ -1,5 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/admin.rss.xml" rel="self"></atom:link><lastBuildDate>Sat, 28 Mar 2015 00:00:00 +0300</lastBuildDate><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/admin.rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 13 Nov 2015 00:00:00 +0300</lastBuildDate><item><title>Stop using root to launch sniffers</title><link>http://blog.hoxnox.com/admin/capabilities.html</link><description>&lt;p&gt;I developed another sniffer and find myself executing testcase through
+&lt;code&gt;sudo&lt;/code&gt;. While something bad not happen, I decided to look through
+&lt;code&gt;capabilities functionality&lt;/code&gt; in Linux kernel. Very interesting things
+written in the manual:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;man capabilities
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;My testcase started service in privileged port range and listened on
+loopback interface. In the other thread &lt;code&gt;tcpreplay&lt;/code&gt; was started to
+generate test traffic. So my testcase executable need the following
+capabilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;CAP_NET_BIND_SERVICE&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;CAP_NET_RAW&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;and &lt;code&gt;tcpreplay&lt;/code&gt; need only &lt;code&gt;CAP_NET_RAW&lt;/code&gt;. Capabilities can be set and
+removed with &lt;code&gt;setcap&lt;/code&gt; utility:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo setcap &amp;#39;CAP_NET_RAW+eip&amp;#39; /usr/bin/tcpreplay
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; ~/devel/sniffer/build/testcase
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now I can launch testcase as a regular user.&lt;/p&gt;
+&lt;p&gt;Removing capabilities:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo setcap -r /usr/bin/tcpreplay
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Getting capabilities:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo getcap /usr/bin/tcpreplay
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And what about this strange 'eip'... It is &lt;code&gt;effective&lt;/code&gt;, &lt;code&gt;inheritable&lt;/code&gt;
+nad &lt;code&gt;permitted&lt;/code&gt;. Suppose you have some program, that starts another
+program. These keys helps to control capabilities of the child process.
+Let's look into concrete example. I want to launch my testcase in the
+CLion IDE debug session. At this point I would face the same problem -
+lack of privileges. I need to change capabilities to the every chain
+link:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;clion.sh
+    -&amp;gt;java
+        -&amp;gt;gdb
+            -&amp;gt;bash
+                -&amp;gt;testcase
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note, that CLion provide it's own JVM and GDB (my CLion is in /opt/clion,
+choose your's):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;/opt/clion/bin/clion.sh
+    -&amp;gt; /opt/clion/jre/bin/java
+        -&amp;gt; /opt/clion/bin/gdb/bin/gdb
+            -&amp;gt; /bin/bash
+                -&amp;gt;~/devel/sniffer/build/testcase
+
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /opt/clion/bin/clion.sh
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /opt/clion/jre/bin/java
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /opt/clion/bin/gdb/bin/gdb
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /bin/bash
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;But, wait... bash, java? Really? It can be even dangerous, than invoking
+&lt;code&gt;sudo&lt;/code&gt;. You will call '&lt;code&gt;sudo&lt;/code&gt;' only once, but capabilities will stay here
+until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 13 Nov 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-11-13:admin/capabilities.html</guid><category>capabilities</category><category>tcpdump</category><category>privileges</category></item><item><title>Ganglia, iostat and gentoo</title><link>http://blog.hoxnox.com/admin/ganglia.html</link><description>&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
+tracking machines (sys-cluster/ganglia) and use web frontend
+(sys-clusted/ganglia-web) to see pretty graphics. After installing
+backend, you must configure /etc/ganglia/gmond.conf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;...
+cluster {
+  name = &amp;quot;jassy&amp;quot;
+  owner = &amp;quot;hoxnox&amp;quot;
+  latlong = &amp;quot;unspecified&amp;quot;
+  url = &amp;quot;unspecified&amp;quot;
+}
+...
+host {
+  location = &amp;quot;jassy&amp;quot;
+}
+...
+udp_send_channel {
+  host = 192.168.3.3
+  port = 8649
+  ttl = 1
+}
+...
+udp_recv_channel {
+  port = 8649
+  bind = 192.168.3.3
+  retry_bind = true
+}
+...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and /etc/ganglia/gmetad.conf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;...
+RRAs &amp;quot;RRA:AVERAGE:0.5:1:5856&amp;quot; &amp;quot;RRA:AVERAGE:0.5:4:20160&amp;quot; &amp;quot;RRA:AVERAGE:0.5:40:52704&amp;quot;
+...
+trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
+...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;After starting gmond and gmetad, you can get statistic:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
+&lt;span class="err"&gt;CLUSTER&lt;/span&gt; &lt;span class="err"&gt;INFORMATION&lt;/span&gt;
+       &lt;span class="err"&gt;Name:&lt;/span&gt; &lt;span class="err"&gt;jassy&lt;/span&gt;
+      &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;1&lt;/span&gt;
+&lt;span class="err"&gt;Gexec&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+ &lt;span class="err"&gt;Dead&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+  &lt;span class="err"&gt;Localtime:&lt;/span&gt; &lt;span class="err"&gt;Thu&lt;/span&gt; &lt;span class="err"&gt;Oct&lt;/span&gt; &lt;span class="err"&gt;22&lt;/span&gt; &lt;span class="err"&gt;22:46:08&lt;/span&gt; &lt;span class="err"&gt;2015&lt;/span&gt;
+
+&lt;span class="err"&gt;☭&lt;/span&gt;  &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;nc&lt;/span&gt; &lt;span class="err"&gt;192.168.30.3&lt;/span&gt; &lt;span class="err"&gt;8651&lt;/span&gt;
+&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="err"&gt;xml&lt;/span&gt; &lt;span class="err"&gt;version=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;encoding=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;standalone=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;&amp;lt;!DOCTYPE&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="k"&gt;[&lt;/span&gt;
+   &lt;span class="k"&gt;&amp;lt;!ELEMENT&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;GRID&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;CLUSTER&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;HOST&lt;/span&gt;&lt;span class="o"&gt;)*&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+
+    &lt;span class="err"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Out of the box there is no disk io statistic. But there is wonderful
+&lt;a href="https://github.com/ganglia/ganglia-modules-linux"&gt;ganglia-modules-linux project&lt;/a&gt;.
+I wrote ebuild for it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;# @author Merder Kim
+# Distributed under the terms of the Apache license
+# Ganglia Linux Modules ebuild script
+
+EAPI=5
+
+inherit autotools-utils eutils
+
+DESCRIPTION=&amp;quot;Ganglia linux modules&amp;quot;
+HOMEPAGE=&amp;quot;https://github.com/ganglia/ganglia-modules-linux&amp;quot;
+SRC_URI=&amp;quot;https://github.com/ganglia/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PN&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/archive/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;.tar.gz -&amp;gt; &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PN&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;-&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;.tar.gz&amp;quot;
+#S=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;WORKDIR&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PN&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;-&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+LICENSE=&amp;quot;Apache&amp;quot;
+SLOT=&amp;quot;0&amp;quot;
+KEYWORDS=&amp;quot;~amd64 ~x86&amp;quot;
+IUSE=&amp;quot;&amp;quot;
+
+RDEPEND=&amp;quot;sys-cluster/ganglia&amp;quot;
+DEPEND=&amp;quot;sys-devel/autoconf
+        sys-devel/automake
+        sys-devel/libtool
+        dev-util/pkgconfig
+        &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;RDEPEND&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+
+# bug 123456
+AUTOTOOLS_IN_SOURCE_BUILD=1
+
+src_prepare()
+{
+    mkdir m4 &lt;span class="err"&gt;&amp;amp;&amp;amp;&lt;/span&gt; autoreconf --install
+}
+
+src_configure()
+{
+    econf \
+        CFLAGS=&amp;quot;`apr-1-config --cflags --includes`&amp;quot; \
+        --docdir=&amp;quot;\$(datarootdir)/doc/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PF&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/html&amp;quot; \
+        --enable-shared \
+        --disable-static
+        --prefix=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;D&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+    emake || die &amp;quot;emake failed&amp;quot;
+}
+
+src_install()
+{
+    emake DESTDIR=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;D&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot; install || die &amp;quot;emake install failed&amp;quot;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;There is one problem - ganglia-modules-linux provides better multicpu
+module. So I had to add
+&lt;code&gt;COLLISION_IGNORE="/usr/lib/ganglia/modmulticpu.so"&lt;/code&gt; into my portage
+configuration.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-22:admin/ganglia.html</guid><category>gentoo</category><category>ebuild</category><category>ganglia</category><category>iostat</category></item><item><title>SSH forwarding example</title><link>http://blog.hoxnox.com/admin/ssh-passthrough.html</link><description>&lt;p&gt;Suppose we have the following network topology: server with two
+interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two
+interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface
+128.4.1.1. Server acts as a gateway into 192.168.3.0/24 for passthrough-pc
+and provides ssh at 192.168.3.3:22. We want to access that ssh
+from client-pc. Passthrough-pc provides ssh to client.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Topology schema" src="http://blog.hoxnox.com/admin/ssh-passthrough_pic1.dia.svg" /&gt;&lt;/p&gt;
+&lt;p&gt;It's quite simple. We just need ssh port forwarding feature. Do on
+passthrough-pc:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ssh -4 128.4.1.82:54321:192.168.3.3:22 192.168.3.3
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That's all. We done:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ssh -p 54321 -i &amp;lt;key&amp;gt; 128.4.1.82
+sshfs -p54321 -o IdentityDile=&amp;lt;key&amp;gt; 128.4.1.82:/path /mountpoint
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 16 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</guid><category>ssh</category><category>forwarding</category></item><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
 in that case my wife's employer would agree to offset the costs. The
 second challenge - it must be integrated into home network. Every home
@@ -72,7 +268,7 @@ printing the test page.&lt;/p&gt;
 &lt;h3&gt;Windows&lt;/h3&gt;
 &lt;p&gt;Windows OEM PCL driver could be found at &lt;a href="http://usa.kyoceradocumentsolutions.com/americas/jsp/Kyocera/resource_details.jsp?pid=26381&amp;amp;rid=26589"&gt;kyocera US&lt;/a&gt;.
 In the printer adding dialog use the following path:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="c1"&gt;//192.168.3.3:631/printers/&amp;lt;PrinterName&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://192.168.3.3:631/printers/&amp;lt;PrinterName&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 

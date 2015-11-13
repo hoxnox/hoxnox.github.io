@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>Stop using root to launch sniffers - NX</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="http://blog.hoxnox.com/admin/capabilities.html">
+
+        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+        <meta name="keywords" content="capabilities,tcpdump,privileges" />
+        <meta name="description" content="I developed another sniffer and find myself executing testcase through sudo. While something bad not happen, I decided to look through capabilities functionality in Linux kernel. Very interesting things written in the manual: man capabilities My testcase started service in privileged port range and listened on loopback interface. In the ..." />
+
+    <!-- Enable latex plugin -->
+
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="http://blog.hoxnox.com/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://blog.hoxnox.com/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/style.css" type="text/css"/>
+
+        <link href="http://blog.hoxnox.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX ATOM Feed"/>
+        <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
+              title="NX RSS Feed"/>
+
+
+        <link href="http://blog.hoxnox.com/feeds/admin.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX admin ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://blog.hoxnox.com/" class="navbar-brand">
+NX            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="http://blog.hoxnox.com/category/admin.html">Admin</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/blog.html">Blog</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/chsheets.html">Chsheets</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/cxx.html">Cxx</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/devel.html">Devel</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/gentoo.html">Gentoo</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/inet.html">Inet</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/other.html">Other</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/sec.html">Sec</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="http://blog.hoxnox.com/admin/capabilities.html"
+                       rel="bookmark"
+                       title="Permalink to Stop using root to launch sniffers">
+                        Stop using root to launch sniffers
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2015-11-13T00:00:00+03:00"> Пт 13 Ноябрь 2015</time>
+    </span>
+
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://blog.hoxnox.com/tag/capabilities.html">capabilities</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/tcpdump.html">tcpdump</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/privileges.html">privileges</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>I developed another sniffer and find myself executing testcase through
+<code>sudo</code>. While something bad not happen, I decided to look through
+<code>capabilities functionality</code> in Linux kernel. Very interesting things
+written in the manual:</p>
+<div class="highlight"><pre>man capabilities
+</pre></div>
+
+
+<p>My testcase started service in privileged port range and listened on
+loopback interface. In the other thread <code>tcpreplay</code> was started to
+generate test traffic. So my testcase executable need the following
+capabilities:</p>
+<ul>
+<li><code>CAP_NET_BIND_SERVICE</code></li>
+<li><code>CAP_NET_RAW</code></li>
+</ul>
+<p>and <code>tcpreplay</code> need only <code>CAP_NET_RAW</code>. Capabilities can be set and
+removed with <code>setcap</code> utility:</p>
+<div class="highlight"><pre>sudo setcap &#39;CAP_NET_RAW+eip&#39; /usr/bin/tcpreplay
+sudo setcap &#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&#39; ~/devel/sniffer/build/testcase
+</pre></div>
+
+
+<p>Now I can launch testcase as a regular user.</p>
+<p>Removing capabilities:</p>
+<div class="highlight"><pre>sudo setcap -r /usr/bin/tcpreplay
+</pre></div>
+
+
+<p>Getting capabilities:</p>
+<div class="highlight"><pre>sudo getcap /usr/bin/tcpreplay
+</pre></div>
+
+
+<p>And what about this strange 'eip'... It is <code>effective</code>, <code>inheritable</code>
+nad <code>permitted</code>. Suppose you have some program, that starts another
+program. These keys helps to control capabilities of the child process.
+Let's look into concrete example. I want to launch my testcase in the
+CLion IDE debug session. At this point I would face the same problem -
+lack of privileges. I need to change capabilities to the every chain
+link:</p>
+<div class="highlight"><pre>clion.sh
+    -&gt;java
+        -&gt;gdb
+            -&gt;bash
+                -&gt;testcase
+</pre></div>
+
+
+<p>Note, that CLion provide it's own JVM and GDB (my CLion is in /opt/clion,
+choose your's):</p>
+<div class="highlight"><pre>/opt/clion/bin/clion.sh
+    -&gt; /opt/clion/jre/bin/java
+        -&gt; /opt/clion/bin/gdb/bin/gdb
+            -&gt; /bin/bash
+                -&gt;~/devel/sniffer/build/testcase
+
+sudo setcap &#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&#39; /opt/clion/bin/clion.sh
+sudo setcap &#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&#39; /opt/clion/jre/bin/java
+sudo setcap &#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&#39; /opt/clion/bin/gdb/bin/gdb
+sudo setcap &#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&#39; /bin/bash
+</pre></div>
+
+
+<p>But, wait... bash, java? Really? It can be even dangerous, than invoking
+<code>sudo</code>. You will call '<code>sudo</code>' only once, but capabilities will stay here
+until you call '<code>setcap -r</code>'. You choose...</p>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="hypercomments_widget"></div>
+        <script type="text/javascript">
+        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        (function() {
+        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
+        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        })();
+        </script>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+                  <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+                  </ul>
+                </li>
+
+
+
+                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group list-inline tagcloud" id="tags">
+                    </ul>
+                </li>    
+
+
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2015 Merder hoxnox Kim <hoxnox@gmail.com>
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://blog.hoxnox.com/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://blog.hoxnox.com/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29479486-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+</body>
+</html>

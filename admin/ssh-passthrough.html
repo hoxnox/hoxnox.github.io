@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>SSH forwarding example - NX</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="http://blog.hoxnox.com/admin/ssh-passthrough.html">
+
+        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+        <meta name="keywords" content="ssh,forwarding" />
+        <meta name="description" content="Suppose we have the following network topology: server with two interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface 128.4.1.1. Server acts as a gateway into 192.168.3 ..." />
+
+    <!-- Enable latex plugin -->
+
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="http://blog.hoxnox.com/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://blog.hoxnox.com/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/style.css" type="text/css"/>
+
+        <link href="http://blog.hoxnox.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX ATOM Feed"/>
+        <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
+              title="NX RSS Feed"/>
+
+
+        <link href="http://blog.hoxnox.com/feeds/admin.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX admin ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://blog.hoxnox.com/" class="navbar-brand">
+NX            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="http://blog.hoxnox.com/category/admin.html">Admin</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/blog.html">Blog</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/chsheets.html">Chsheets</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/cxx.html">Cxx</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/devel.html">Devel</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/gentoo.html">Gentoo</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/inet.html">Inet</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/other.html">Other</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/sec.html">Sec</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="http://blog.hoxnox.com/admin/ssh-passthrough.html"
+                       rel="bookmark"
+                       title="Permalink to SSH forwarding example">
+                        SSH forwarding example
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2015-10-16T00:00:00+03:00"> Пт 16 Октябрь 2015</time>
+    </span>
+
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://blog.hoxnox.com/tag/ssh.html">ssh</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/forwarding.html">forwarding</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>Suppose we have the following network topology: server with two
+interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two
+interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface
+128.4.1.1. Server acts as a gateway into 192.168.3.0/24 for passthrough-pc
+and provides ssh at 192.168.3.3:22. We want to access that ssh
+from client-pc. Passthrough-pc provides ssh to client.</p>
+<p><img alt="Topology schema" src="http://blog.hoxnox.com/admin/ssh-passthrough_pic1.dia.svg" /></p>
+<p>It's quite simple. We just need ssh port forwarding feature. Do on
+passthrough-pc:</p>
+<div class="highlight"><pre>ssh -4 128.4.1.82:54321:192.168.3.3:22 192.168.3.3
+</pre></div>
+
+
+<p>That's all. We done:</p>
+<div class="highlight"><pre>ssh -p 54321 -i &lt;key&gt; 128.4.1.82
+sshfs -p54321 -o IdentityDile=&lt;key&gt; 128.4.1.82:/path /mountpoint
+</pre></div>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="hypercomments_widget"></div>
+        <script type="text/javascript">
+        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        (function() {
+        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
+        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        })();
+        </script>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+                  <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+                  </ul>
+                </li>
+
+
+
+                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group list-inline tagcloud" id="tags">
+                    </ul>
+                </li>    
+
+
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2015 Merder hoxnox Kim <hoxnox@gmail.com>
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://blog.hoxnox.com/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://blog.hoxnox.com/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29479486-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+</body>
+</html>

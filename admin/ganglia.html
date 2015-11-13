@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>Ganglia, iostat and gentoo - NX</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="http://blog.hoxnox.com/admin/ganglia.html">
+
+        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+        <meta name="keywords" content="gentoo,ebuild,ganglia,iostat" />
+        <meta name="description" content="Ganglia is a very good monitoring tool. You can install backand to tracking machines (sys-cluster/ganglia) and use web frontend (sys-clusted/ganglia-web) to see pretty graphics. After installing backend, you must configure /etc/ganglia/gmond.conf ... cluster { name = &#34;jassy&#34; owner = &#34;hoxnox&#34; latlong = &#34;unspecified&#34; url = &#34;unspecified&#34; } ... host { location = &#34;jassy&#34; } ... udp_send_channel { host ..." />
+
+    <!-- Enable latex plugin -->
+
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="http://blog.hoxnox.com/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://blog.hoxnox.com/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/style.css" type="text/css"/>
+
+        <link href="http://blog.hoxnox.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX ATOM Feed"/>
+        <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
+              title="NX RSS Feed"/>
+
+
+        <link href="http://blog.hoxnox.com/feeds/admin.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX admin ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://blog.hoxnox.com/" class="navbar-brand">
+NX            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li class="active">
+                            <a href="http://blog.hoxnox.com/category/admin.html">Admin</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/blog.html">Blog</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/chsheets.html">Chsheets</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/cxx.html">Cxx</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/devel.html">Devel</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/gentoo.html">Gentoo</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/inet.html">Inet</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/other.html">Other</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/sec.html">Sec</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="http://blog.hoxnox.com/admin/ganglia.html"
+                       rel="bookmark"
+                       title="Permalink to Ganglia, iostat and gentoo">
+                        Ganglia, iostat and gentoo
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2015-10-22T00:00:00+03:00"> Чт 22 Октябрь 2015</time>
+    </span>
+
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://blog.hoxnox.com/tag/gentoo.html">gentoo</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/ebuild.html">ebuild</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/ganglia.html">ganglia</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/iostat.html">iostat</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>Ganglia is a very good monitoring tool. You can install backand to
+tracking machines (sys-cluster/ganglia) and use web frontend
+(sys-clusted/ganglia-web) to see pretty graphics. After installing
+backend, you must configure /etc/ganglia/gmond.conf</p>
+<div class="highlight"><pre>...
+cluster {
+  name = &quot;jassy&quot;
+  owner = &quot;hoxnox&quot;
+  latlong = &quot;unspecified&quot;
+  url = &quot;unspecified&quot;
+}
+...
+host {
+  location = &quot;jassy&quot;
+}
+...
+udp_send_channel {
+  host = 192.168.3.3
+  port = 8649
+  ttl = 1
+}
+...
+udp_recv_channel {
+  port = 8649
+  bind = 192.168.3.3
+  retry_bind = true
+}
+...
+</pre></div>
+
+
+<p>and /etc/ganglia/gmetad.conf</p>
+<div class="highlight"><pre>...
+RRAs &quot;RRA:AVERAGE:0.5:1:5856&quot; &quot;RRA:AVERAGE:0.5:4:20160&quot; &quot;RRA:AVERAGE:0.5:40:52704&quot;
+...
+trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
+...
+</pre></div>
+
+
+<p>After starting gmond and gmetad, you can get statistic:</p>
+<div class="highlight"><pre><span class="err">☯</span> <span class="err">~</span>  <span class="err">gstat</span>
+<span class="err">CLUSTER</span> <span class="err">INFORMATION</span>
+       <span class="err">Name:</span> <span class="err">jassy</span>
+      <span class="err">Hosts:</span> <span class="err">1</span>
+<span class="err">Gexec</span> <span class="err">Hosts:</span> <span class="err">0</span>
+ <span class="err">Dead</span> <span class="err">Hosts:</span> <span class="err">0</span>
+  <span class="err">Localtime:</span> <span class="err">Thu</span> <span class="err">Oct</span> <span class="err">22</span> <span class="err">22:46:08</span> <span class="err">2015</span>
+
+<span class="err">☭</span>  <span class="err">~</span>  <span class="err">nc</span> <span class="err">192.168.30.3</span> <span class="err">8651</span>
+<span class="err">&lt;</span><span class="o">?</span><span class="err">xml</span> <span class="err">version=</span><span class="s2">&quot;1.0&quot;</span> <span class="err">encoding=</span><span class="s2">&quot;ISO-8859-1&quot;</span> <span class="err">standalone=</span><span class="s2">&quot;yes&quot;</span><span class="o">?</span><span class="k">&gt;</span>
+<span class="k">&lt;!DOCTYPE</span> <span class="nt">GANGLIA_XML</span> <span class="k">[</span>
+   <span class="k">&lt;!ELEMENT</span> <span class="nt">GANGLIA_XML</span> <span class="o">(</span><span class="nt">GRID</span><span class="o">|</span><span class="nt">CLUSTER</span><span class="o">|</span><span class="nt">HOST</span><span class="o">)*</span><span class="k">&gt;</span>
+
+    <span class="err">...</span>
+</pre></div>
+
+
+<p>Out of the box there is no disk io statistic. But there is wonderful
+<a href="https://github.com/ganglia/ganglia-modules-linux">ganglia-modules-linux project</a>.
+I wrote ebuild for it:</p>
+<div class="highlight"><pre># @author Merder Kim
+# Distributed under the terms of the Apache license
+# Ganglia Linux Modules ebuild script
+
+EAPI=5
+
+inherit autotools-utils eutils
+
+DESCRIPTION=&quot;Ganglia linux modules&quot;
+HOMEPAGE=&quot;https://github.com/ganglia/ganglia-modules-linux&quot;
+SRC_URI=&quot;https://github.com/ganglia/<span class="cp">${</span><span class="n">PN</span><span class="cp">}</span>/archive/<span class="cp">${</span><span class="n">PV</span><span class="cp">}</span>.tar.gz -&gt; <span class="cp">${</span><span class="n">PN</span><span class="cp">}</span>-<span class="cp">${</span><span class="n">PV</span><span class="cp">}</span>.tar.gz&quot;
+#S=&quot;<span class="cp">${</span><span class="n">WORKDIR</span><span class="cp">}</span>/<span class="cp">${</span><span class="n">PN</span><span class="cp">}</span>-<span class="cp">${</span><span class="n">PV</span><span class="cp">}</span>&quot;
+LICENSE=&quot;Apache&quot;
+SLOT=&quot;0&quot;
+KEYWORDS=&quot;~amd64 ~x86&quot;
+IUSE=&quot;&quot;
+
+RDEPEND=&quot;sys-cluster/ganglia&quot;
+DEPEND=&quot;sys-devel/autoconf
+        sys-devel/automake
+        sys-devel/libtool
+        dev-util/pkgconfig
+        <span class="cp">${</span><span class="n">RDEPEND</span><span class="cp">}</span>&quot;
+
+# bug 123456
+AUTOTOOLS_IN_SOURCE_BUILD=1
+
+src_prepare()
+{
+    mkdir m4 <span class="err">&amp;&amp;</span> autoreconf --install
+}
+
+src_configure()
+{
+    econf \
+        CFLAGS=&quot;`apr-1-config --cflags --includes`&quot; \
+        --docdir=&quot;\$(datarootdir)/doc/<span class="cp">${</span><span class="n">PF</span><span class="cp">}</span>/html&quot; \
+        --enable-shared \
+        --disable-static
+        --prefix=&quot;<span class="cp">${</span><span class="n">D</span><span class="cp">}</span>&quot;
+    emake || die &quot;emake failed&quot;
+}
+
+src_install()
+{
+    emake DESTDIR=&quot;<span class="cp">${</span><span class="n">D</span><span class="cp">}</span>&quot; install || die &quot;emake install failed&quot;
+}
+</pre></div>
+
+
+<p>There is one problem - ganglia-modules-linux provides better multicpu
+module. So I had to add
+<code>COLLISION_IGNORE="/usr/lib/ganglia/modmulticpu.so"</code> into my portage
+configuration.</p>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="hypercomments_widget"></div>
+        <script type="text/javascript">
+        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        (function() {
+        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
+        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        })();
+        </script>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+                  <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+                  </ul>
+                </li>
+
+
+
+                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group list-inline tagcloud" id="tags">
+                    </ul>
+                </li>    
+
+
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2015 Merder hoxnox Kim <hoxnox@gmail.com>
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://blog.hoxnox.com/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://blog.hoxnox.com/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29479486-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+</body>
+</html>

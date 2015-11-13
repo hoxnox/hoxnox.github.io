@@ -1,5 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 01 May 2015 00:00:00 +0300</lastBuildDate><item><title>WiFi access point with wpa_supplicant</title><link>http://blog.hoxnox.com/gentoo/wifi-hotspot.html</link><description>&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 13 Nov 2015 00:00:00 +0300</lastBuildDate><item><title>Stop using root to launch sniffers</title><link>http://blog.hoxnox.com/admin/capabilities.html</link><description>&lt;p&gt;I developed another sniffer and find myself executing testcase through
+&lt;code&gt;sudo&lt;/code&gt;. While something bad not happen, I decided to look through
+&lt;code&gt;capabilities functionality&lt;/code&gt; in Linux kernel. Very interesting things
+written in the manual:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;man capabilities
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;My testcase started service in privileged port range and listened on
+loopback interface. In the other thread &lt;code&gt;tcpreplay&lt;/code&gt; was started to
+generate test traffic. So my testcase executable need the following
+capabilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;CAP_NET_BIND_SERVICE&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;CAP_NET_RAW&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;and &lt;code&gt;tcpreplay&lt;/code&gt; need only &lt;code&gt;CAP_NET_RAW&lt;/code&gt;. Capabilities can be set and
+removed with &lt;code&gt;setcap&lt;/code&gt; utility:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo setcap &amp;#39;CAP_NET_RAW+eip&amp;#39; /usr/bin/tcpreplay
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; ~/devel/sniffer/build/testcase
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now I can launch testcase as a regular user.&lt;/p&gt;
+&lt;p&gt;Removing capabilities:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo setcap -r /usr/bin/tcpreplay
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Getting capabilities:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo getcap /usr/bin/tcpreplay
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And what about this strange 'eip'... It is &lt;code&gt;effective&lt;/code&gt;, &lt;code&gt;inheritable&lt;/code&gt;
+nad &lt;code&gt;permitted&lt;/code&gt;. Suppose you have some program, that starts another
+program. These keys helps to control capabilities of the child process.
+Let's look into concrete example. I want to launch my testcase in the
+CLion IDE debug session. At this point I would face the same problem -
+lack of privileges. I need to change capabilities to the every chain
+link:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;clion.sh
+    -&amp;gt;java
+        -&amp;gt;gdb
+            -&amp;gt;bash
+                -&amp;gt;testcase
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note, that CLion provide it's own JVM and GDB (my CLion is in /opt/clion,
+choose your's):&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;/opt/clion/bin/clion.sh
+    -&amp;gt; /opt/clion/jre/bin/java
+        -&amp;gt; /opt/clion/bin/gdb/bin/gdb
+            -&amp;gt; /bin/bash
+                -&amp;gt;~/devel/sniffer/build/testcase
+
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /opt/clion/bin/clion.sh
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /opt/clion/jre/bin/java
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /opt/clion/bin/gdb/bin/gdb
+sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /bin/bash
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;But, wait... bash, java? Really? It can be even dangerous, than invoking
+&lt;code&gt;sudo&lt;/code&gt;. You will call '&lt;code&gt;sudo&lt;/code&gt;' only once, but capabilities will stay here
+until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 13 Nov 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-11-13:admin/capabilities.html</guid><category>capabilities</category><category>tcpdump</category><category>privileges</category></item><item><title>Ganglia, iostat and gentoo</title><link>http://blog.hoxnox.com/admin/ganglia.html</link><description>&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
+tracking machines (sys-cluster/ganglia) and use web frontend
+(sys-clusted/ganglia-web) to see pretty graphics. After installing
+backend, you must configure /etc/ganglia/gmond.conf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;...
+cluster {
+  name = &amp;quot;jassy&amp;quot;
+  owner = &amp;quot;hoxnox&amp;quot;
+  latlong = &amp;quot;unspecified&amp;quot;
+  url = &amp;quot;unspecified&amp;quot;
+}
+...
+host {
+  location = &amp;quot;jassy&amp;quot;
+}
+...
+udp_send_channel {
+  host = 192.168.3.3
+  port = 8649
+  ttl = 1
+}
+...
+udp_recv_channel {
+  port = 8649
+  bind = 192.168.3.3
+  retry_bind = true
+}
+...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and /etc/ganglia/gmetad.conf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;...
+RRAs &amp;quot;RRA:AVERAGE:0.5:1:5856&amp;quot; &amp;quot;RRA:AVERAGE:0.5:4:20160&amp;quot; &amp;quot;RRA:AVERAGE:0.5:40:52704&amp;quot;
+...
+trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
+...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;After starting gmond and gmetad, you can get statistic:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
+&lt;span class="err"&gt;CLUSTER&lt;/span&gt; &lt;span class="err"&gt;INFORMATION&lt;/span&gt;
+       &lt;span class="err"&gt;Name:&lt;/span&gt; &lt;span class="err"&gt;jassy&lt;/span&gt;
+      &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;1&lt;/span&gt;
+&lt;span class="err"&gt;Gexec&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+ &lt;span class="err"&gt;Dead&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+  &lt;span class="err"&gt;Localtime:&lt;/span&gt; &lt;span class="err"&gt;Thu&lt;/span&gt; &lt;span class="err"&gt;Oct&lt;/span&gt; &lt;span class="err"&gt;22&lt;/span&gt; &lt;span class="err"&gt;22:46:08&lt;/span&gt; &lt;span class="err"&gt;2015&lt;/span&gt;
+
+&lt;span class="err"&gt;☭&lt;/span&gt;  &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;nc&lt;/span&gt; &lt;span class="err"&gt;192.168.30.3&lt;/span&gt; &lt;span class="err"&gt;8651&lt;/span&gt;
+&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="err"&gt;xml&lt;/span&gt; &lt;span class="err"&gt;version=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;encoding=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;standalone=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;&amp;lt;!DOCTYPE&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="k"&gt;[&lt;/span&gt;
+   &lt;span class="k"&gt;&amp;lt;!ELEMENT&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;GRID&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;CLUSTER&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;HOST&lt;/span&gt;&lt;span class="o"&gt;)*&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+
+    &lt;span class="err"&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Out of the box there is no disk io statistic. But there is wonderful
+&lt;a href="https://github.com/ganglia/ganglia-modules-linux"&gt;ganglia-modules-linux project&lt;/a&gt;.
+I wrote ebuild for it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;# @author Merder Kim
+# Distributed under the terms of the Apache license
+# Ganglia Linux Modules ebuild script
+
+EAPI=5
+
+inherit autotools-utils eutils
+
+DESCRIPTION=&amp;quot;Ganglia linux modules&amp;quot;
+HOMEPAGE=&amp;quot;https://github.com/ganglia/ganglia-modules-linux&amp;quot;
+SRC_URI=&amp;quot;https://github.com/ganglia/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PN&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/archive/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;.tar.gz -&amp;gt; &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PN&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;-&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;.tar.gz&amp;quot;
+#S=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;WORKDIR&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PN&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;-&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PV&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+LICENSE=&amp;quot;Apache&amp;quot;
+SLOT=&amp;quot;0&amp;quot;
+KEYWORDS=&amp;quot;~amd64 ~x86&amp;quot;
+IUSE=&amp;quot;&amp;quot;
+
+RDEPEND=&amp;quot;sys-cluster/ganglia&amp;quot;
+DEPEND=&amp;quot;sys-devel/autoconf
+        sys-devel/automake
+        sys-devel/libtool
+        dev-util/pkgconfig
+        &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;RDEPEND&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+
+# bug 123456
+AUTOTOOLS_IN_SOURCE_BUILD=1
+
+src_prepare()
+{
+    mkdir m4 &lt;span class="err"&gt;&amp;amp;&amp;amp;&lt;/span&gt; autoreconf --install
+}
+
+src_configure()
+{
+    econf \
+        CFLAGS=&amp;quot;`apr-1-config --cflags --includes`&amp;quot; \
+        --docdir=&amp;quot;\$(datarootdir)/doc/&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PF&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;/html&amp;quot; \
+        --enable-shared \
+        --disable-static
+        --prefix=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;D&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;
+    emake || die &amp;quot;emake failed&amp;quot;
+}
+
+src_install()
+{
+    emake DESTDIR=&amp;quot;&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;D&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot; install || die &amp;quot;emake install failed&amp;quot;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;There is one problem - ganglia-modules-linux provides better multicpu
+module. So I had to add
+&lt;code&gt;COLLISION_IGNORE="/usr/lib/ganglia/modmulticpu.so"&lt;/code&gt; into my portage
+configuration.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-22:admin/ganglia.html</guid><category>gentoo</category><category>ebuild</category><category>ganglia</category><category>iostat</category></item><item><title>SSH forwarding example</title><link>http://blog.hoxnox.com/admin/ssh-passthrough.html</link><description>&lt;p&gt;Suppose we have the following network topology: server with two
+interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two
+interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface
+128.4.1.1. Server acts as a gateway into 192.168.3.0/24 for passthrough-pc
+and provides ssh at 192.168.3.3:22. We want to access that ssh
+from client-pc. Passthrough-pc provides ssh to client.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Topology schema" src="http://blog.hoxnox.com/admin/ssh-passthrough_pic1.dia.svg" /&gt;&lt;/p&gt;
+&lt;p&gt;It's quite simple. We just need ssh port forwarding feature. Do on
+passthrough-pc:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ssh -4 128.4.1.82:54321:192.168.3.3:22 192.168.3.3
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That's all. We done:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;ssh -p 54321 -i &amp;lt;key&amp;gt; 128.4.1.82
+sshfs -p54321 -o IdentityDile=&amp;lt;key&amp;gt; 128.4.1.82:/path /mountpoint
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 16 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</guid><category>ssh</category><category>forwarding</category></item><item><title>WiFi access point with wpa_supplicant</title><link>http://blog.hoxnox.com/gentoo/wifi-hotspot.html</link><description>&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
 and it has a wifi card which is managed by &lt;code&gt;wpa_supplicant&lt;/code&gt;, you can
 easily setup this computer as WiFi access point. You even don't need
 &lt;a href="http://w1.fi/hostapd"&gt;hostapd&lt;/a&gt; - just &lt;code&gt;wpa_supplicant&lt;/code&gt; and dhcp server
@@ -144,7 +340,7 @@ printing the test page.&lt;/p&gt;
 &lt;h3&gt;Windows&lt;/h3&gt;
 &lt;p&gt;Windows OEM PCL driver could be found at &lt;a href="http://usa.kyoceradocumentsolutions.com/americas/jsp/Kyocera/resource_details.jsp?pid=26381&amp;amp;rid=26589"&gt;kyocera US&lt;/a&gt;.
 In the printer adding dialog use the following path:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nx"&gt;http&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="c1"&gt;//192.168.3.3:631/printers/&amp;lt;PrinterName&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;http://192.168.3.3:631/printers/&amp;lt;PrinterName&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -359,25 +555,46 @@ C/C++, так и на Lua, используя
 можете "оторвать" нужную вам часть и унести в свой проект. Всё
 усложняется лицензией - GPLv2. Проект активно развивается с 1998 года
 при поддержке сообщества.&lt;/p&gt;
+&lt;h2&gt;Snort&lt;/h2&gt;
+&lt;p&gt;Система обнаружения вторжений Snort развивается как продукт с открытым
+исходным кодом под лицензией GPLv2, написанный на C. В 2013 году
+выкуплена компанией Cisco.&lt;/p&gt;
+&lt;p&gt;Архитектура анализатора не очень удачна. Парсер состоит множества
+функций с префиксом Decode, которые заполняют огромную структуру Packet,
+имеющие поля на все случаи жизни. При добавлении нового протокола
+придется сделать шрапнельные правки, которые сломают бинарную
+совместимость библиотеки и изменят структуры данных.&lt;/p&gt;
 &lt;h2&gt;Bro (binpac)&lt;/h2&gt;
 &lt;p&gt;Проект bro - это сканер безопасности. Он имеет множество различных
-функциональностей, расширяем. Одной из
-составных частей является разбор трафика. В bro за это отвечают
-анализаторы (analyzer). Изначально они писались вручную, как и в
-wireshark (TODO: залезть внутрь, изучить архитектуру). Затем был
-предложен инструмент binpac и &lt;a href="https://www.bro.org/sphinx/components/binpac/README.html"&gt;специальный язык&lt;/a&gt;,
-с помощью которого можно описать протокол. На основе описания можно
-сгенерировать анализатор. Вся прелесть в том, что с определёнными
-заглушками данные анализаторы могут быть использован вне bro.&lt;/p&gt;
+функциональностей, расширяем. Одной из составных частей является разбор
+трафика. В bro за это отвечают анализаторы (analyzer). Изначально они
+писались вручную, как и в wireshark. Затем был предложен инструмент
+binpac и &lt;a href="https://www.bro.org/sphinx/components/binpac/README.html"&gt;специальный язык&lt;/a&gt;, с
+помощью которого можно описать протокол. На основе описания можно
+сгенерировать анализатор.&lt;/p&gt;
 &lt;p&gt;bro разрабатывается в Беркли при поддержке сообщества, грантов от
-крупных игроков индустрии безопасности и правительства США.&lt;/p&gt;
+крупных игроков индустрии безопасности и правительства США.
+Распространяется по лицензии BSD, что позволяет использовать его в
+коммерческих проектах.&lt;/p&gt;
 &lt;h2&gt;Hilti (binpac++)&lt;/h2&gt;
 &lt;p&gt;Очень молодой, но достаточно интересный проект от создателей bro.
-Продолжение развития идей binpac++.&lt;/p&gt;
-&lt;p&gt;К сожалению он только начал своё развитие. Что-то понять можно только
-изучая исходный код и скудную, но интересную информацию с &lt;a href="www.icir.org/hilti/"&gt;официального
-сайта&lt;/a&gt; и из
-&lt;a href="http://www.youtube.com/watch?v=3sQ6thi_BR0&amp;amp;feature=youtu.be"&gt;презентаций&lt;/a&gt;.&lt;/p&gt;
+BinPAC++ - генератор анализаторов. С его помощью можно достаточно легко
+реализовать парсер протокола или формата файла. BinPAC++ используют
+инфраструктуру Hilti для компидляции описания на языке PAC2 в
+высокоэффективный нативный код, который может использоваться как
+статически, так и динамически. Результат разбора доступен из C
+приложения посредством специального интрефейса.&lt;/p&gt;
+&lt;p&gt;К сожалению проект только начал своё развитие. Что-то понять можно только
+изучая исходный код и скудную, но интересную информацию с
+&lt;a href="www.icir.org/hilti/"&gt;официального сайта&lt;/a&gt; и из
+&lt;a href="http://www.youtube.com/watch?v=3sQ6thi_BR0&amp;amp;feature=youtu.be"&gt;презентаций&lt;/a&gt;.
+Исходники доступны под BSD лицензией:
+git://git.icir.org/hilti
+Зеркало на github:
+https://github.com/rsmmr/hilti.git
+К сожалению исходники компилируются с помощью clang и libc++, что на
+gentoo не так-то просто сделать. НО Робин Соммер уже обо всем
+позаботился: https://github.com/rsmmr/install-clang.&lt;/p&gt;
 &lt;h2&gt;Xplico (capanalisys)&lt;/h2&gt;
 &lt;p&gt;Сам xplico зародился и развивается как open-source проект и его код 
 &lt;a href="https://sourceforge.net/projects/xplico/files/Xplico%20versions/"&gt;доступен&lt;/a&gt;
@@ -386,8 +603,8 @@ wireshark (TODO: залезть внутрь, изучить архитекту�
 оторваны от остального кода проекта, будет проще "вынести" их в своё
 приложение. Но автор проекта пытается коммерцианализировать эту часть
 проекта, унося её в &lt;a href="http://www.capanalysis.net/ca/"&gt;capanalysis&lt;/a&gt;. Судя
-по всему со временем диссекторы внутри самого xplico перестанут развиваться и
-дополнятся.&lt;/p&gt;
+по всему со временем диссекторы внутри самого xplico перестанут
+развиваться и дополнятся.&lt;/p&gt;
 &lt;h2&gt;Выводы&lt;/h2&gt;
 &lt;p&gt;Наиболее простым и удобным инструментом является Wireshark, но он не
 подойдёт если нужно "отойти в сторону" от pcap или унести диссекторы в
@@ -395,7 +612,7 @@ wireshark (TODO: залезть внутрь, изучить архитекту�
 часть. Наиболее перспективными кажутся идеи, положенные в основу binpac. Но к
 сожалению по нему не так много информации. Создаётся ощущение, что идеи
 развиваются в рамках проекта Hilti, но последний слишком сырой.
-Диссекторы Xplico перестают существовать как open-source проект.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 03 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-03:sec/proto-analisys.html</guid><category>bro</category><category>hilti</category><category>binpac</category><category>binpac++</category><category>binpacpp</category><category>xplico</category><category>wireshark</category></item><item><title>Сравнение двух подходов к визуализации записанного HTTP трафика - MITM и Реконструкция.</title><link>http://blog.hoxnox.com/sec/http_mitm_vs_rebuilding.html</link><description>&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
+Диссекторы Xplico перестают существовать как open-source проект.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 03 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-03:sec/proto-analisys.html</guid><category>bro</category><category>hilti</category><category>binpac</category><category>binpac++</category><category>binpacpp</category><category>xplico</category><category>wireshark</category><category>snort</category></item><item><title>Сравнение двух подходов к визуализации записанного HTTP трафика - MITM и Реконструкция.</title><link>http://blog.hoxnox.com/sec/http_mitm_vs_rebuilding.html</link><description>&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
 решена. Более подробно об этой задаче можно прочитать
 &lt;a href="http://blog.hoxnox.com/sec/http_restoring.html"&gt;в первой статье на тему визуализации HTTP трафика&lt;/a&gt;.
 Как уже было упомянуто существует два подхода к разрешению
@@ -539,9 +756,9 @@ HTML в браузер.&lt;/p&gt;
 запроса &lt;code&gt;GET /yandsearch?text=test&lt;/code&gt; к хосту yandex.ru. Таким образом у
 11 ответов указан referer, не соответствующий пользовательскому запросу.
 Поисковый запрос выглядел так: &lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;GET /jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/ HTTP/1.1
-Host: clck.yandex.ru
-Referer: http://ya.ru/
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nf"&gt;GET&lt;/span&gt; &lt;span class="nn"&gt;/jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/&lt;/span&gt; &lt;span class="kr"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;1.1&lt;/span&gt;
+&lt;span class="na"&gt;Host&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="l"&gt;clck.yandex.ru&lt;/span&gt;
+&lt;span class="na"&gt;Referer&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="l"&gt;http://ya.ru/&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -693,14 +910,14 @@ B, а B в свою очередь встроен в A, необходимо с�
 &lt;p&gt;Все проверенные браузеры Firefox 30.0, Chromium 35.0, Internet Explorer
 11 нормально разбирают по крайней мере дважды вложенные документы. Для
 проверки можно попытаться открыть следующий документ:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;html&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;head&amp;gt;&lt;/span&gt;
-    &lt;span class="nt"&gt;&amp;lt;script &lt;/span&gt;&lt;span class="na"&gt;type=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;application/javascript&amp;quot;&lt;/span&gt; &lt;span class="na"&gt;src=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;data:application/javascript;base64,ZnVuY3Rpb24gZml4X2NvbnRlbnQoKQp7Cgl2YXIgbmFtZV9pbnB1dCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjb250ZW50JykKCW5hbWVfaW5wdXQuaW5uZXJIVE1MID0gIjxpbWcgc3JjPSdkYXRhOmltYWdlL2dpZjtiYXNlNjQsUjBsR09EbGhNZ0FlQU1aY0FBQUFBQU1EQXdVRkJRWUdCZ2NIQndnSUNBb0tDZ3NMQ3c0T0RoQVFFQkVSRVJJU0VoTVRFeFVWRlJZV0Zod2NIQjRlSGg4Zkh5QWdJQ0VoSVNJaUlpUWtKQ2NuSnlnb0tDa3BLU29xS2l3c0xDNHVMakV4TVRJeU1qMDlQVUJBUUVSRVJFeE1URkZSVVZKU1VsTlRVMWxaV1ZwYVdseGNYRjVlWG1Sa1pHVmxaV2hvYUd4c2JHMXRiWGg0ZUlxS2lvNk9qcENRa0pLU2twaVltSm1abWFDZ29LV2xwYkt5c3JPenM3Mjl2YjYrdnNEQXdNSEJ3Y0xDd3NiR3hzakl5TXpNek03T3p0UFQwOVhWMWRmWDE5bloyZURnNE9MaTR1VGs1T1hsNWVibTV1Zm41K25wNmV2cjYrenM3TzN0N2U3dTd1L3Y3L0R3OFBIeDhmUHo4L1QwOVBYMTlmYjI5dmYzOS9uNStmdjcrLzM5L2YvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3lINUJBRUtBSDhBTEFBQUFBQXlBQjRBQUFmK2dGeUNnNFNGaG9lSWlZcUxqSTJPajVDUmtwT1VsWmFYbUptYW01eWRucCtnbkFDakFBVVVMVStkQUl5cmdsaEVLaUNxcklWUEJvSkZKQXNJSWsyQ0FEWWNCQTRuVG9NMEVnSVZNNjFjelluTldFVXJzbHdiT2xkU0xDbS9HVGxVU1NZbGdqZ1NPMVE3RWMzUGlLU2tEMGVHVXcrL1FZTk1ESUllT0lNM3pRaTBCR1VaRWdLRklDTWpHb3dLOEdzTG9WWUtvZ3lDMHN4Q3dFRkxFZ2o2NEFLSkZpeXQyRUdVS0lnaUpIWks4bkU1UUVVUWo1Q0ZXdTBiaElQZG9tWURRM0Rqd2dHR0ZTQVlZRDRrTjZGSGxSNFQxckVpSllDQ0N5dUNnblFZQUVHRzBFSE5aa1JRRm1NQTFsQ0xmRndBcStpRUVDcy9OcndnbTZpR0JnTU9HR0E0WkV1M3J0MjdlUE95RFFRQU93PT0nLz4iCn0KCg==&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&amp;lt;/script&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/head&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;body&lt;/span&gt; &lt;span class="na"&gt;onload=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;setTimeout(fix_content, 500)&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
-    &lt;span class="nt"&gt;&amp;lt;div&lt;/span&gt; &lt;span class="na"&gt;id=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;content&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt; tick, tick, tick &lt;span class="nt"&gt;&amp;lt;/div&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
-&lt;span class="nt"&gt;&amp;lt;/html&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;head&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt; &lt;span class="nt"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;application/javascript&amp;quot;&lt;/span&gt; &lt;span class="nt"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;data:application/javascript;base64,ZnVuY3Rpb24gZml4X2NvbnRlbnQoKQp7Cgl2YXIgbmFtZV9pbnB1dCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjb250ZW50JykKCW5hbWVfaW5wdXQuaW5uZXJIVE1MID0gIjxpbWcgc3JjPSdkYXRhOmltYWdlL2dpZjtiYXNlNjQsUjBsR09EbGhNZ0FlQU1aY0FBQUFBQU1EQXdVRkJRWUdCZ2NIQndnSUNBb0tDZ3NMQ3c0T0RoQVFFQkVSRVJJU0VoTVRFeFVWRlJZV0Zod2NIQjRlSGg4Zkh5QWdJQ0VoSVNJaUlpUWtKQ2NuSnlnb0tDa3BLU29xS2l3c0xDNHVMakV4TVRJeU1qMDlQVUJBUUVSRVJFeE1URkZSVVZKU1VsTlRVMWxaV1ZwYVdseGNYRjVlWG1Sa1pHVmxaV2hvYUd4c2JHMXRiWGg0ZUlxS2lvNk9qcENRa0pLU2twaVltSm1abWFDZ29LV2xwYkt5c3JPenM3Mjl2YjYrdnNEQXdNSEJ3Y0xDd3NiR3hzakl5TXpNek03T3p0UFQwOVhWMWRmWDE5bloyZURnNE9MaTR1VGs1T1hsNWVibTV1Zm41K25wNmV2cjYrenM3TzN0N2U3dTd1L3Y3L0R3OFBIeDhmUHo4L1QwOVBYMTlmYjI5dmYzOS9uNStmdjcrLzM5L2YvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3lINUJBRUtBSDhBTEFBQUFBQXlBQjRBQUFmK2dGeUNnNFNGaG9lSWlZcUxqSTJPajVDUmtwT1VsWmFYbUptYW01eWRucCtnbkFDakFBVVVMVStkQUl5cmdsaEVLaUNxcklWUEJvSkZKQXNJSWsyQ0FEWWNCQTRuVG9NMEVnSVZNNjFjelluTldFVXJzbHdiT2xkU0xDbS9HVGxVU1NZbGdqZ1NPMVE3RWMzUGlLU2tEMGVHVXcrL1FZTk1ESUllT0lNM3pRaTBCR1VaRWdLRklDTWpHb3dLOEdzTG9WWUtvZ3lDMHN4Q3dFRkxFZ2o2NEFLSkZpeXQyRUdVS0lnaUpIWks4bkU1UUVVUWo1Q0ZXdTBiaElQZG9tWURRM0Rqd2dHR0ZTQVlZRDRrTjZGSGxSNFQxckVpSllDQ0N5dUNnblFZQUVHRzBFSE5aa1JRRm1NQTFsQ0xmRndBcStpRUVDcy9OcndnbTZpR0JnTU9HR0E0WkV1M3J0MjdlUE95RFFRQU93PT0nLz4iCn0KCg==&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;head&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt; &lt;span class="nt"&gt;onload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;setTimeout(fix_content, 500)&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+    &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="nt"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;content&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt; &lt;span class="nt"&gt;tick&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;tick&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="nt"&gt;tick&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;body&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -4657,7 +4874,7 @@ postup(). Следует учесть, что postup должен отрабат
 &lt;span class="nv"&gt;config_wlan0&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;dhcp&amp;quot;&lt;/span&gt;
 &lt;span class="nv"&gt;dhcp_wlan0&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;nodns&amp;quot;&lt;/span&gt;
 postup&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
-        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;IFVAR&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;lo&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="c"&gt;# prevent lo long wail&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;IFVAR&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;lo&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="c"&gt;# prevent lo long wail&lt;/span&gt;
                 /etc/init.d/ntp-client start
         &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="o"&gt;}&lt;/span&gt;
@@ -4828,8 +5045,8 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 &lt;span class="nb"&gt;  &lt;/span&gt;load_env
 &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;${prev_saved_entry}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${prev_saved_entry}&amp;quot;&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
   save_env saved_entry
   &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
   save_env prev_saved_entry
@@ -4837,15 +5054,15 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 &lt;span class="k"&gt;fi&lt;/span&gt;
 
 &lt;span class="k"&gt;function&lt;/span&gt; savedefault &lt;span class="o"&gt;{&lt;/span&gt;
-  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -z &lt;span class="s2"&gt;&amp;quot;${boot_once}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-    &lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;${chosen}&amp;quot;&lt;/span&gt;
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -z &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;boot_once&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+    &lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;chosen&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
     save_env saved_entry
   &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="o"&gt;}&lt;/span&gt;
 
 &lt;span class="k"&gt;function&lt;/span&gt; recordfail &lt;span class="o"&gt;{&lt;/span&gt;
   &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1
-  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -n &lt;span class="s2"&gt;&amp;quot;${have_grubenv}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -z &lt;span class="s2"&gt;&amp;quot;${boot_once}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; save_env recordfail&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -n &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;have_grubenv&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -z &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;boot_once&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; save_env recordfail&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="o"&gt;}&lt;/span&gt;
 
 &lt;span class="k"&gt;function&lt;/span&gt; load_video &lt;span class="o"&gt;{&lt;/span&gt;
@@ -4872,7 +5089,7 @@ search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root e12ef
   insmod gettext
 &lt;span class="k"&gt;fi&lt;/span&gt;
 terminal_output gfxterm
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;${recordfail}&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; 1 &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
   &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;-1
 &lt;span class="k"&gt;else&lt;/span&gt;
   &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;3
@@ -4888,10 +5105,10 @@ terminal_output gfxterm
 &lt;span class="c"&gt;### END /etc/grub.d/05_debian_theme ###&lt;/span&gt;
 
 &lt;span class="c"&gt;### BEGIN /etc/grub.d/10_linux ###&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; 1 &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -e &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt;/gfxblacklist.txt &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; hwmatch &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt;/gfxblacklist.txt 3&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-      &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="k"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;match&lt;/span&gt;&lt;span class="k"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; 0 &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -e &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;/gfxblacklist.txt &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; hwmatch &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;/gfxblacklist.txt 3&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+      &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;match&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
         &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;keep
       &lt;span class="k"&gt;else&lt;/span&gt;
         &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
@@ -4906,7 +5123,7 @@ terminal_output gfxterm
   &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
 &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="nb"&gt;export &lt;/span&gt;linux_gfx_mode
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;$linux_gfx_mode&amp;quot;&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; load_video&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$linux_gfx_mode&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; load_video&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
 menuentry &lt;span class="s1"&gt;&amp;#39;Ubuntu, с Linux 3.0.0-14-generic&amp;#39;&lt;/span&gt; --class ubuntu --class gnu-linux --class gnu --class os &lt;span class="o"&gt;{&lt;/span&gt;
         recordfail
         &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;gfxpayload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$linux_gfx_mode&lt;/span&gt;
