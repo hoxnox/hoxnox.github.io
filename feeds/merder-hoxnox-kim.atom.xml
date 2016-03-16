@@ -9,10 +9,10 @@ of &lt;code&gt;root.fake_input&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Tmux multiplexer has it's own panes and you can switch between them with
 combination of prefix and arrow keys. Almost the same we have in awesome
 wm. The key of head aches is "almost". It's very hard to switch between
-different hot keys. The problem can be solved the problem in awesome
+different hot keys. The problem can be solved in awesome's
 configuration file. All needed is to check client while switching to
 next window. If the client is tmux - don't switch, send "prefix + arrow"
-instead. The solutions is very easy and effective. The code above&lt;/p&gt;
+instead. The solution is very easy and effective. The code is below&lt;/p&gt;
 &lt;p&gt;.tmux.conf&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;set-option -g prefix m-a
 set-option -g repeat-time 0
@@ -88,7 +88,7 @@ bind-key up select-pane -t:.-
 
 &lt;h2&gt;proposal #2&lt;/h2&gt;
 &lt;p&gt;There is common recommendation to use vim's native layout switching
-(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;), when you have more than one keyboard layout to use.
+(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;) when you have more than one keyboard layout to use.
 It solves problems with hot keys in vim. Other applications uses
 system-wide switcher with it's own key bindings. Similar to the proposal #1
 we can tune awesome wm configuration:&lt;/p&gt;
