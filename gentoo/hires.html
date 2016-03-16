@@ -2,7 +2,7 @@
 <html lang="ru"
 >
 <head>
-    <title>YaC 2014 - NX</title>
+    <title>Linux desktop on high resolution display - NX</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -10,11 +10,11 @@
 
 
 
-<link rel="canonical" href="http://blog.hoxnox.com/devel/YaC.html">
+<link rel="canonical" href="http://blog.hoxnox.com/gentoo/hires.html">
 
         <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
-        <meta name="keywords" content="YaC" />
-        <meta name="description" content="30 октября 2014 года прошла конференция YaC-2014, организованная компанией Яндекс. Я присутствовал на секциях &#34;Backend&#34; и &#34;Information Security&#34;. Прослушал следующие доклады: Презентация технологии распознавания речи от компании Яндекс. На докладе представлен SpeechKit - публичный программный интерфейс распознавания речи и сервис Cloud. Технология позволяет с 95% точностью распознавать русскую речь для географических ..." />
+        <meta name="keywords" content="getnoo,high resolution,xorg,gtk" />
+        <meta name="description" content="Recently I&#39;ve bought Dell XPS-15 9550 with great 4k display (3840x2160). But when my gentoo booted I was very disappointed - it looked very ugly. Some apps looked normal - thunderbird, Telegram, but most was unusable like gimp - with tiny icons and broken fonts. It takes some time to tune everything ..." />
 
     <!-- Enable latex plugin -->
 
@@ -34,8 +34,8 @@
               title="NX RSS Feed"/>
 
 
-        <link href="http://blog.hoxnox.com/feeds/other.atom.xml" type="application/atom+xml" rel="alternate"
-              title="NX other ATOM Feed"/>
+        <link href="http://blog.hoxnox.com/feeds/gentoo.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX gentoo ATOM Feed"/>
 
 </head>
 <body>
@@ -69,13 +69,13 @@ NX            </a>
                         <li >
                             <a href="http://blog.hoxnox.com/category/devel.html">Devel</a>
                         </li>
-                        <li >
+                        <li class="active">
                             <a href="http://blog.hoxnox.com/category/gentoo.html">Gentoo</a>
                         </li>
                         <li >
                             <a href="http://blog.hoxnox.com/category/inet.html">Inet</a>
                         </li>
-                        <li class="active">
+                        <li >
                             <a href="http://blog.hoxnox.com/category/other.html">Other</a>
                         </li>
                         <li >
@@ -98,10 +98,10 @@ NX            </a>
         <article>
             <header class="page-header">
                 <h1>
-                    <a href="http://blog.hoxnox.com/devel/YaC.html"
+                    <a href="http://blog.hoxnox.com/gentoo/hires.html"
                        rel="bookmark"
-                       title="Permalink to YaC 2014">
-                        YaC 2014
+                       title="Permalink to Linux desktop on high resolution display">
+                        Linux desktop on high resolution display
                     </a>
                 </h1>
             </header>
@@ -111,7 +111,7 @@ NX            </a>
 <footer class="post-info">
     <span class="label label-default">Date</span>
     <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2014-10-31T00:00:00+03:00"> Пт 31 Октябрь 2014</time>
+        <i class="fa fa-calendar"></i><time datetime="2016-03-13T00:00:00+03:00"> Вс 13 Март 2016</time>
     </span>
 
 
@@ -120,71 +120,115 @@ NX            </a>
 
 
 <span class="label label-default">Tags</span>
-	<a href="http://blog.hoxnox.com/tag/yac.html">YaC</a>
+	<a href="http://blog.hoxnox.com/tag/getnoo.html">getnoo</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/high-resolution.html">high resolution</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/xorg.html">xorg</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/gtk.html">gtk</a>
     
 </footer><!-- /.post-info -->                    </div>
                 </div>
-                <p>30 октября 2014 года прошла конференция YaC-2014, организованная
-компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
-Security". Прослушал следующие доклады:</p>
-<ol>
-<li>
-<p>Презентация технологии распознавания речи от компании Яндекс. На
-   докладе представлен SpeechKit - публичный программный интерфейс
-   распознавания речи и сервис Cloud. Технология позволяет с 95%
-   точностью распознавать русскую речь для географических объектов и с
-   87% точностью текст на естественном языке. Основой технологии
-   является большая нейронная сеть, обученная более чем на 500 часах
-   дикторской речи и огромном количестве тестов. Помимо распознавания
-   Яндекс представил синтезатор речи. Все эти технологии можно
-   попробовать, используя приложение "Яндекс диктовка" для мобильных
-   устройств.</p>
-</li>
-<li>
-<p>Презентация новой "Яндекс метрики". На докладе показаны нововведения
-   в "Яндекс метрику". Инструмент позволяет маркетологам проводить
-   анализ поведения клиентов в Web-сфере и разработке под мобильные
-   платформы.</p>
-</li>
-<li>
-<p>В рабочей зоне проходил интерактив по теме "Использование Python для
-   интерактивного анализа данных". В презентации показаны инструменты
-   ipython-notebook, pandas, Basemap, позволяющие проводить быстрый
-   анализ данных, составляя на их основе отчеты, графики, диаграммы и
-   прочее. Поупражняться в анализе можно на специально подготовленной
-   сотрудниками компании Яндекс странице
-   http://ipython-workshop.yandex.net:8000
-   Код представлен на github: http://github.com/koldunovn/Yac.2014</p>
-</li>
-<li>
-<p>Круглый стол по Docker. Представители Яндекс, Spotify, Badoo и
-   Экспресс-42 обсуждали с сотрудником Docker inc проблемы
-   использования Docker в разработке промышленного программного
-   обеспечения. Основной вывод обсуждения - Docker - инструмент
-   дистрибуции программного обеспечения, а не виртуальная машина.
-   Docker - технология управления контейнерами. Последние -
-   легковесные "виртуальные машины", позволяющие контролировать среду и
-   окружение исполняемого в них программного обеспечения. Очень удачно
-   сравнили Docker со статическим связыванием библиотек в C++. Затронули
-   проблемы журналирования.</p>
-</li>
-<li>
-<p>Доклад о тонкостях массового внедрения SSL/TLS в Яндекс. Расписаны
-   подходы к снижению нагрузки на аппаратную часть правильной настройкой
-   стека SSL/TLS. Затронуты вопросы получения сертификатов от основных
-   CA (рекомендовали элиптическую криптографию), использование
-   SSL-степлинга и восстановления сессий.</p>
-</li>
-<li>
-<p>Доклад представителя Docker inc о том как можно строить сложные
-   распределенные системы, используя технологии контейнеризации.
-   Трудности и подходы к их решению в этой сфере. Затронуты вопросы
-   организации системы как совокупности микросервисов, подходы к обмену
-   данными между приложениями контейнеров (shared localhost, shared
-   filesystem, shared IPC, host networking, share device nodes),
-   обнаружение служб (srvice discovery).</p>
-</li>
-</ol>
+                <p>Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
+But when my gentoo booted I was very disappointed - it looked very ugly.
+Some apps looked normal - thunderbird, Telegram, but most was unusable
+like gimp - with tiny icons and broken fonts. It takes some time to tune
+everything back.</p>
+<h2>xandr DPI</h2>
+<p>In the <code>~/.xinitrc</code> file before starting window manager invoke xrandr command:</p>
+<div class="highlight"><pre>xrandr --dpi 194
+exec /usr/bin/awesome
+</pre></div>
+
+
+<h2>Fonts settings</h2>
+<p>Change some X settings in <code>~/.Xresources</code> (simlink <code>~/.Xdefaults</code> to it):</p>
+<div class="highlight"><pre>Xft.dpi: 194
+Xft.hinting: true
+Xft.hintstyle: hintslight
+Xft.antialias: true
+Xft.rgba: none
+</pre></div>
+
+
+<h2>GTK</h2>
+<p>Modern GTK applications built with gtk+-3, but there are many supporting
+only gtk+-2. I chose scalable gtk-3 theme on gnome-look.org and put it into <code>~/.themes</code>
+directory. Almost every gtk-3 theme support gtk-2. I had to install some
+gtk engines with my package manager:</p>
+<div class="highlight"><pre>sudo emerge -av --quiet gtk-engines-murrine
+sudo emerge -av --quiet gdk-pixbuf
+</pre></div>
+
+
+<p>GTK generations has different setting files:</p>
+<p><code>~/.gtkrc-2.0</code></p>
+<div class="highlight"><pre>gtk-theme-name = &quot;Vertex-Dark&quot;
+</pre></div>
+
+
+<p><code>~/.config/gtk-3.0/settings.ini</code></p>
+<div class="highlight"><pre><span class="k">[Settings]</span>
+<span class="na">gtk-theme-name</span> <span class="o">=</span> <span class="s">Vertex-Dark</span>
+</pre></div>
+
+
+<p>If you can, replace all GTK+-2 applications with
+GTK+-3 analogues (gqview was replaced with gthumb, gimp was rebuild from
+sources in <code>gtk3-port</code> branch) see ebuild in <a href="https://github.com/hoxnox/hoxnox-portage-overlay">hoxnox-portage-overlay on github</a>.
+If you can't build gimp from source, another workaround - <a href="http://gimpforums.com/thread-large-size-icons-themes">special icon theme (48x48)</a>.
+Put it in <code>~/.themes</code> and include gtkrc file:</p>
+<p><code>~/.gtkrc-2.0</code></p>
+<div class="highlight"><pre>gtk-theme-name = &quot;Vertex-Dark&quot;
+include &#39;/home/hoxnox/.themes/Theme-Symbolic-Big-48/gtkrc&#39;
+</pre></div>
+
+
+<p>GTK-3 applications can scale. Just add two environment variales:</p>
+<div class="highlight"><pre>GDK_DPI_SCALE=0.5
+GDK_SCALE=2
+</pre></div>
+
+
+<p>Qt have <code>QT_DEVICE_PIXEL_RATIO</code> variable, but it doesn't help my apps.</p>
+<h2>Cursor</h2>
+<p>Install any scalable cursor theme:</p>
+<div class="highlight"><pre>emerge -av --quiet vanilla-dmz-aa-xcursors
+</pre></div>
+
+
+<p>And apply it globally in <code>~/.Xresources</code> file (chromium required
+~/.Xdefaults symlink).</p>
+<div class="highlight"><pre>Xcursor.theme: Vanilla-DMZ-AA
+Xcursor.size: 48
+</pre></div>
+
+
+<p>I've included cursor size lines into gtk settings files:</p>
+<p><code>~/.gtkrc-2.0</code></p>
+<div class="highlight"><pre>gtk-cursor-theme-name = &quot;Vanilla-DMZ-AA&quot;
+gtk-cursor-theme-size = 48
+</pre></div>
+
+
+<p><code>~/.config/gtk-3.0/settings.ini</code></p>
+<div class="highlight"><pre>gtk-cursor-theme-name = Vanilla-DMZ-AA
+gtk-cursor-theme-size = 48
+</pre></div>
+
+
+<p>Only awesome-wm left with a small cursor. I didn't found a way to change
+it.</p>
+<h1>adwaita warnings</h1>
+<p>Some GTK applications gave me warnings:</p>
+<div class="highlight"><pre>Gtk-WARNING **: Загружаемый модуль тем не найден в module_path: «adwaita»,
+</pre></div>
+
+
+<p>This module comes in standard gnome theme pack:</p>
+<div class="highlight"><pre>emerge -av --quiet gnome-themes-standard
+</pre></div>
             </div>
             <!-- /.entry-content -->
     <hr/>

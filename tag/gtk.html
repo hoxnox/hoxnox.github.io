@@ -2,7 +2,7 @@
 <html lang="ru"
 >
 <head>
-    <title>Концепция Web User Interface - NX</title>
+    <title>gtk - NX</title>
     <!-- Using the latest rendering mode for IE -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta charset="utf-8">
@@ -10,15 +10,19 @@
 
 
 
-<link rel="canonical" href="http://blog.hoxnox.com/devel/webui-concept.html">
 
-        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
-        <meta name="keywords" content="web,microservices,http" />
-        <meta name="description" content="Самым простым интерфейсом взаимодействия пользователя с приложением является командная строка. Приложение принимает на вход определённые параметры, приложение возвращает результат в стандартный вывод. Если пользователь впервые сталкивается с приложением, он должен будет изучить все возможные варианты Пользователь вводит URL приложения, ему отвечает nginx. В ответе есть поле для ввода данных. По ..." />
+    <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+    <meta name="keywords" content="gtk" />
 
     <!-- Enable latex plugin -->
 
 
+    <!-- Open Graph tags -->
+        <meta property="og:site_name" content="NX" />
+        <meta property="og:type" content="website"/>
+        <meta property="og:title" content="NX"/>
+        <meta property="og:url" content="http://blog.hoxnox.com"/>
+        <meta property="og:description" content="NX"/>
 
 
     <!-- Bootstrap -->
@@ -34,8 +38,6 @@
               title="NX RSS Feed"/>
 
 
-        <link href="http://blog.hoxnox.com/feeds/devel.atom.xml" type="application/atom+xml" rel="alternate"
-              title="NX devel ATOM Feed"/>
 
 </head>
 <body>
@@ -66,7 +68,7 @@ NX            </a>
                         <li >
                             <a href="http://blog.hoxnox.com/category/cxx.html">Cxx</a>
                         </li>
-                        <li class="active">
+                        <li >
                             <a href="http://blog.hoxnox.com/category/devel.html">Devel</a>
                         </li>
                         <li >
@@ -94,72 +96,17 @@ NX            </a>
     <div class="row">
         <div class="col-sm-9">
 
-    <section id="content">
-        <article>
-            <header class="page-header">
-                <h1>
-                    <a href="http://blog.hoxnox.com/devel/webui-concept.html"
-                       rel="bookmark"
-                       title="Permalink to Концепция Web User Interface">
-                        Концепция Web User Interface
-                    </a>
-                </h1>
-            </header>
-            <div class="entry-content">
-                <div class="panel">
-                    <div class="panel-body">
-<footer class="post-info">
-    <span class="label label-default">Date</span>
-    <span class="published">
-        <i class="fa fa-calendar"></i><time datetime="2015-03-05T00:00:00+03:00"> Чт 05 Март 2015</time>
-    </span>
-
-
-
-
-
-
-<span class="label label-default">Tags</span>
-	<a href="http://blog.hoxnox.com/tag/web.html">web</a>
-        /
-	<a href="http://blog.hoxnox.com/tag/microservices.html">microservices</a>
-        /
-	<a href="http://blog.hoxnox.com/tag/http.html">http</a>
-    
-</footer><!-- /.post-info -->                    </div>
+            <article>
+                <h2><a href="http://blog.hoxnox.com/gentoo/hires.html">Linux desktop on high resolution display</a></h2>
+                <div class="summary"><p>Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
+But when my gentoo booted I was very disappointed - it looked very ugly.
+Some apps looked normal - thunderbird, Telegram, but most was unusable
+like gimp - with tiny icons and broken fonts. It takes some time to tune
+everything ...</p>
+                    <a class="btn btn-default btn-xs" href="http://blog.hoxnox.com/gentoo/hires.html">more ...</a>
                 </div>
-                <p>Самым простым интерфейсом взаимодействия пользователя с приложением
-является командная строка. Приложение принимает на вход определённые
-параметры, приложение возвращает результат в стандартный вывод. Если
-пользователь впервые сталкивается с приложением, он должен будет изучить
-все возможные варианты</p>
-<p>Пользователь вводит URL приложения, ему отвечает nginx. В ответе есть
-поле для ввода данных. По нажатию на "submit" сервер должен запустить
-приложение. Это можно сделать с помощью cgi, fcgi или же в</p>
-            </div>
-            <!-- /.entry-content -->
-    <hr/>
-    <section class="comments" id="comments">
-        <h2>Comments</h2>
-
-        <div id="hypercomments_widget"></div>
-        <script type="text/javascript">
-        _hcwp = window._hcwp || [];
-        _hcwp.push({widget:"Stream", widget_id: 27931});
-        (function() {
-        if("HC_LOAD_INIT" in window)return;
-        HC_LOAD_INIT = true;
-        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
-        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hcc, s.nextSibling);
-        })();
-        </script>
-
-    </section>
-        </article>
-    </section>
+            </article>
+            <hr/>
 
         </div>
         <div class="col-sm-3 well well-sm" id="sidebar">
