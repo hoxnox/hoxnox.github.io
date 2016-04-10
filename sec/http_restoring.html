@@ -16,9 +16,19 @@
         <meta name="keywords" content="http,pcap,traffic,xplico,forensic analysis" />
         <meta name="description" content="В проблеме &#34;визуализации&#34; собранного трафика необходимо решить две задачи: Классификация трафика &#34;проигрывание&#34; трафика заданного типа в соответствующем приложении Анализ публикаций в Интернете wireshark + ncat http://aerokid240.blogspot.ru/2009/12/replaying-captured-web-traffic-using.html Fiddler AutoResponder (http://114r16.blogspot.ru/2012/08/replaying-session-with-fiddler.html) perl утилита http://patrick.net/sprocket/rwt.html ..." />
 
-    <!-- Enable latex plugin -->
-
-
+        <meta property="og:site_name" content="NX" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Визуализация записанного ранее HTTP трафика"/>
+        <meta property="og:url" content="http://blog.hoxnox.com/sec/http_restoring.html"/>
+        <meta property="og:description" content="В проблеме &#34;визуализации&#34; собранного трафика необходимо решить две задачи: Классификация трафика &#34;проигрывание&#34; трафика заданного типа в соответствующем приложении Анализ публикаций в Интернете wireshark + ncat http://aerokid240.blogspot.ru/2009/12/replaying-captured-web-traffic-using.html Fiddler AutoResponder (http://114r16.blogspot.ru/2012/08/replaying-session-with-fiddler.html) perl утилита http://patrick.net/sprocket/rwt.html ..."/>
+        <meta property="article:published_time" content="2015-02-18" />
+            <meta property="article:section" content="sec" />
+            <meta property="article:tag" content="http" />
+            <meta property="article:tag" content="pcap" />
+            <meta property="article:tag" content="traffic" />
+            <meta property="article:tag" content="xplico" />
+            <meta property="article:tag" content="forensic analysis" />
+            <meta property="article:author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
 
 
     <!-- Bootstrap -->
@@ -33,15 +43,11 @@
         <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
               title="NX RSS Feed"/>
 
-
-        <link href="http://blog.hoxnox.com/feeds/sec.atom.xml" type="application/atom+xml" rel="alternate"
-              title="NX sec ATOM Feed"/>
-
 </head>
 <body>
 
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+	<div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -83,13 +89,14 @@ NX            </a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+              <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
     </div>
 </div> <!-- /.navbar -->
-
+<!-- Banner -->
+<!-- End Banner -->
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
@@ -113,9 +120,6 @@ NX            </a>
     <span class="published">
         <i class="fa fa-calendar"></i><time datetime="2015-02-18T00:00:00+03:00"> Ср 18 Февраль 2015</time>
     </span>
-
-
-
 
 
 
@@ -212,7 +216,7 @@ HTML в браузер.</p>
 запроса <code>GET /yandsearch?text=test</code> к хосту yandex.ru. Таким образом у
 11 ответов указан referer, не соответствующий пользовательскому запросу.
 Поисковый запрос выглядел так: </p>
-<div class="highlight"><pre><span class="nf">GET</span> <span class="nn">/jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<div class="highlight"><pre><span></span><span class="nf">GET</span> <span class="nn">/jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
 <span class="na">Host</span><span class="o">:</span> <span class="l">clck.yandex.ru</span>
 <span class="na">Referer</span><span class="o">:</span> <span class="l">http://ya.ru/</span>
 </pre></div>
@@ -247,7 +251,7 @@ content, в формат заголовка ответа HTTP и обрабат�
 http-equiv="Refresh"</code>, браузер получает правильный двухсотый ответ с
 контентом, но тут же запрашивает другую страницу, которую и покажет
 пользователю.</p>
-<div class="highlight"><pre>&lt;meta http-equiv=&quot;Refresh&quot; content=&quot;0;URL=forum/index.php&quot;&gt;
+<div class="highlight"><pre><span></span>&lt;meta http-equiv=&quot;Refresh&quot; content=&quot;0;URL=forum/index.php&quot;&gt;
 </pre></div>
 
 
@@ -295,7 +299,7 @@ pcap трафиком.</p>
 </ol>
 <p>Пользователь может просматривать страницу в
    одном браузере, а оператор в другом. За счет блоков вида:</p>
-<div class="highlight"><pre>&lt;!--[if gte ie 9]&gt;
+<div class="highlight"><pre><span></span>&lt;!--[if gte ie 9]&gt;
 ...
 &lt;!--&gt;
 </pre></div>
@@ -366,7 +370,7 @@ B, а B в свою очередь встроен в A, необходимо с�
 <p>Все проверенные браузеры Firefox 30.0, Chromium 35.0, Internet Explorer
 11 нормально разбирают по крайней мере дважды вложенные документы. Для
 проверки можно попытаться открыть следующий документ:</p>
-<div class="highlight"><pre><span class="o">&lt;</span><span class="nt">html</span><span class="o">&gt;</span>
+<div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="nt">html</span><span class="o">&gt;</span>
 <span class="o">&lt;</span><span class="nt">head</span><span class="o">&gt;</span>
     <span class="o">&lt;</span><span class="nt">script</span> <span class="nt">type</span><span class="o">=</span><span class="s2">&quot;application/javascript&quot;</span> <span class="nt">src</span><span class="o">=</span><span class="s2">&quot;data:application/javascript;base64,ZnVuY3Rpb24gZml4X2NvbnRlbnQoKQp7Cgl2YXIgbmFtZV9pbnB1dCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjb250ZW50JykKCW5hbWVfaW5wdXQuaW5uZXJIVE1MID0gIjxpbWcgc3JjPSdkYXRhOmltYWdlL2dpZjtiYXNlNjQsUjBsR09EbGhNZ0FlQU1aY0FBQUFBQU1EQXdVRkJRWUdCZ2NIQndnSUNBb0tDZ3NMQ3c0T0RoQVFFQkVSRVJJU0VoTVRFeFVWRlJZV0Zod2NIQjRlSGg4Zkh5QWdJQ0VoSVNJaUlpUWtKQ2NuSnlnb0tDa3BLU29xS2l3c0xDNHVMakV4TVRJeU1qMDlQVUJBUUVSRVJFeE1URkZSVVZKU1VsTlRVMWxaV1ZwYVdseGNYRjVlWG1Sa1pHVmxaV2hvYUd4c2JHMXRiWGg0ZUlxS2lvNk9qcENRa0pLU2twaVltSm1abWFDZ29LV2xwYkt5c3JPenM3Mjl2YjYrdnNEQXdNSEJ3Y0xDd3NiR3hzakl5TXpNek03T3p0UFQwOVhWMWRmWDE5bloyZURnNE9MaTR1VGs1T1hsNWVibTV1Zm41K25wNmV2cjYrenM3TzN0N2U3dTd1L3Y3L0R3OFBIeDhmUHo4L1QwOVBYMTlmYjI5dmYzOS9uNStmdjcrLzM5L2YvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3lINUJBRUtBSDhBTEFBQUFBQXlBQjRBQUFmK2dGeUNnNFNGaG9lSWlZcUxqSTJPajVDUmtwT1VsWmFYbUptYW01eWRucCtnbkFDakFBVVVMVStkQUl5cmdsaEVLaUNxcklWUEJvSkZKQXNJSWsyQ0FEWWNCQTRuVG9NMEVnSVZNNjFjelluTldFVXJzbHdiT2xkU0xDbS9HVGxVU1NZbGdqZ1NPMVE3RWMzUGlLU2tEMGVHVXcrL1FZTk1ESUllT0lNM3pRaTBCR1VaRWdLRklDTWpHb3dLOEdzTG9WWUtvZ3lDMHN4Q3dFRkxFZ2o2NEFLSkZpeXQyRUdVS0lnaUpIWks4bkU1UUVVUWo1Q0ZXdTBiaElQZG9tWURRM0Rqd2dHR0ZTQVlZRDRrTjZGSGxSNFQxckVpSllDQ0N5dUNnblFZQUVHRzBFSE5aa1JRRm1NQTFsQ0xmRndBcStpRUVDcy9OcndnbTZpR0JnTU9HR0E0WkV1M3J0MjdlUE95RFFRQU93PT0nLz4iCn0KCg==&quot;</span><span class="o">&gt;&lt;/</span><span class="nt">script</span><span class="o">&gt;</span>
 <span class="o">&lt;/</span><span class="nt">head</span><span class="o">&gt;</span>
@@ -378,10 +382,10 @@ B, а B в свою очередь встроен в A, необходимо с�
 
 
 <p>Блок base64 в нем - это HTML-документ типа application/javascript следующего вида:</p>
-<div class="highlight"><pre><span class="kd">function</span> <span class="nx">fix_content</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><span class="nt">function</span> <span class="nt">fix_content</span><span class="o">()</span>
 <span class="p">{</span>
-    <span class="kd">var</span> <span class="nx">name_input</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">)</span>
-    <span class="nx">name_input</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;img src=&#39;data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==&#39;/&gt;&quot;</span>
+    <span class="n">var</span> <span class="n">name_input</span> <span class="o">=</span> <span class="n">document</span><span class="o">.</span><span class="n">getElementById</span><span class="p">(</span><span class="s1">&#39;content&#39;</span><span class="p">)</span>
+    <span class="n">name_input</span><span class="o">.</span><span class="n">innerHTML</span> <span class="o">=</span> <span class="s2">&quot;&lt;img src=&#39;data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==&#39;/&gt;&quot;</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -395,53 +399,60 @@ B, а B в свою очередь встроен в A, необходимо с�
     <section class="comments" id="comments">
         <h2>Comments</h2>
 
-        <div id="hypercomments_widget"></div>
+        <div id="disqus_thread"></div>
         <script type="text/javascript">
-        _hcwp = window._hcwp || [];
-        _hcwp.push({widget:"Stream", widget_id: 27931});
-        (function() {
-        if("HC_LOAD_INIT" in window)return;
-        HC_LOAD_INIT = true;
-        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
-        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hcc, s.nextSibling);
-        })();
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'sec/http_restoring';
+                var disqus_url = 'http://blog.hoxnox.com/sec/http_restoring.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
         </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
     </section>
         </article>
     </section>
 
         </div>
-        <div class="col-sm-3 well well-sm" id="sidebar">
+        <div class="col-sm-3" id="sidebar">
+            <aside>
 
-<aside>
-    <section>
-        <ul class="list-group list-group-flush">
-                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
-                  <ul class="list-group" id="social">
-                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
-                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
-                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
-                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
-                  </ul>
-                </li>
-
-
-
-                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
-                    <ul class="list-group list-inline tagcloud" id="tags">
-                    </ul>
-                </li>    
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+              </ul>
+            </li>
 
 
 
-        </ul>
-    </section>
-
-</aside>        </div>
+            <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                <ul class="list-group list-inline tagcloud" id="tags">
+                </ul>
+            </li>
+    </ul>
+</section>
+            </aside>
+        </div>
     </div>
 </div>
 <footer>
@@ -464,6 +475,21 @@ B, а B в свою очередь встроен в A, необходимо с�
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
 <script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
 
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
     <!-- Google Analytics -->
     <script type="text/javascript">
 
@@ -481,5 +507,6 @@ B, а B в свою очередь встроен в A, необходимо с�
         })();
     </script>
     <!-- End Google Analytics Code -->
+
 </body>
 </html>

@@ -3,7 +3,7 @@
 &lt;code&gt;sudo&lt;/code&gt;. While something bad not happen, I decided to look through
 &lt;code&gt;capabilities functionality&lt;/code&gt; in Linux kernel. Very interesting things
 written in the manual:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;man capabilities
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;man capabilities
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -17,19 +17,19 @@ capabilities:&lt;/p&gt;
 &lt;/ul&gt;
 &lt;p&gt;and &lt;code&gt;tcpreplay&lt;/code&gt; need only &lt;code&gt;CAP_NET_RAW&lt;/code&gt;. Capabilities can be set and
 removed with &lt;code&gt;setcap&lt;/code&gt; utility:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo setcap &amp;#39;CAP_NET_RAW+eip&amp;#39; /usr/bin/tcpreplay
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo setcap &amp;#39;CAP_NET_RAW+eip&amp;#39; /usr/bin/tcpreplay
 sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; ~/devel/sniffer/build/testcase
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Now I can launch testcase as a regular user.&lt;/p&gt;
 &lt;p&gt;Removing capabilities:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo setcap -r /usr/bin/tcpreplay
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo setcap -r /usr/bin/tcpreplay
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Getting capabilities:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo getcap /usr/bin/tcpreplay
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo getcap /usr/bin/tcpreplay
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -40,7 +40,7 @@ Let's look into concrete example. I want to launch my testcase in the
 CLion IDE debug session. At this point I would face the same problem -
 lack of privileges. I need to change capabilities to the every chain
 link:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;clion.sh
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;clion.sh
     -&amp;gt;java
         -&amp;gt;gdb
             -&amp;gt;bash
@@ -50,7 +50,7 @@ link:&lt;/p&gt;
 
 &lt;p&gt;Note, that CLion provide it's own JVM and GDB (my CLion is in /opt/clion,
 choose your's):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;/opt/clion/bin/clion.sh
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;/opt/clion/bin/clion.sh
     -&amp;gt; /opt/clion/jre/bin/java
         -&amp;gt; /opt/clion/bin/gdb/bin/gdb
             -&amp;gt; /bin/bash
@@ -69,7 +69,7 @@ until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</de
 tracking machines (sys-cluster/ganglia) and use web frontend
 (sys-clusted/ganglia-web) to see pretty graphics. After installing
 backend, you must configure /etc/ganglia/gmond.conf&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;...
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
 cluster {
   name = &amp;quot;jassy&amp;quot;
   owner = &amp;quot;hoxnox&amp;quot;
@@ -97,7 +97,7 @@ udp_recv_channel {
 
 
 &lt;p&gt;and /etc/ganglia/gmetad.conf&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;...
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
 RRAs &amp;quot;RRA:AVERAGE:0.5:1:5856&amp;quot; &amp;quot;RRA:AVERAGE:0.5:4:20160&amp;quot; &amp;quot;RRA:AVERAGE:0.5:40:52704&amp;quot;
 ...
 trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
@@ -106,7 +106,7 @@ trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
 
 
 &lt;p&gt;After starting gmond and gmetad, you can get statistic:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
 &lt;span class="err"&gt;CLUSTER&lt;/span&gt; &lt;span class="err"&gt;INFORMATION&lt;/span&gt;
        &lt;span class="err"&gt;Name:&lt;/span&gt; &lt;span class="err"&gt;jassy&lt;/span&gt;
       &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;1&lt;/span&gt;
@@ -126,7 +126,7 @@ trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
 &lt;p&gt;Out of the box there is no disk io statistic. But there is wonderful
 &lt;a href="https://github.com/ganglia/ganglia-modules-linux"&gt;ganglia-modules-linux project&lt;/a&gt;.
 I wrote ebuild for it:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;# @author Merder Kim
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# @author Merder Kim
 # Distributed under the terms of the Apache license
 # Ganglia Linux Modules ebuild script
 
@@ -188,12 +188,12 @@ from client-pc. Passthrough-pc provides ssh to client.&lt;/p&gt;
 &lt;p&gt;&lt;img alt="Topology schema" src="http://blog.hoxnox.com/admin/ssh-passthrough_pic1.dia.svg" /&gt;&lt;/p&gt;
 &lt;p&gt;It's quite simple. We just need ssh port forwarding feature. Do on
 passthrough-pc:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ssh -4 128.4.1.82:54321:192.168.3.3:22 192.168.3.3
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ssh -4 128.4.1.82:54321:192.168.3.3:22 192.168.3.3
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;That's all. We done:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ssh -p 54321 -i &amp;lt;key&amp;gt; 128.4.1.82
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ssh -p 54321 -i &amp;lt;key&amp;gt; 128.4.1.82
 sshfs -p54321 -o IdentityDile=&amp;lt;key&amp;gt; 128.4.1.82:/path /mountpoint
 &lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 16 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</guid><category>ssh</category><category>forwarding</category></item><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
@@ -214,7 +214,7 @@ don't use the installer. It has hardcoded installation paths (which
 in my case were wrong) and some not very useful utilities. Only thing is
 needed - special filter program and PPD file.&lt;/p&gt;
 &lt;p&gt;I plugged printer into my home server, emerged cups, tuned it:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Listen 192.168.3.3:631
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Listen 192.168.3.3:631
 Listen localhost:631
 
 ...
@@ -236,19 +236,19 @@ My cups distro uses /usr/libexec/cups path. Firstly I created
 /usr/lib/cups/filter manually and copied utility into the directory. Off
 course I have forgotten, that my server's OS is i686 --- not 64bit.
 After correctness, i've got the following error:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;E [27/Mar/2015:22:40:09 +0400] NxPrinter: File &amp;quot;/usr/lib/cups/filter/kyofilter_C&amp;quot; has insecure permissions (0100555/uid=1000/gid=1000).
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;E [27/Mar/2015:22:40:09 +0400] NxPrinter: File &amp;quot;/usr/lib/cups/filter/kyofilter_C&amp;quot; has insecure permissions (0100555/uid=1000/gid=1000).
 E [27/Mar/2015:22:43:50 +0400] NxPrinter: Directory &amp;quot;/usr/lib/cups/filter&amp;quot; has insecure permissions (040755/uid=1000/gid=1000).
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;my fault, fixed:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;drwxr-xr-x 2 root root 4,0K мар 27 23:48 /usr/libexec/cups/filter
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;drwxr-xr-x 2 root root 4,0K мар 27 23:48 /usr/libexec/cups/filter
 -rwxr-xr-x 1 root root 362K мар 27 22:38 /usr/libexec/cups/filter/kyofilter_C
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;I thought it was the final issue, but the new error was^&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;D [27/Mar/2015:22:56:48 +0400] [Job 3] execv failed: Permission denied
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;D [27/Mar/2015:22:56:48 +0400] [Job 3] execv failed: Permission denied
 D [27/Mar/2015:22:56:48 +0400] [Job 3] PID 16490 (/usr/lib/cups/filter/kyofilter_C) stopped with status 113 (Permission denied)
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -261,24 +261,24 @@ printing the test page.&lt;/p&gt;
 &lt;h2&gt;Clients setup&lt;/h2&gt;
 &lt;h3&gt;Linux&lt;/h3&gt;
 &lt;p&gt;We just need to correct /etc/cups/client.conf:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ServerName 192.168.3.3
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ServerName 192.168.3.3
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;h3&gt;Windows&lt;/h3&gt;
 &lt;p&gt;Windows OEM PCL driver could be found at &lt;a href="http://usa.kyoceradocumentsolutions.com/americas/jsp/Kyocera/resource_details.jsp?pid=26381&amp;amp;rid=26589"&gt;kyocera US&lt;/a&gt;.
 In the printer adding dialog use the following path:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;http://192.168.3.3:631/printers/&amp;lt;PrinterName&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;http://192.168.3.3:631/printers/&amp;lt;PrinterName&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 28 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</guid><category>cups</category><category>gentoo</category><category>printserver</category><category>kyocera</category><category>ppd</category></item><item><title>QEMU</title><link>http://blog.hoxnox.com/virtual/qemu.html</link><description>&lt;p&gt;Создать диск: &lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Для KVM эмуляции надо собирать ядро и qemu с поддержкой KVM.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;⚒ ~  cat /etc/portage/env/qemu.conf 
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;⚒ ~  cat /etc/portage/env/qemu.conf 
 QEMU_SOFTMMU_TARGETS=&amp;quot;i386 x86_64&amp;quot;
 QEMU_USER_TARGETS=&amp;quot;i386 x86_64&amp;quot;
 
@@ -302,7 +302,7 @@ CONFIG_KVM_DEVICE_ASSIGNMENT=y
 
 
 &lt;p&gt;Поддержка VIRTIO устройств нужна гостю:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;⚒ ~  grep &amp;#39;VIRTIO&amp;#39; /usr/src/linux/.config
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;⚒ ~  grep &amp;#39;VIRTIO&amp;#39; /usr/src/linux/.config
 CONFIG_VIRTIO_BLK=m
 CONFIG_VIRTIO_NET=m
 # CONFIG_VIRTIO_CONSOLE is not set
@@ -318,11 +318,11 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
 &lt;p&gt;Запускаем с проброшенным 22 портом на localhost:28955 с virtio
 драйверами, простой сетью (без низкоуровневых вещей типа icmp) и без
 графики (управление по ssh).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;qemu-system-i386 -enable-kvm -cpu host -drive file=/media/data/vbox/Debian7.i386.virtio.survey.qcow2,index=0,media=disk,if=virtio -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::28955-:22 -nographic
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-system-i386 -enable-kvm -cpu host -drive file=/media/data/vbox/Debian7.i386.virtio.survey.qcow2,index=0,media=disk,if=virtio -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::28955-:22 -nographic
 &lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 04 Jan 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-01-04:virtual/qemu.html</guid><category>qemu</category></item><item><title>Samba и домен</title><link>http://blog.hoxnox.com/internet/samba_domen.html</link><description>&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
 пользователя на контроллер домена. Для этого необходимо собрать её с ключём ads. Затем настроить
 керберос (/etc/krb5.conf)&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;[libdefaults]
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[libdefaults]
     default_realm = example.com
 
 [realms]
@@ -333,7 +333,7 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
     .EXAMPLE.COM = server.example.com
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;аутентификация в samba настраивается следующим образом&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;security = ADS
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;security = ADS
 realm = example.com
 password server = server.example.com
 &lt;/pre&gt;&lt;/div&gt;

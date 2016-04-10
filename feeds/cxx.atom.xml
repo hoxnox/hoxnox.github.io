@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/cxx.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2012-06-04T00:00:00+04:00</updated><entry><title>boost chrono</title><link href="http://blog.hoxnox.com/cxx/boost.chrono.html" rel="alternate"></link><updated>2012-06-04T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-04:cxx/boost.chrono.html</id><summary type="html">&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;#include &amp;lt;boost/chrono.hpp&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#include &amp;lt;boost/chrono.hpp&amp;gt;
 #include &amp;lt;cmath&amp;gt;
 
 int main()

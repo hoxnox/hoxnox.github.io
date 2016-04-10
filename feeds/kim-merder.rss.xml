@@ -12,12 +12,12 @@ ODBC API. При замене движка СУБД вы меняете лишь
 &lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Установка&lt;/h2&gt;
 &lt;p&gt;В Windows всё должно работать из коробки. Рассмотрим установку в gentoo.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av unixODBC
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo emerge -av unixODBC
 sudo emerge -av libodbc++
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;С PostgreSQL драйвером некоторые трудности... В портежах по умолчанию он отсутствует, а в дефолтных
 оверлеях старьё. Поэтому пришлось накорябать свой (git://github.com/hoxnox/hoxnox-portage-overlay.git).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;quot;dev-db/psqlodbc ~amd64&amp;quot; | sudo tee -a /etc/portage/package.keywords
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;echo &amp;quot;dev-db/psqlodbc ~amd64&amp;quot; | sudo tee -a /etc/portage/package.keywords
 sudo emerge -av psqlodbc
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
@@ -26,7 +26,7 @@ sudo emerge -av psqlodbc
 &lt;p&gt;Существует GUI утилиты (unixODBC-GUI-Qt), но нормально собрать их из оверлея qt или из исходников у
 меня не получилось. Поэтому вручную поправим конфиги (/etc/unixODBC/odbcinst.ini и
 /etc/unixODBC/odbc.ini) соответственно:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;[ODBC]
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[ODBC]
 Trace=yes
 TraceFile=/tmp/odbc_log.txt
 
@@ -34,7 +34,7 @@ TraceFile=/tmp/odbc_log.txt
 driver=/usr/lib/psqlodbcw.so
 setup=/usr/lib/psqlodbcw.so
 &lt;/pre&gt;&lt;/div&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;[Test]
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[Test]
 driver=PostgreSQL
 Servername=localhost
 Username=postgres
@@ -45,11 +45,11 @@ Database=test
 &lt;/div&gt;
 &lt;div class="section" id="c"&gt;
 &lt;h2&gt;Пример на C++&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;odbc++/drivermanager.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;odbc++/connection.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;odbc++/preparedstatement.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;odbc++/resultset.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;iostream&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;odbc++/drivermanager.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;odbc++/connection.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;odbc++/preparedstatement.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;odbc++/resultset.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;iostream&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="k"&gt;using&lt;/span&gt; &lt;span class="k"&gt;namespace&lt;/span&gt; &lt;span class="n"&gt;odbc&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;

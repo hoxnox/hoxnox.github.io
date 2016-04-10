@@ -16,9 +16,16 @@
         <meta name="keywords" content="algorithm,container" />
         <meta name="description" content="Описание контейнера к-свёртки" />
 
-    <!-- Enable latex plugin -->
-
-
+        <meta property="og:site_name" content="NX" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="К-свёртка"/>
+        <meta property="og:url" content="http://blog.hoxnox.com/other/kconvol.html"/>
+        <meta property="og:description" content="Описание контейнера к-свёртки"/>
+        <meta property="article:published_time" content="2012-06-07" />
+            <meta property="article:section" content="other" />
+            <meta property="article:tag" content="algorithm" />
+            <meta property="article:tag" content="container" />
+            <meta property="article:author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
 
 
     <!-- Bootstrap -->
@@ -33,15 +40,11 @@
         <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
               title="NX RSS Feed"/>
 
-
-        <link href="http://blog.hoxnox.com/feeds/other.atom.xml" type="application/atom+xml" rel="alternate"
-              title="NX other ATOM Feed"/>
-
 </head>
 <body>
 
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+	<div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -83,13 +86,14 @@ NX            </a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+              <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
     </div>
 </div> <!-- /.navbar -->
-
+<!-- Banner -->
+<!-- End Banner -->
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
@@ -116,9 +120,6 @@ NX            </a>
 
 
 
-
-
-
 <span class="label label-default">Tags</span>
 	<a href="http://blog.hoxnox.com/tag/algorithm.html">algorithm</a>
         /
@@ -141,7 +142,7 @@ NX            </a>
 <li>00 - блок B типа</li>
 <li>01 - блок C типа</li>
 </ul>
-<div class="highlight"><pre>Порядок нумерации бит в блоке:
+<div class="highlight"><pre><span></span>Порядок нумерации бит в блоке:
               ...      89ABCDEF 01234567
     +--------+--------+--------+--------+
     |   3    |   2    |   1    |   0    |
@@ -153,7 +154,7 @@ NX            </a>
 </pre></div>
 <p>В к-свёртке каждое натуральное число N представлено парой чисел A и B в виде
 N = 30*A + B, где</p>
-<div class="highlight"><pre>if(N%30 == 0)
+<div class="highlight"><pre><span></span>if(N%30 == 0)
         A = N/30 - 1
         B = 30
 else
@@ -162,7 +163,7 @@ else
 </pre></div>
 <p>При этом натуральное A будем называть индексом, а натуральное B &lt;=30
 остатком. Остаток B представляется в памяти числом (1 &lt;&lt; 32) + (1 &lt;&lt; (30 - B)) (см. таблицу)</p>
-<div class="highlight"><pre>Пример представления остатка
+<div class="highlight"><pre><span></span>Пример представления остатка
 b     двоичное представление                  запись в файле
 1     10100000 00000000 00000000 00000000     0x00 0x00 0x00 0xA0
 2     10010000 00000000 00000000 00000000     0x00 0x00 0x00 0x90
@@ -187,7 +188,7 @@ b     двоичное представление                  запись 
 <h3>Пример создания к-свёртки из последовательности</h3>
 <p>Свернём следующую последовательность из 97 элементов:
 61, 65, 90, 91, 92, 93, ...,154, 156, 157, ..., 184, 193</p>
-<div class="highlight"><pre>N1  = 61,  N1  = 30*2 + 1,  (2, 1)
+<div class="highlight"><pre><span></span>N1  = 61,  N1  = 30*2 + 1,  (2, 1)
 N2  = 65,  N2  = 30*2 + 5,  (2, 5)
 N3  = 90,  N3  = 30*2 + 30  (2, 30)
 N4  = 91,  N4  = 30*3 + 1   (3, 1)
@@ -209,7 +210,7 @@ N96 = 184, N96 = 30*6 + 4   (6, 4)
 N97 = 193, N97 = 30*6 + 13  (6, 13)
 </pre></div>
 <p>Группируем:</p>
-<div class="highlight"><pre>(2, {1, 5, 30})
+<div class="highlight"><pre><span></span>(2, {1, 5, 30})
 (3, {1, 2, ..., 30})
 (4, {1, 2, ..., 30})
 (5, {1, 2, 3, 4, 6, 7, ..., 30})
@@ -219,28 +220,28 @@ N97 = 193, N97 = 30*6 + 13  (6, 13)
 можно представить блоком типа C: <cite>0x3fffff + 2</cite>. Индексы, начиная со 2 идут
 друг за другом, поэтому можно их не записывать. Таким образом свёртка
 записывается в следующем виде:</p>
-<div class="highlight"><pre>1. Индекс 2
+<div class="highlight"><pre><span></span>1. Индекс 2
 2. Сумма остатков 1, 5, 30
 3. C-блок 0x3fffff + 2
 4. Сумма остатков 1, 2, 3, 4, 6, 7, ..., 30
 5. Сумма остатков 1, 2, 3, 4, 13
 </pre></div>
 <p>В бинарной системе счисления (группировка по 4 байта)</p>
-<div class="highlight"><pre>1. 00000000 00000000 00000000 00000010
+<div class="highlight"><pre><span></span>1. 00000000 00000000 00000000 00000010
 2. 10100010 00000000 00000000 00000001
 3. 01000000 00000000 00000000 00000010
 4. 10111101 11111111 11111111 11111111
 5. 10111100 00000010 00000000 00000000
 </pre></div>
 <p>В шестнадцатеричной:</p>
-<div class="highlight"><pre>1. 0x00 0x00 0x00 0x02
+<div class="highlight"><pre><span></span>1. 0x00 0x00 0x00 0x02
 2. 0xA2 0x00 0x00 0x01
 3. 0x40 0x00 0x00 0x02
 4. 0xBD 0xFF 0xFF 0xFF
 5. 0xBC 0x02 0x00 0x00
 </pre></div>
 <p>Итого, дамп памяти в прямом порядке байт данной свёртки будет выглядеть так:</p>
-<div class="highlight"><pre>00000000 02 00 00 00 01 00 00 A2 02 00 00 40
+<div class="highlight"><pre><span></span>00000000 02 00 00 00 01 00 00 A2 02 00 00 40
 00000010 FF FF FF BD 00 00 02 BC
 </pre></div>
 </div>
@@ -261,26 +262,26 @@ N97 = 193, N97 = 30*6 + 13  (6, 13)
 порядку. Блоки типа B и C увеличивают значение индекса не на единицу, а на
 число, записанное в этом блоке (не считая биты, определяющие тип блока).</p>
 <p>Пример нумерации блоков в свёртке:</p>
-<div class="highlight"><pre>        A               B               A               A               C
+<div class="highlight"><pre><span></span>        A               B               A               A               C
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 |x00 x1F x03 x80|x02 x00 x00 x00|x00 x02 x00 xB8|x10 xD3 xA1 x80|x03 x00 x00 x40|
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 i=0             ==&gt;             i=i+2=2         i=i+1=3         i=i+3=6
 </pre></div>
 <p>Раскроем к-свёртку</p>
-<div class="highlight"><pre>00000000 01 00 00 00 FF FF F7 86 00 00 00 BE
+<div class="highlight"><pre><span></span>00000000 01 00 00 00 FF FF F7 86 00 00 00 BE
 </pre></div>
 <p>Разбиваем на блоки:</p>
-<div class="highlight"><pre>01 00 00 00 | FF FF F7 86 | 00 00 00 BE
+<div class="highlight"><pre><span></span>01 00 00 00 | FF FF F7 86 | 00 00 00 BE
      B             A             A
 </pre></div>
 <p>Блоки типа A и их индексы:</p>
-<div class="highlight"><pre>в файле       соотв. двоичное число                   индекс
+<div class="highlight"><pre><span></span>в файле       соотв. двоичное число                   индекс
 FF FF F7 86   10000110 11110111 11111111 11111111     1
 00 00 00 BE   10111110 00000000 00000000 00000000     2
 </pre></div>
 <p>Остатки FF FF F7 86:</p>
-<div class="highlight"><pre>10000100 00000000 00000000 00000000   4
+<div class="highlight"><pre><span></span>10000100 00000000 00000000 00000000   4
 10000010 00000000 00000000 00000000   5
 10000000 10000000 00000000 00000000   7
 10000000 10000000 00000000 00000000   8
@@ -292,14 +293,14 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 10000000 00000000 00000000 00000001   30
 </pre></div>
 <p>Остатки 00 00 00 BE:</p>
-<div class="highlight"><pre>10100000 00000000 00000000 00000000   1
+<div class="highlight"><pre><span></span>10100000 00000000 00000000 00000000   1
 10010000 00000000 00000000 00000000   2
 10001000 00000000 00000000 00000000   3
 10000100 00000000 00000000 00000000   4
 10000010 00000000 00000000 00000000   5
 </pre></div>
 <p>Соответствующая последовательность:</p>
-<div class="highlight"><pre>1*30 + 4  = 34
+<div class="highlight"><pre><span></span>1*30 + 4  = 34
 1*30 + 5  = 35
 1*30 + 7  = 37
 1*30 + 8  = 38
@@ -329,53 +330,60 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
     <section class="comments" id="comments">
         <h2>Comments</h2>
 
-        <div id="hypercomments_widget"></div>
+        <div id="disqus_thread"></div>
         <script type="text/javascript">
-        _hcwp = window._hcwp || [];
-        _hcwp.push({widget:"Stream", widget_id: 27931});
-        (function() {
-        if("HC_LOAD_INIT" in window)return;
-        HC_LOAD_INIT = true;
-        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
-        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hcc, s.nextSibling);
-        })();
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'other/kconvol';
+                var disqus_url = 'http://blog.hoxnox.com/other/kconvol.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
         </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
     </section>
         </article>
     </section>
 
         </div>
-        <div class="col-sm-3 well well-sm" id="sidebar">
+        <div class="col-sm-3" id="sidebar">
+            <aside>
 
-<aside>
-    <section>
-        <ul class="list-group list-group-flush">
-                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
-                  <ul class="list-group" id="social">
-                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
-                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
-                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
-                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
-                  </ul>
-                </li>
-
-
-
-                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
-                    <ul class="list-group list-inline tagcloud" id="tags">
-                    </ul>
-                </li>    
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+              </ul>
+            </li>
 
 
 
-        </ul>
-    </section>
-
-</aside>        </div>
+            <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                <ul class="list-group list-inline tagcloud" id="tags">
+                </ul>
+            </li>
+    </ul>
+</section>
+            </aside>
+        </div>
     </div>
 </div>
 <footer>
@@ -398,6 +406,21 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
 <script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
 
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
     <!-- Google Analytics -->
     <script type="text/javascript">
 
@@ -415,5 +438,6 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
         })();
     </script>
     <!-- End Google Analytics Code -->
+
 </body>
 </html>

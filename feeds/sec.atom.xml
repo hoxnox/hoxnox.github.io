@@ -228,7 +228,7 @@ HTML в браузер.&lt;/p&gt;
 запроса &lt;code&gt;GET /yandsearch?text=test&lt;/code&gt; к хосту yandex.ru. Таким образом у
 11 ответов указан referer, не соответствующий пользовательскому запросу.
 Поисковый запрос выглядел так: &lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nf"&gt;GET&lt;/span&gt; &lt;span class="nn"&gt;/jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/&lt;/span&gt; &lt;span class="kr"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;1.1&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nf"&gt;GET&lt;/span&gt; &lt;span class="nn"&gt;/jclck/dtype=stred/pid=0/cid=2873/path=morda_ru.not_used.p0.nah_not_shown.keyboard/user_input=test/text=test/times=20.52.23.19.16.20/region=1/log=sgtype%3ABBBBBBBBBB/pos=4/ratio=4.4.4/since_first_change=3919/since_last_change=3504/session=1401026534664/*data=url%3Dhttp%3A%2F%2Fya.ru/&lt;/span&gt; &lt;span class="kr"&gt;HTTP&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="m"&gt;1.1&lt;/span&gt;
 &lt;span class="na"&gt;Host&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="l"&gt;clck.yandex.ru&lt;/span&gt;
 &lt;span class="na"&gt;Referer&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="l"&gt;http://ya.ru/&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
@@ -263,7 +263,7 @@ content, в формат заголовка ответа HTTP и обрабат�
 http-equiv="Refresh"&lt;/code&gt;, браузер получает правильный двухсотый ответ с
 контентом, но тут же запрашивает другую страницу, которую и покажет
 пользователю.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;meta http-equiv=&amp;quot;Refresh&amp;quot; content=&amp;quot;0;URL=forum/index.php&amp;quot;&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&amp;lt;meta http-equiv=&amp;quot;Refresh&amp;quot; content=&amp;quot;0;URL=forum/index.php&amp;quot;&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -311,7 +311,7 @@ pcap трафиком.&lt;/p&gt;
 &lt;/ol&gt;
 &lt;p&gt;Пользователь может просматривать страницу в
    одном браузере, а оператор в другом. За счет блоков вида:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;!--[if gte ie 9]&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&amp;lt;!--[if gte ie 9]&amp;gt;
 ...
 &amp;lt;!--&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
@@ -382,7 +382,7 @@ B, а B в свою очередь встроен в A, необходимо с�
 &lt;p&gt;Все проверенные браузеры Firefox 30.0, Chromium 35.0, Internet Explorer
 11 нормально разбирают по крайней мере дважды вложенные документы. Для
 проверки можно попытаться открыть следующий документ:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;html&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
 &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;head&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
     &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt; &lt;span class="nt"&gt;type&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;application/javascript&amp;quot;&lt;/span&gt; &lt;span class="nt"&gt;src&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;data:application/javascript;base64,ZnVuY3Rpb24gZml4X2NvbnRlbnQoKQp7Cgl2YXIgbmFtZV9pbnB1dCA9IGRvY3VtZW50LmdldEVsZW1lbnRCeUlkKCdjb250ZW50JykKCW5hbWVfaW5wdXQuaW5uZXJIVE1MID0gIjxpbWcgc3JjPSdkYXRhOmltYWdlL2dpZjtiYXNlNjQsUjBsR09EbGhNZ0FlQU1aY0FBQUFBQU1EQXdVRkJRWUdCZ2NIQndnSUNBb0tDZ3NMQ3c0T0RoQVFFQkVSRVJJU0VoTVRFeFVWRlJZV0Zod2NIQjRlSGg4Zkh5QWdJQ0VoSVNJaUlpUWtKQ2NuSnlnb0tDa3BLU29xS2l3c0xDNHVMakV4TVRJeU1qMDlQVUJBUUVSRVJFeE1URkZSVVZKU1VsTlRVMWxaV1ZwYVdseGNYRjVlWG1Sa1pHVmxaV2hvYUd4c2JHMXRiWGg0ZUlxS2lvNk9qcENRa0pLU2twaVltSm1abWFDZ29LV2xwYkt5c3JPenM3Mjl2YjYrdnNEQXdNSEJ3Y0xDd3NiR3hzakl5TXpNek03T3p0UFQwOVhWMWRmWDE5bloyZURnNE9MaTR1VGs1T1hsNWVibTV1Zm41K25wNmV2cjYrenM3TzN0N2U3dTd1L3Y3L0R3OFBIeDhmUHo4L1QwOVBYMTlmYjI5dmYzOS9uNStmdjcrLzM5L2YvLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vLy8vL3lINUJBRUtBSDhBTEFBQUFBQXlBQjRBQUFmK2dGeUNnNFNGaG9lSWlZcUxqSTJPajVDUmtwT1VsWmFYbUptYW01eWRucCtnbkFDakFBVVVMVStkQUl5cmdsaEVLaUNxcklWUEJvSkZKQXNJSWsyQ0FEWWNCQTRuVG9NMEVnSVZNNjFjelluTldFVXJzbHdiT2xkU0xDbS9HVGxVU1NZbGdqZ1NPMVE3RWMzUGlLU2tEMGVHVXcrL1FZTk1ESUllT0lNM3pRaTBCR1VaRWdLRklDTWpHb3dLOEdzTG9WWUtvZ3lDMHN4Q3dFRkxFZ2o2NEFLSkZpeXQyRUdVS0lnaUpIWks4bkU1UUVVUWo1Q0ZXdTBiaElQZG9tWURRM0Rqd2dHR0ZTQVlZRDRrTjZGSGxSNFQxckVpSllDQ0N5dUNnblFZQUVHRzBFSE5aa1JRRm1NQTFsQ0xmRndBcStpRUVDcy9OcndnbTZpR0JnTU9HR0E0WkV1M3J0MjdlUE95RFFRQU93PT0nLz4iCn0KCg==&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;script&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
 &lt;span class="o"&gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;head&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
@@ -394,10 +394,10 @@ B, а B в свою очередь встроен в A, необходимо с�
 
 
 &lt;p&gt;Блок base64 в нем - это HTML-документ типа application/javascript следующего вида:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;fix_content&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;function&lt;/span&gt; &lt;span class="nt"&gt;fix_content&lt;/span&gt;&lt;span class="o"&gt;()&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="kd"&gt;var&lt;/span&gt; &lt;span class="nx"&gt;name_input&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nb"&gt;document&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;getElementById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;content&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;name_input&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;innerHTML&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;lt;img src=&amp;#39;data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==&amp;#39;/&amp;gt;&amp;quot;&lt;/span&gt;
+    &lt;span class="n"&gt;var&lt;/span&gt; &lt;span class="n"&gt;name_input&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;document&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;getElementById&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;content&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;name_input&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;innerHTML&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&amp;lt;img src=&amp;#39;data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==&amp;#39;/&amp;gt;&amp;quot;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -408,7 +408,7 @@ B, а B в свою очередь встроен в A, необходимо с�
 &lt;h2&gt;Установление соединения&lt;/h2&gt;
 &lt;p&gt;Первое, что мы сделаем - пошлём простейший пакет, содержащий ClinetHello.&lt;/p&gt;
 &lt;p&gt;Итак, структура простейшего ClientHello&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ProtocolVersion = { 0x03, 0x03 } соответствует TLS 1.2
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ProtocolVersion = { 0x03, 0x03 } соответствует TLS 1.2
 Random = { gmt_unix_time = { 0x50, 0x2C, 0xDA, 0x7A }, random = {0x69, 0xC7, 0xE0, 0x2A, 0x2C, 0x2F, 0x06, 0x43,
                                                                  0x3C, 0xA5, 0xFD, 0xA5, 0x1A, 0xDF, 0x36, 0x45,
                                                                  0x38, 0x7E, 0x32, 0x8E, 0x1F, 0xE3, 0xBA, 0x16,
@@ -425,7 +425,7 @@ CompressionMethod = { 0x00 }
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;реализация на си (сокеты)&lt;/p&gt;
 &lt;p&gt;...&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;/***всё семейство RSA***/
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;/***всё семейство RSA***/
 CipherSuite = { 0x00, 0x00, 0x00, 0x01, 0x00, 0x02, 0x00, 0x3B, 0x00, 0x04, 0x00, 0x05,
                 0x00, 0x0A, 0x00, 0x2F, 0x00, 0x35, 0x00, 0x3C, 0x00, 0x3D, 0x16 }
 /***всё семейство DH***/
@@ -445,13 +445,13 @@ CompressionMethod = 0x0
 &lt;div class="section" id="id2"&gt;
 &lt;h3&gt;Число&lt;/h3&gt;
 &lt;p&gt;Все данные, представляемые в протоколе записываются в прямом порядке байт. То есть&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;value = (byte[0] &amp;lt;&amp;lt; 8*(n-1)) | (byte[1] &amp;lt;&amp;lt; 8*(n-2)) | ... | byte[n-1];
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;value = (byte[0] &amp;lt;&amp;lt; 8*(n-1)) | (byte[1] &amp;lt;&amp;lt; 8*(n-2)) | ... | byte[n-1];
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id3"&gt;
 &lt;h3&gt;Вектор&lt;/h3&gt;
 &lt;p&gt;Запись вида&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;T T&amp;#39;[n];
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;T T&amp;#39;[n];
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;означает определение нового типа T', который является вектором значений типа T фиксированной длины
 n. При этом n - &lt;strong&gt;количество байт&lt;/strong&gt;, занимаемых новым типом T'.&lt;/p&gt;
@@ -464,7 +464,7 @@ n. При этом n - &lt;strong&gt;количество байт&lt;/strong&gt
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;Пример:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;opaque Datum[3]; /* Три байта, не интерпретируемые протоколом */
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;opaque Datum[3]; /* Три байта, не интерпретируемые протоколом */
 Datum Data[9]; /* 9-байтный вектор значений типа Datum.*/
 
 /*
@@ -477,12 +477,12 @@ Datum Data[3];
 &lt;!-- *** --&gt;
 &lt;p&gt;Существует такое понятие как &lt;em&gt;вектор переменной длины&lt;/em&gt;. Определение нового типа T' - вектор
 переменной длины от K до N байт, содержащий значения типа T.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;T T&amp;#39;&amp;lt;K..N&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;T T&amp;#39;&amp;lt;K..N&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;При кодировании таких векторов дополнительно приписывается его текущая длина. Записывается она в
 виде числа из M байт, где M - число байт, достаточных для хранения числа, отражающего максимальную
 длину вектора в байтах. Например:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;opaque mandatory&amp;lt;300..400&amp;gt;;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;opaque mandatory&amp;lt;300..400&amp;gt;;
  /* вектор не менее 300, но не более 400 байт. Длина записывается числом в 2 байта (достаточно для
  хранения числа 400.*/
 uint16 longer&amp;lt;0..800&amp;gt;
@@ -499,7 +499,7 @@ uint16 longer&amp;lt;0..800&amp;gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;Базовый тип данных - uint8. Определены также&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;uint8 uint16[2];
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;uint8 uint16[2];
 uint8 uint24[3];
 uint8 uint32[4];
 uint8 uint64[8];
@@ -510,7 +510,7 @@ uint8 uint64[8];
 &lt;div class="section" id="id4"&gt;
 &lt;h3&gt;Перечисление&lt;/h3&gt;
 &lt;p&gt;Аналогично языку си:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { e1(v1), e2(v2), ..., en(vn) [[, (k)]] } Te;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { e1(v1), e2(v2), ..., en(vn) [[, (k)]] } Te;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Соответственно объем, занимаемый одним значением типа &amp;quot;перечисление&amp;quot;, равен числу байт, необходимых
 для хранения максимального значения перечисления.&lt;/p&gt;
@@ -524,20 +524,20 @@ uint8 uint64[8];
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;Пример:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { red(3), green(23), blue(1) } Color;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { red(3), green(23), blue(1) } Color;
 
 Color color = Color.blue;
 Color color = blue;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Для перечислений, которые никогда не интерпретируются своими значениями последние можно опустить.
 Например:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum{ low, medium, high } Amount;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum{ low, medium, high } Amount;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id5"&gt;
 &lt;h3&gt;Структура&lt;/h3&gt;
 &lt;p&gt;Аналогично языку си:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         T1 t1;
         T2 t2;
         ...
@@ -548,7 +548,7 @@ Color color = blue;
 &lt;div class="section" id="id6"&gt;
 &lt;h3&gt;Вариант&lt;/h3&gt;
 &lt;p&gt;Поля структуры могут варьироваться в соответствии с каким-либо перечислимым типом.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { e1, e2, ..., ek } E;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { e1, e2, ..., ek } E;
 struct P
         T1 t1;
         T2 t2;
@@ -566,7 +566,7 @@ struct P
 &lt;p&gt;Например, мы можем определить структуру транспорт с полями &amp;quot;скорость движения&amp;quot; и &amp;quot;количество мест&amp;quot;. Если
 это автомобиль, то структура будет содержать поле &amp;quot;объем двигателя&amp;quot;, а для велосипеда определим
 &amp;quot;количество скоростей&amp;quot;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { auto, bicycle } TransportType;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { auto, bicycle } TransportType;
 
 struct Transport {
         int16 speed;
@@ -594,7 +594,7 @@ struct Transport {
 &lt;h2&gt;Кодирование криптографических опреаций&lt;/h2&gt;
 &lt;div class="section" id="id8"&gt;
 &lt;h3&gt;Цифровая подпись&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         SignatureAndHashAlgorithm algorithm;
         opaque signature&amp;lt;0..2^16-1&amp;gt;;
 } DigitallySigned;
@@ -658,28 +658,28 @@ protcol), а затем по протоколу изменения параме�
 &lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;connection end (оконечная точка соединения)
 Является ли сущность клиентом или сервером в данном соединении.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { server, client } ConnectionEnd;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { server, client } ConnectionEnd;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;PRF algorithm (псевдослучайная функция)
 Алгоритм, используемый для генерации ключей из главного ключа (master key).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum{ tls_prf_sha256 } PRFAlgorithm;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum{ tls_prf_sha256 } PRFAlgorithm;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;bulk encryption algorithm (алгоритм шифрования)
 Спецификация включает в себя размер ключа, является ли шифрование блочными или AEAD, размер блока
 шифра (если имеется), и длины явного и неявного инициализирующих векторов.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { null, rc4, 3des, aes } BulkCipherAlgorithm;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { null, rc4, 3des, aes } BulkCipherAlgorithm;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;MAC algorithm (алгоритм имитовставки)
 Спецификация включает размер значения, возвращаемого алгоритмом.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { stream, block, aead } CipherType;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { stream, block, aead } CipherType;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;compression algorithm (алгоритм сжатия)
 Спецификация включает всю информацию, необходимую для сжатия&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { null(0), (255) } CompressionMethod;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { null(0), (255) } CompressionMethod;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;master secret
@@ -692,7 +692,7 @@ protcol), а затем по протоколу изменения параме�
 32-байтное значение, вырабатываемое сервером&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         ConnectionEnd       entity;
         PRFAlgorithm        prf_algorithm;
         BulkCipherAlgorithm bulk_cipher_algorithm;
@@ -740,7 +740,7 @@ protcol), а затем по протоколу изменения параме�
 &lt;p&gt;Уровень записи фрагментирует блоки в TLSPlaintext записи (см. ниже). Размер записи не может
 превышать 2^14 байт. Границы сообщения клиента не сохраняются. То есть в одной записи может
 содержаться несколько сообщений или наоборот в нескольких записях может быть одно сообщение.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         uint8 major;
         uint8 minor;
 } ProtocolVersion;
@@ -784,7 +784,7 @@ data) могут (например для усложнения анализа т
 &lt;p&gt;Должно использоваться сжатие без потерь, не увеличивающее длину содержимого более чем на 1024 байт.
 Если при распаковке получился фрагмент, длина которого больше 2^14 байт (больше максимально
 возможного), то функция распаковки должна сообщить об ошибке.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         ContentType type; /*** как и TLSPlaintext ***/
         ProtocolVersion version; /*** как и в TLSPlaintext ***/
         uint16 length; /*** не больше 2^14 + 1024 ***/
@@ -805,7 +805,7 @@ data) могут (например для усложнения анализа т
 &lt;p&gt;Функции шифрования и имитовставки преобразуют TLSCompressed структуру в TLSCiphertext. Функции
 расшифрования осуществляют обратную операцию. Имитовставка имеет номер для обнаружения пропущенных
 или повторяющихся сообщений.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         ContentType type;
         ProtocolVersion version;
         uint16 length; /*** не превышет 2^14 + 2048 ***/
@@ -818,13 +818,13 @@ data) могут (например для усложнения анализа т
 &lt;/pre&gt;&lt;/div&gt;
 &lt;div class="section" id="id14"&gt;
 &lt;h3&gt;Пустой или стандартный потоковый шифр&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;stream-ciphered struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;stream-ciphered struct {
         opaque Content[TLSCompressed.length];
         opaque MAC[SecurityParameters.mac_length];
 } GenericStreamCipher;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Имитовставка генерируется следующим образом:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;  MAC(MAC_write_key, seq_num
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;  MAC(MAC_write_key, seq_num
           + TLSCompressed.type
           + TLSCompressed.version
           + TLSCompressed.length
@@ -845,7 +845,7 @@ TODO:&lt;/td&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id15"&gt;
 &lt;h3&gt;Блочное шифрование&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         /*** вектор инициализации ***/
         opaque IV(SecurityParameters.record_iv_length];
         block-ciphered struct {
@@ -872,7 +872,7 @@ TODO:&lt;/td&gt;
 Таким образом дополнение должно состоять минимум из 8*11 - (81 + 1) = 6 байт. Оно может быть и
 больше: 6 + 8 байт, 6 + 8 + 8 байт, ..., 254 байта. Тогда последние 8 байт (для минимального
 дополнения) GenericBlockCipher будут&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;0x## 0x06 0x06 0x06 0x06 0x06 0x06 0x06
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;0x## 0x06 0x06 0x06 0x06 0x06 0x06 0x06
 
 0x## - последний байт имитовставки
 &lt;/pre&gt;&lt;/div&gt;
@@ -888,7 +888,7 @@ TODO:&lt;/td&gt;
 &lt;p&gt;Многие приложения для обеспечения целостности используют имитовставку, а для обеспечения
 конфиденциальности какой-то алгоритм шифрования. При этом используется два независимых ключа. Идея
 AEAD состоит в том, чтобы заменить этот подход единым алгоритмом.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         opaque nonce_explicit[SecurityParameters.record_iv_length];
         aead-ciphered struct {
                 opaque content[TLSCompressed.length];
@@ -896,7 +896,7 @@ AEAD состоит в том, чтобы заменить этот подход
 } GenericAEADCipher;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;дополнительные подлинные данные определяются следующим образом:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;additional_data = seq_num + TLSCompressed.type + TLSCompressed.version +
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;additional_data = seq_num + TLSCompressed.type + TLSCompressed.version +
                 TLSCompressed.length;
 
 &amp;quot;+&amp;quot; - это конкатенация
@@ -910,13 +910,13 @@ AEAD состоит в том, чтобы заменить этот подход
 Некоторые AEAD шифры могут дополнительно нуждаться в клиентском и серверном инициализирующих
 векторах.&lt;/p&gt;
 &lt;p&gt;раскрытие в последовательность байт:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;key_block = PRF(SecurityParameters.master_secret,
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;key_block = PRF(SecurityParameters.master_secret,
         &amp;quot;key expansion&amp;quot;,
         SecurityParameters.server_random +
         SecurityParameters.client_random);
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;разделение:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;client_write_MAC_key[SecurityParameters.mac_key_length];
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;client_write_MAC_key[SecurityParameters.mac_key_length];
 server_write_MAC_key[SecurityParameters.mac_key_length];
 client_write_key[SecurityParameters.enc_key_length];
 server_write_key[SecurityParameters.enc_key_length];
@@ -944,7 +944,7 @@ parameters) соединения на уровне записи для ауте�
 &lt;h3&gt;Протокол изменения параметров шифрования&lt;/h3&gt;
 &lt;p&gt;Протокол состоит из одного сообщения, которое шифруется и сжимается по текущему (не &lt;em&gt;ожидаемому&lt;/em&gt;, а
 текущему) состоянию. Сообщение состоит из одного байта 0x01.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         enum { change_cipher_spec(1), (255) } type;
 } ChangeCipherSpec;
 &lt;/pre&gt;&lt;/div&gt;
@@ -961,7 +961,7 @@ parameters) соединения на уровне записи для ауте�
 происходить какое-то общение между узлами, но идентификатор сессии становится недействительным.
 Таким образом, сессия не может использоваться для установления новых соединений. Сообщение тревоги
 шифруется и сжимается, как и остальные.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { warning(1), fatal(2), (255) } AlertLevel;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { warning(1), fatal(2), (255) } AlertLevel;
 
 enum {
         close_notify(0),
@@ -1117,7 +1117,7 @@ struct {
 незамедлительно шлёт &lt;cite&gt;Finished&lt;/cite&gt; сообщение зашифрованное новым шифром. В ответ сервер пошлёт своё
 сообщение &lt;cite&gt;ChangeCipherSpec&lt;/cite&gt;, меняет шифр и шлёт &lt;cite&gt;Finished&lt;/cite&gt;. С этого момента установление соединения
 закончено и можно обмениваться данными.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Client                        Server
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Client                        Server
 
 ClientHello        --------&amp;gt;
                               ServerHello
@@ -1143,7 +1143,7 @@ Application Data   &amp;lt;-------&amp;gt;  Application Data
 соединение с помощью данной сессии, он пошлёт ServerHello с тем же идентификатором сессии, они
 меняют шифры посредством &lt;cite&gt;ChangeCipherSpec&lt;/cite&gt; сообщений и обмениваются &lt;cite&gt;Finished&lt;/cite&gt;. Если же сессия
 отсутствует в кэше сервера, то производится полная процедура установления соединения.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Client                        Server
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Client                        Server
 
 ClientHello        --------&amp;gt;
                               ServerHello
@@ -1155,7 +1155,7 @@ Application Data   &amp;lt;-------&amp;gt;  Application Data
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Протокол установления соединения на более низком уровне использует протокол TLS записи для передачи
 сообщений.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum {
         hello_request(0),
         client_hello(1),
         server_hello(2),
@@ -1192,13 +1192,13 @@ struct {
 соединение. Послав &lt;cite&gt;HelloRequest&lt;/cite&gt; сервер должен дождаться какого-то результата процедуры
 установления соединения.&lt;/p&gt;
 &lt;p&gt;Структура сообщения:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {} HelloRequest;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {} HelloRequest;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="clienthello"&gt;
 &lt;h3&gt;ClientHello&lt;/h3&gt;
 &lt;p&gt;Структура сообщения:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         ProtocolVersion client_version;
         Random random;
         SessionID session_id;
@@ -1214,7 +1214,7 @@ struct {
 &lt;/pre&gt;&lt;/div&gt;
 &lt;div class="section" id="random"&gt;
 &lt;h4&gt;Random&lt;/h4&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         uint32 gmt_unix_time;
         opaque random_bytes[28];
 } Random;
@@ -1229,7 +1229,7 @@ struct {
 &lt;div class="section" id="sessionid"&gt;
 &lt;h4&gt;SessionID&lt;/h4&gt;
 &lt;p&gt;Если не пусто, то продолжить сессию. Если пусто - начать новую.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;opaque SessionID&amp;lt;0..32&amp;gt;;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;opaque SessionID&amp;lt;0..32&amp;gt;;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id21"&gt;
@@ -1238,14 +1238,14 @@ struct {
 &amp;quot;набор шифрования&amp;quot; содержит алгоритм распределения ключей, алгоритм шифрования (включая длину
 закрытого ключа), алгоритм имитовставки и псевдослучайную функцию. Сервер выберет подходящий набор,
 либо вернет критическую ошибку.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;uint8 CipherSuite[2];
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;uint8 CipherSuite[2];
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Возможные варианты:&lt;/p&gt;
 &lt;p&gt;Без шифрования (может использоваться только как инициализирующее значение).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite TLS_NULL_WITH_NULL_NULL = { 0x00,0x00 };
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;CipherSuite TLS_NULL_WITH_NULL_NULL = { 0x00,0x00 };
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Для серверов, поддерживающих RSA (должен быть сертификат):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite   TLS_RSA_WITH_NULL_MD5                ={  0x00, 0x01  };
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;CipherSuite   TLS_RSA_WITH_NULL_MD5                ={  0x00, 0x01  };
 CipherSuite   TLS_RSA_WITH_NULL_SHA                ={  0x00, 0x02  };
 CipherSuite   TLS_RSA_WITH_NULL_SHA256             ={  0x00, 0x3B  };
 CipherSuite   TLS_RSA_WITH_RC4_128_MD5             ={  0x00, 0x04  };
@@ -1257,7 +1257,7 @@ CipherSuite   TLS_RSA_WITH_AES_128_CBC_SHA256      ={  0x00, 0x3C  };
 CipherSuite   TLS_RSA_WITH_AES_256_CBC_SHA256      ={  0x00, 0x3D  };
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Диффи-Хэллман (у сервера должен быть серктификат, у клиента он тоже может быть запрошен).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite   TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x0D   };
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;CipherSuite   TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x0D   };
 CipherSuite   TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x10   };
 CipherSuite   TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA    ={   0x00, 0x13   };
 CipherSuite   TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA    ={   0x00, 0x16   };
@@ -1279,7 +1279,7 @@ CipherSuite   TLS_DHE_DSS_WITH_AES_256_CBC_SHA256  ={   0x00, 0x6A   };
 CipherSuite   TLS_DHE_RSA_WITH_AES_256_CBC_SHA256  ={   0x00, 0x6B   };
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Диффи-Хэллман (анонимно)&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;CipherSuite  TLS_DH_anon_WITH_RC4_128_MD5         =  {  0x00, 0x18  };
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;CipherSuite  TLS_DH_anon_WITH_RC4_128_MD5         =  {  0x00, 0x18  };
 CipherSuite  TLS_DH_anon_WITH_3DES_EDE_CBC_SHA    =  {  0x00, 0x1B  };
 CipherSuite  TLS_DH_anon_WITH_AES_128_CBC_SHA     =  {  0x00, 0x34  };
 CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA     =  {  0x00, 0x3A  };
@@ -1291,13 +1291,13 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
 &lt;div class="section" id="id22"&gt;
 &lt;h4&gt;Метод сжатия&lt;/h4&gt;
 &lt;p&gt;Обязательно должен поддерживаться режим без сжатия.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;enum { null(0), (255) } CompressionMethod;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;enum { null(0), (255) } CompressionMethod;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="serverhello"&gt;
 &lt;h3&gt;ServerHello&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;struct {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;struct {
         ProtocolVersion server_version;
         Random random;
         SessionID session_id;

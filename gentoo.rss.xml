@@ -9,12 +9,12 @@ of &lt;code&gt;root.fake_input&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Tmux multiplexer has it's own panes and you can switch between them with
 combination of prefix and arrow keys. Almost the same we have in awesome
 wm. The key of head aches is "almost". It's very hard to switch between
-different hot keys. The problem can be solved in awesome's
+different hot keys. The problem can be solved the problem in awesome
 configuration file. All needed is to check client while switching to
 next window. If the client is tmux - don't switch, send "prefix + arrow"
-instead. The solution is very easy and effective. The code is below&lt;/p&gt;
+instead. The solutions is very easy and effective. The code above&lt;/p&gt;
 &lt;p&gt;.tmux.conf&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;set-option -g prefix m-a
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;set-option -g prefix m-a
 set-option -g repeat-time 0
 set -g default-terminal &amp;quot;screen-256color&amp;quot;
 set -g mode-keys vi
@@ -24,104 +24,104 @@ bind-key up select-pane -t:.-
 
 
 &lt;p&gt;rc.lua:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="p"&gt;...&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
 
-&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="nx"&gt;nil&lt;/span&gt;
-    &lt;span class="nx"&gt;or&lt;/span&gt; &lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="kr"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="nx"&gt;nil&lt;/span&gt;
-    &lt;span class="nx"&gt;then&lt;/span&gt;
-         &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
-    &lt;span class="nx"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
-&lt;span class="nx"&gt;end&lt;/span&gt;
+function is_tmux(c)
+    if string.find(string.lower(c.name), &amp;quot;tmux&amp;quot;) ~= nil
+    or string.find(string.lower(c.class), &amp;quot;tmux&amp;quot;) ~= nil
+    then
+         return true
+    end
+    return false
+end
 
-&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;waiter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;timer&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="nx"&gt;timeout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;up&amp;#39;&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
-        &lt;span class="nx"&gt;waiter&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="nx"&gt;waiter&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="nx"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;down&amp;#39;&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
-        &lt;span class="nx"&gt;waiter&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="nx"&gt;waiter&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="nx"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="nx"&gt;end&lt;/span&gt;
-    &lt;span class="nx"&gt;waiter&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="nx"&gt;end&lt;/span&gt;
+function send_tmux_command(cmd)
+    keygrabber.stop()
+    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+    root.fake_input(&amp;quot;key_press&amp;quot;, 38)
+    root.fake_input(&amp;quot;key_release&amp;quot;, 38)
+    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    waiter = timer({timeout = 0.01})
+    if cmd == &amp;#39;up&amp;#39; then
+        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
+            waiter:stop()
+            root.fake_input(&amp;quot;key_press&amp;quot;, 116)
+            root.fake_input(&amp;quot;key_release&amp;quot;, 116)
+            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        end)
+    end
+    if cmd == &amp;#39;down&amp;#39; then
+        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
+            waiter:stop()
+            root.fake_input(&amp;quot;key_press&amp;quot;, 111)
+            root.fake_input(&amp;quot;key_release&amp;quot;, 111)
+            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        end)
+    end
+    waiter:start()
+end
 
-&lt;span class="nx"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
-    &lt;span class="nx"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="nx"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;j&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
-                &lt;span class="nx"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;down&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="k"&gt;else&lt;/span&gt;
-                &lt;span class="nx"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt; &lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="nx"&gt;end&lt;/span&gt;
-            &lt;span class="nx"&gt;end&lt;/span&gt;
-        &lt;span class="nx"&gt;end&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
-    &lt;span class="nx"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="nx"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;k&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="kd"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
-                &lt;span class="nx"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;up&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="k"&gt;else&lt;/span&gt;
-                &lt;span class="nx"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt; &lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;&lt;span class="nx"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="nx"&gt;end&lt;/span&gt;
-            &lt;span class="nx"&gt;end&lt;/span&gt;
-        &lt;span class="nx"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+globalkeys = awful.util.table.join(
+    awful.key({ modkey,           }, &amp;quot;j&amp;quot;,
+        function()
+            if is_tmux(client.focus) then
+                send_tmux_command(&amp;#39;down&amp;#39;)
+            else
+                awful.client.focus.byidx(1)
+                if client.focus then client.focus:raise() end
+            end
+        end),
+    awful.key({ modkey,           }, &amp;quot;k&amp;quot;,
+        function()
+            if is_tmux(client.focus) then
+                send_tmux_command(&amp;#39;up&amp;#39;)
+            else
+                awful.client.focus.byidx(-1)
+                if client.focus then client.focus:raise() end
+            end
+        end))
 
-&lt;span class="p"&gt;...&lt;/span&gt;
+...
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;h2&gt;proposal #2&lt;/h2&gt;
 &lt;p&gt;There is common recommendation to use vim's native layout switching
-(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;) when you have more than one keyboard layout to use.
+(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;), when you have more than one keyboard layout to use.
 It solves problems with hot keys in vim. Other applications uses
 system-wide switcher with it's own key bindings. Similar to the proposal #1
 we can tune awesome wm configuration:&lt;/p&gt;
 &lt;p&gt;.vimrc&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;inoremap &amp;lt;M-=&amp;gt; &amp;lt;C-^&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;inoremap &amp;lt;M-=&amp;gt; &amp;lt;C-^&amp;gt;
 cnoremap &amp;lt;M-=&amp;gt; &amp;lt;C-^&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;rc.lua&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="nx"&gt;nil&lt;/span&gt;
-    &lt;span class="nx"&gt;or&lt;/span&gt; &lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;string&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="kr"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="nx"&gt;nil&lt;/span&gt;
-    &lt;span class="nx"&gt;then&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="nx"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
-&lt;span class="nx"&gt;end&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;function is_vim(c)
+    if string.find(string.lower(c.name), &amp;quot;vim&amp;quot;) ~= nil
+    or string.find(string.lower(c.class), &amp;quot;vim&amp;quot;) ~= nil
+    then
+        return true;
+    end
+    return false
+end
 
-&lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="nx"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nx"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="nx"&gt;then&lt;/span&gt;
-        &lt;span class="nx"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-        &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="nx"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;else&lt;/span&gt;
-        &lt;span class="nx"&gt;mylswitcher&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="k"&gt;switch&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="nx"&gt;end&lt;/span&gt;
-&lt;span class="nx"&gt;end&lt;/span&gt;
+function switch_key_layout_vimspecial()
+    if is_vim(client.focus) then
+        keygrabber.stop()
+        root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        root.fake_input(&amp;quot;key_press&amp;quot;, 21)
+        root.fake_input(&amp;quot;key_release&amp;quot;, 21)
+        root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    else
+        mylswitcher.switch()
+    end
+end
 
-&lt;span class="nx"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="nx"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nx"&gt;globalkeys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="nx"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="nx"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="nx"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;space&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kd"&gt;function&lt;/span&gt; &lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="nx"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="nx"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+globalkeys = awful.util.table.join(globalkeys,
+    awful.key({modkey, }, &amp;quot;space&amp;quot;, function () switch_key_layout_vimspecial() end))
 &lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 16 Mar 2016 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2016-03-16:gentoo/awm-key-integration.html</guid><category>gentoo</category><category>vim</category><category>tmux</category><category>key bindings</category></item><item><title>Linux desktop on high resolution display</title><link>http://blog.hoxnox.com/gentoo/hires.html</link><description>&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
 But when my gentoo booted I was very disappointed - it looked very ugly.
 Some apps looked normal - thunderbird, Telegram, but most was unusable
@@ -129,14 +129,14 @@ like gimp - with tiny icons and broken fonts. It takes some time to tune
 everything back.&lt;/p&gt;
 &lt;h2&gt;xandr DPI&lt;/h2&gt;
 &lt;p&gt;In the &lt;code&gt;~/.xinitrc&lt;/code&gt; file before starting window manager invoke xrandr command:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;xrandr --dpi 194
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xrandr --dpi 194
 exec /usr/bin/awesome
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;h2&gt;Fonts settings&lt;/h2&gt;
 &lt;p&gt;Change some X settings in &lt;code&gt;~/.Xresources&lt;/code&gt; (simlink &lt;code&gt;~/.Xdefaults&lt;/code&gt; to it):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Xft.dpi: 194
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Xft.dpi: 194
 Xft.hinting: true
 Xft.hintstyle: hintslight
 Xft.antialias: true
@@ -149,19 +149,19 @@ Xft.rgba: none
 only gtk+-2. I chose scalable gtk-3 theme on gnome-look.org and put it into &lt;code&gt;~/.themes&lt;/code&gt;
 directory. Almost every gtk-3 theme support gtk-2. I had to install some
 gtk engines with my package manager:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av --quiet gtk-engines-murrine
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo emerge -av --quiet gtk-engines-murrine
 sudo emerge -av --quiet gdk-pixbuf
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;GTK generations has different setting files:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;~/.gtkrc-2.0&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;gtk-theme-name = &amp;quot;Vertex-Dark&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;gtk-theme-name = &amp;quot;Vertex-Dark&amp;quot;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;&lt;code&gt;~/.config/gtk-3.0/settings.ini&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;[Settings]&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Settings]&lt;/span&gt;
 &lt;span class="na"&gt;gtk-theme-name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;Vertex-Dark&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -172,13 +172,13 @@ sources in &lt;code&gt;gtk3-port&lt;/code&gt; branch) see ebuild in &lt;a href="
 If you can't build gimp from source, another workaround - &lt;a href="http://gimpforums.com/thread-large-size-icons-themes"&gt;special icon theme (48x48)&lt;/a&gt;.
 Put it in &lt;code&gt;~/.themes&lt;/code&gt; and include gtkrc file:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;~/.gtkrc-2.0&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;gtk-theme-name = &amp;quot;Vertex-Dark&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;gtk-theme-name = &amp;quot;Vertex-Dark&amp;quot;
 include &amp;#39;/home/hoxnox/.themes/Theme-Symbolic-Big-48/gtkrc&amp;#39;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;GTK-3 applications can scale. Just add two environment variales:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;GDK_DPI_SCALE=0.5
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;GDK_DPI_SCALE=0.5
 GDK_SCALE=2
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -186,26 +186,26 @@ GDK_SCALE=2
 &lt;p&gt;Qt have &lt;code&gt;QT_DEVICE_PIXEL_RATIO&lt;/code&gt; variable, but it doesn't help my apps.&lt;/p&gt;
 &lt;h2&gt;Cursor&lt;/h2&gt;
 &lt;p&gt;Install any scalable cursor theme:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;emerge -av --quiet vanilla-dmz-aa-xcursors
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;emerge -av --quiet vanilla-dmz-aa-xcursors
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;And apply it globally in &lt;code&gt;~/.Xresources&lt;/code&gt; file (chromium required
 ~/.Xdefaults symlink).&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Xcursor.theme: Vanilla-DMZ-AA
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Xcursor.theme: Vanilla-DMZ-AA
 Xcursor.size: 48
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;I've included cursor size lines into gtk settings files:&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;~/.gtkrc-2.0&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;gtk-cursor-theme-name = &amp;quot;Vanilla-DMZ-AA&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;gtk-cursor-theme-name = &amp;quot;Vanilla-DMZ-AA&amp;quot;
 gtk-cursor-theme-size = 48
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;&lt;code&gt;~/.config/gtk-3.0/settings.ini&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;gtk-cursor-theme-name = Vanilla-DMZ-AA
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;gtk-cursor-theme-name = Vanilla-DMZ-AA
 gtk-cursor-theme-size = 48
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -214,12 +214,12 @@ gtk-cursor-theme-size = 48
 it.&lt;/p&gt;
 &lt;h1&gt;adwaita warnings&lt;/h1&gt;
 &lt;p&gt;Some GTK applications gave me warnings:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Gtk-WARNING **: Загружаемый модуль тем не найден в module_path: «adwaita»,
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Gtk-WARNING **: Загружаемый модуль тем не найден в module_path: «adwaita»,
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;This module comes in standard gnome theme pack:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;emerge -av --quiet gnome-themes-standard
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;emerge -av --quiet gnome-themes-standard
 &lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 13 Mar 2016 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2016-03-13:gentoo/hires.html</guid><category>getnoo</category><category>high resolution</category><category>xorg</category><category>gtk</category></item><item><title>WiFi access point with wpa_supplicant</title><link>http://blog.hoxnox.com/gentoo/wifi-hotspot.html</link><description>&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
 and it has a wifi card which is managed by &lt;code&gt;wpa_supplicant&lt;/code&gt;, you can
 easily setup this computer as WiFi access point. You even don't need
@@ -229,7 +229,7 @@ software.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
 &lt;p&gt;&lt;code&gt;wpa_supplicant&lt;/code&gt; should be compiled with &lt;code&gt;ap&lt;/code&gt; USE flag:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;#39;net-wireless/wpa_supplicant ap&amp;#39; | sudo tee -a /etc/portage/package.use
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;echo &amp;#39;net-wireless/wpa_supplicant ap&amp;#39; | sudo tee -a /etc/portage/package.use
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -237,7 +237,7 @@ software.&lt;/p&gt;
 &lt;li&gt;
 &lt;p&gt;Configure &lt;code&gt;wpa_supplicant.conf&lt;/code&gt; as follows (&lt;code&gt;mode=2&lt;/code&gt; is Access Point
    mode, for more see &lt;a href="http://w1.fi/cgit/hostap/plain/wpa_supplicant/wpa_supplicant.conf"&gt;documentation&lt;/a&gt;):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;network={
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;network={
     ssid=&amp;quot;AP-NAME&amp;quot;
     mode=2
     key_mgmt=WPA-PSK
@@ -253,14 +253,14 @@ wikipedia&lt;/a&gt;.&lt;/p&gt;
 &lt;li&gt;
 &lt;p&gt;Install and setup DHCP server. I'm using &lt;code&gt;net-misc/dhcp&lt;/code&gt; with
    &lt;code&gt;server&lt;/code&gt; USE flag:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;#39;net-misc/dhcp server&amp;#39; | sudo tee -a /etc/portage/package.use
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;echo &amp;#39;net-misc/dhcp server&amp;#39; | sudo tee -a /etc/portage/package.use
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Configure &lt;code&gt;/etc/dhcp/dhcpd.conf&lt;/code&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;subnet 192.168.6.0 netmask 255.255.255.0 {
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;subnet 192.168.6.0 netmask 255.255.255.0 {
   range 192.168.6.20 192.168.6.30;
   option domain-name-servers 8.8.8.8;
   option routers 192.168.6.1;
@@ -274,7 +274,7 @@ wikipedia&lt;/a&gt;.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Start wifi interface, controlled by &lt;code&gt;wpa_supplicant&lt;/code&gt; and DHCP server:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo /etc/init.d/net.wifi start
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo /etc/init.d/net.wifi start
 sudo ifconfig wifi 192.168.6.1/24
 sudo mkdir /var/run/dhcp
 sudo touch /var/lib/dhcp/dhcpcd.leases
@@ -285,7 +285,7 @@ sudo /usr/sbin/dhcpd -f -user dhcp -group dhcp wifi
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;Setup forwarding. Suppose 192.168.4.2 wired to the Internet&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo sysctl -w net.ipv4.ip_forward=1
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo sysctl -w net.ipv4.ip_forward=1
 sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168.4.2
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -310,7 +310,7 @@ sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168
 &lt;li&gt;Утилита xautolock&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Дополняем .xintrc:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;xautolock -time 30 -locker &amp;quot;sudo pm-suspend&amp;quot; -detectsleep &amp;amp;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xautolock -time 30 -locker &amp;quot;sudo pm-suspend&amp;quot; -detectsleep &amp;amp;
 &lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 20 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-20:gentoo/suspend-resume.html</guid><category>gentoo</category><category>suspend</category><category>acpi</category><category>resume</category></item><item><title>G-CPAN</title><link>http://blog.hoxnox.com/gentoo/g-cpan.html</link><description>&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
 я разбираюсь как свинья в апельсинах, тем не менее я знаю о
 существовании единого репозитория &lt;a href="http://www.cpan.org/"&gt;CPAN&lt;/a&gt;. В то же
@@ -320,39 +320,39 @@ sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168
 &lt;a href="http://search.cpan.org/~bingos/CPANPLUS-0.9152/lib/CPANPLUS.pm"&gt;cpanplus&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;Будем использовать g-cpan.&lt;/p&gt;
 &lt;p&gt;Ставим.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av --quiet g-cpan
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo emerge -av --quiet g-cpan
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Создаём оверлей, в который g-cpan будет класть генерируемые ebuild.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo mkdir -p /usr/local/portage-overlays/gcpan/metadata
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo mkdir -p /usr/local/portage-overlays/gcpan/metadata
 echo &amp;#39;masters = gentoo&amp;#39; | sudo tee -a /usr/local/portage-overlays/gcpan/metadata/layout.conf
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Добавляем переменные окружения:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;#39;PORTDIR_OVERLAY=&amp;quot;/usr/local/portage-overlays/gcpan &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PORTDIR_OVERLAY&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&amp;#39; | sudo tee -a /etc/portage/make.conf
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;echo &amp;#39;PORTDIR_OVERLAY=&amp;quot;/usr/local/portage-overlays/gcpan &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;PORTDIR_OVERLAY&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;&amp;#39; | sudo tee -a /etc/portage/make.conf
 echo &amp;#39;GCPAN_OVERLAY=/usr/local/portage-overlays/gcpan&amp;#39; | sudo tee -a /etc/portage/make.conf
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Не знаю уж почему, но мой g-cpan не захотел выгребать эти переменные из
 make.conf, пришлось указать через переменные окружения:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo PORTDIR=/usr/portage PORTDIR_OVERLAY=/usr/local/portage-overlays/gcpan GCPAN_OVERLAY=/usr/local/portage-overlays/gcpan g-cpan -gv DBD::ODBC
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo PORTDIR=/usr/portage PORTDIR_OVERLAY=/usr/local/portage-overlays/gcpan GCPAN_OVERLAY=/usr/local/portage-overlays/gcpan g-cpan -gv DBD::ODBC
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Как водится с первого раза не получилось. Сказав, что есть зависимость
 от DBI, который должен быть собран, g-cpan остановился. Ок, поставим DBI
 вручную:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo emerge -av --quiet -1 DBI
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo emerge -av --quiet -1 DBI
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Вот теперь получилось. В оверлее gcpan появились &lt;code&gt;perl-gcpan/DBD-ODBC&lt;/code&gt; и
 &lt;code&gt;perl-gcpan/Test-Version&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Добавляем в /etc/portage/package.keywords.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;# required by perl-gcpan/Test-Version-1.004001::x-gcpan
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;# required by perl-gcpan/Test-Version-1.004001::x-gcpan
 # required by perl-gcpan/DBD-ODBC-1.50::x-gcpan
 # required by DBD-ODBC (argument)
 =dev-lang/io-2011.09.12-r2 ~amd64
@@ -364,7 +364,7 @@ make.conf, пришлось указать через переменные ок�
 
 
 &lt;p&gt;Устанавливаем DBD-ODBC.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo einstall -av --quiet DBD-ODBC
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo einstall -av --quiet DBD-ODBC
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -374,7 +374,7 @@ perl-module. В исходнике видна переменная myconf, зн�
 передаётся прямо Makefile.PL на этапе &lt;code&gt;src_configure()&lt;/code&gt;. Таким образом в
 полученном достаточно немножечко поменять полученный ebuild, чтобы
 передать параметр -u - добавить строчку&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;myconf=&amp;quot;-u&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;myconf=&amp;quot;-u&amp;quot;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -402,7 +402,7 @@ bootloader&lt;/a&gt;. Официальная инструкция
 &lt;a href="http://dangerousprototypes.com/forum/viewtopic.php?t=3697&amp;amp;p=37398#p37371"&gt;тредов&lt;/a&gt;
 формума Dangerous Prototypes. Стоит отметить, что устройство не особо
 реагировало на команды, отличные от&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo ./fw_update -e -w -v -m all -vid 0x04D8 -pid 0xFD0B -ix ../USBIRToy.v22.hex
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo ./fw_update -e -w -v -m all -vid 0x04D8 -pid 0xFD0B -ix ../USBIRToy.v22.hex
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -420,13 +420,13 @@ lirc&lt;/a&gt;. Так что в версии 0.9.2
 обучаем LIRC нашему пульту. Много времени на это ушло, но в итоге
 получилось. Советую для названий клавишь использовать официальные (не
 использовать ключ irrecord -n). Их список можно получить командой&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;irrecord --list-namespace
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;irrecord --list-namespace
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;p&gt;Копируем конфиг в /etc/lirc/lircf.conf. Не забываем дать
 вменяемое имя в поле name. Правим /etc/lirc/hardware.conf:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;REMOTE=&amp;quot;Custom&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;REMOTE=&amp;quot;Custom&amp;quot;
 REMOTE_MODULES=&amp;quot;&amp;quot;
 REMOTE_DRIVER=&amp;quot;usb_irtoy&amp;quot;
 REMOTE_DEVICE=&amp;quot;/dev/ttyACM0&amp;quot;
@@ -437,7 +437,7 @@ REMOTE_LIRCD_ARGS=&amp;quot;&amp;quot;
 
 
 &lt;p&gt;Запускаем lirc, и проверяем работоспособность:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;#sudo irw
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#sudo irw
 ffff001700000000 00 ok RemoteXXX.conf
 ffff001000000000 00 up RemoteXXX.conf
 ffff001100000000 00 down RemoteXXX.conf
@@ -447,7 +447,7 @@ ffff001100000000 00 down RemoteXXX.conf
 &lt;p&gt;Теперь можно настроить управляемое ПО. К примеру &lt;a href="http://forum.kodi.tv/showthread.php?tid=45972"&gt;по
 мануалу&lt;/a&gt; XBMC
 (.xbmc/userdata/Lircmap.conf):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nt"&gt;&amp;lt;lircmap&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nt"&gt;&amp;lt;lircmap&amp;gt;&lt;/span&gt;
   &lt;span class="nt"&gt;&amp;lt;remote&lt;/span&gt; &lt;span class="na"&gt;device=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;LG_AKB73615307&amp;quot;&lt;/span&gt;&lt;span class="nt"&gt;&amp;gt;&lt;/span&gt;
     &lt;span class="nt"&gt;&amp;lt;left&amp;gt;&lt;/span&gt;KEY_LEGT&lt;span class="nt"&gt;&amp;lt;/left&amp;gt;&lt;/span&gt;
     &lt;span class="nt"&gt;&amp;lt;right&amp;gt;&lt;/span&gt;KEY_RIGHT&lt;span class="nt"&gt;&amp;lt;/right&amp;gt;&lt;/span&gt;
@@ -460,11 +460,11 @@ ffff001100000000 00 down RemoteXXX.conf
 &lt;p&gt;Кроме LIRC рекомендую проект
 &lt;a href="https://github.com/crleblanc/PyIrToy"&gt;PyIrToy&lt;/a&gt;. Позволяет легко из
 питона работать с игрушкой. Вот пример кода:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;serial&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;serial&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;irtoy&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;time&lt;/span&gt;
 
-&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;serial&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;/dev/ttyACM0&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;serialDevice&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
+&lt;span class="k"&gt;with&lt;/span&gt; &lt;span class="n"&gt;serial&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;Serial&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/dev/ttyACM0&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;as&lt;/span&gt; &lt;span class="n"&gt;serialDevice&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;
     &lt;span class="n"&gt;toy&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;irtoy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;IrToy&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;serialDevice&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="n"&gt;irCode&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;toy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;receive&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
     &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;irCode&lt;/span&gt;
@@ -481,7 +481,7 @@ http://www.aladdin-rd.ru/support/downloads/29366/&lt;/p&gt;
 &lt;p&gt;Для гентов можно использовать оверлей товарища mva:
 http://gpo.zugaina.org/app-crypt/etoken-sac
 Нужен небольшой патч (25.02.2014 отписал автору, может поправит):&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="gh"&gt;diff --git a/app-crypt/etoken-sac/etoken-sac-8.1.ebuild b/app-crypt/etoken-sac/etoken-sac-8.1.ebuild&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gh"&gt;diff --git a/app-crypt/etoken-sac/etoken-sac-8.1.ebuild b/app-crypt/etoken-sac/etoken-sac-8.1.ebuild&lt;/span&gt;
 &lt;span class="gh"&gt;index 5ed5dae..622ee1d 100644&lt;/span&gt;
 &lt;span class="gd"&gt;--- a/app-crypt/etoken-sac/etoken-sac-8.1.ebuild&lt;/span&gt;
 &lt;span class="gi"&gt;+++ b/app-crypt/etoken-sac/etoken-sac-8.1.ebuild&lt;/span&gt;
@@ -520,7 +520,7 @@ alias mc='. /usr/libexec/mc/mc-wrapper.sh'&lt;/blockquote&gt;
 собранного ядра&lt;/a&gt;, настраиваем сеть.&lt;/p&gt;
 &lt;p&gt;Начну с общего. Для начала пропишу адреса &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DNS"&gt;DNS&lt;/a&gt; серверов, которые буду использовать. Для этого имеется
 /etc/resolv.conf&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;nameserver&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.8.4.4&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;nameserver&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.8.4.4&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 nameserver&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.8.8.8&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;div class="section" id="ethernet"&gt;
@@ -529,10 +529,10 @@ nameserver&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="mf"&gt;8.8.8.8&lt;
 гуглим настройку нашей сетевой карточки), то есть ifconfig показывает нам eth0 интерфейс. Далее всё
 просто, если в вашей сети имеется &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP"&gt;dhcp&lt;/a&gt;, то всё должно заработать из коробки. Максимум придётся
 включить eth0 интерфейс:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ifconfig eth0 up
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ifconfig eth0 up
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Если &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP"&gt;dhcp&lt;/a&gt; отсутствует, задаём вручную IP и, возможно, &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/%D0%A8%D0%BB%D1%8E%D0%B7_%D0%BF%D0%BE_%D1%83%D0%BC%D0%BE%D0%BB%D1%87%D0%B0%D0%BD%D0%B8%D1%8E"&gt;шлюз по умолчанию&lt;/a&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ifconfig eth0 192.168.1.2
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ifconfig eth0 192.168.1.2
 route add default gw 192.168.1.1
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
@@ -555,7 +555,7 @@ route add default gw 192.168.1.1
 &lt;/blockquote&gt;
 &lt;p&gt;Ставлю &lt;a class="reference external" href="http://hostap.epitest.fi/wpa_supplicant/"&gt;wpa_supplicant&lt;/a&gt;. Необходимо его настроить. Подробней о настройке wpa_supplicant можно
 почитать на &lt;a class="reference external" href="http://hostap.epitest.fi/gitweb/gitweb.cgi?p=hostap.git;a=blob_plain;f=wpa_supplicant/wpa_supplicant.conf"&gt;официальном сайте&lt;/a&gt;. В моём случае это простейший WEP со статическим паролем&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# /etc/wpa_supplicant/wpa_supplicant.conf&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c"&gt;# /etc/wpa_supplicant/wpa_supplicant.conf&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 ctrl_interface=/var/run/wpa_supplicant&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="c"&gt;# ограничим доступ к настройкам WPA только для root&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 ctrl_interface_group=0&lt;span class="w"&gt;&lt;/span&gt;
@@ -572,7 +572,7 @@ network={&lt;span class="w"&gt;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Как и в большинстве роутеров, в моем имеется &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP"&gt;dhcp&lt;/a&gt;. Буду использовать его, для этого корректируем
 /etc/conf.d/net.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;#/etc/conf.d/net&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c"&gt;#/etc/conf.d/net&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;span class="c"&gt;#Wireless&lt;/span&gt;&lt;span class="w"&gt;&lt;/span&gt;
 module=&amp;quot;wpa_supplicant&amp;quot;&lt;span class="w"&gt;&lt;/span&gt;
 config_wlan0=&amp;quot;dhcp&amp;quot;&lt;span class="w"&gt;&lt;/span&gt;
@@ -588,7 +588,7 @@ dhcp_wlan0=&amp;quot;nodns&amp;quot;&lt;span class="w"&gt;&lt;/span&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;Создаём скрипт инициализации и добавляем его в автозапуск&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; /etc/init.d
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="nb"&gt;cd&lt;/span&gt; /etc/init.d
 cp net.lo net.wlan0
 rc-update add net.wlan0 default
 &lt;/pre&gt;&lt;/div&gt;
@@ -605,19 +605,19 @@ postup(). Следует учесть, что postup должен отрабат
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;#/etc/conf.d/net&lt;/span&gt;
-&lt;span class="c"&gt;#Wireless&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;#/etc/conf.d/net&lt;/span&gt;
+&lt;span class="c1"&gt;#Wireless&lt;/span&gt;
 &lt;span class="nv"&gt;module&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;wpa_supplicant&amp;quot;&lt;/span&gt;
 &lt;span class="nv"&gt;config_wlan0&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;dhcp&amp;quot;&lt;/span&gt;
 &lt;span class="nv"&gt;dhcp_wlan0&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;nodns&amp;quot;&lt;/span&gt;
 postup&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
-        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;IFVAR&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;lo&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="c"&gt;# prevent lo long wail&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;IFVAR&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;lo&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="c1"&gt;# prevent lo long wail&lt;/span&gt;
                 /etc/init.d/ntp-client start
         &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="o"&gt;}&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Можно запускать&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;/etc/init.d/net.wlan0 start
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;/etc/init.d/net.wlan0 start
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id4"&gt;
@@ -673,7 +673,7 @@ Linux'ом на борту.
 &lt;p&gt;Сначала настрою Ubutnu, чтобы она могла корректно работать в изменившихся условиях. Монтирую
 куда-нибудь ubutnu-раздел, правлю /etc/fstab и настройки grub2&lt;/p&gt;
 &lt;p&gt;Получаю UUID соответствующих разделов:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;mkdir /mnt/ubutnu
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mkdir /mnt/ubutnu
 mount /dev/disk/by-label/ubuntu /mnt/ubutntu
 ls -l /dev/disk/by-uuid
 ls -l /dev/disk/by-label
@@ -691,7 +691,7 @@ UUID=85b9d2ba-32a8-4172-89b8-7714eaf04dfe  none           swap    sw            
 UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime                 0       1
 &lt;/pre&gt;
 &lt;p&gt;Монтирую /dev и /proc и chroot'юсь в Ubuntu&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;mount -t proc none /mnt/ubuntu/proc
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mount -t proc none /mnt/ubuntu/proc
 mount --rbind /dev /mnt/ubuntu/dev
 chroot /mnt/ubuntu
 &lt;/pre&gt;&lt;/div&gt;
@@ -706,13 +706,13 @@ chroot /mnt/ubuntu
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;mkdir /media/boot
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mkdir /media/boot
 mount /dev/disk/by-label/boot /media/boot
 grub-install --boot-directory&lt;span class="o"&gt;=&lt;/span&gt;/media/boot /dev/sda
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;В раздел boot копирую ядра, которые я бы хотел загружать. Папка /boot в Ubuntu мне уже не
 понадобится. Её можно удалить. На её место будет монтироваться boot раздел.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;cp /boot/vmlinuz-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cp /boot/vmlinuz-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
    /boot/vmcoreinfo-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
    /boot/System.map-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
    /boot/initrd.img-3.0.0-14-generic &lt;span class="se"&gt;\&lt;/span&gt;
@@ -736,7 +736,7 @@ mount /dev/disk/by-label/boot /boot
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;p&gt;Пересоздаю файл конфигурации&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;update-grub
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;update-grub
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Теперь перезагружаюсь в Ubuntu. В ней уже имеются настройки, которые я бы хотел перенести в
 Gentoo, работает сеть и вообще уютно.&lt;/p&gt;
@@ -755,7 +755,7 @@ Gentoo, работает сеть и вообще уютно.&lt;/p&gt;
 &lt;p&gt;Процесс установки отлично описан в &lt;a class="reference external" href="http://www.gentoo.org/doc/ru/handbook/handbook-x86.xml?full=1"&gt;документации&lt;/a&gt;, нам надо лишь слегка видоизменить его.
 Скачиваю свежий дистрибутив Gentoo - &lt;a class="reference external" href="http://mirror.yandex.ru/gentoo-distfiles/releases/x86/current-stage3"&gt;stage3&lt;/a&gt; и распаковываю в gentoo раздел. Также скачиваем и
 распаковываем &lt;a class="reference external" href="http://mirror.yandex.ru/gentoo-distfiles/snapshots/portage-latest.tar.bz2"&gt;portage&lt;/a&gt;&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;tar xvjpf stage3-*.tar.bz2
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;tar xvjpf stage3-*.tar.bz2
 tar xvjf /mnt/gentoo/portage-latest.tar.bz2 -C /mnt/gentoo/usr
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Правим /mnt/gentoo/etc/fstab&lt;/p&gt;
@@ -774,20 +774,20 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 /etc/grub.d Но пока что руки до этого не дошли. Просто вручную пишу конфигурацию /boot/grub/grub.cfg
 сохраняю копию где-нибудь, чтобы восстановить, если нагрянет update-grub. Ещё можно добавить нужные
 пункты загрузки в /etc/grub.d/40_custom.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="c"&gt;# /boot/grub/grub.cfg&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# /boot/grub/grub.cfg&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/00_header ###&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -s &lt;span class="nv"&gt;$prefix&lt;/span&gt;/grubenv &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;have_grubenv&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
-&lt;span class="nb"&gt;  &lt;/span&gt;load_env
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/00_header ###&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -s $prefix/grubenv &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;have_grubenv&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+  load_env
 &lt;span class="k"&gt;fi&lt;/span&gt;
-&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
+&lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;default&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;0&amp;quot;&lt;/span&gt;
 &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;
   save_env saved_entry
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;prev_saved_entry&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;
   save_env prev_saved_entry
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;boot_once&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;boot_once&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nb"&gt;true&lt;/span&gt;
 &lt;span class="k"&gt;fi&lt;/span&gt;
 
 &lt;span class="k"&gt;function&lt;/span&gt; savedefault &lt;span class="o"&gt;{&lt;/span&gt;
@@ -798,7 +798,7 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 &lt;span class="o"&gt;}&lt;/span&gt;
 
 &lt;span class="k"&gt;function&lt;/span&gt; recordfail &lt;span class="o"&gt;{&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;1
   &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -n &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;have_grubenv&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -z &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;boot_once&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; save_env recordfail&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="o"&gt;}&lt;/span&gt;
 
@@ -811,63 +811,63 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 
 insmod part_msdos
 insmod ext2
-&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos7)&amp;#39;&lt;/span&gt;
+&lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos7)&amp;#39;&lt;/span&gt;
 search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root e12efc8c-8057-4a14-bdf0-448e26437e77
 &lt;span class="k"&gt;if&lt;/span&gt; loadfont /usr/share/grub/unicode.pf2 &lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;gfxmode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;gfxmode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;auto
   load_video
   insmod gfxterm
   insmod part_msdos
   insmod ext2
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
   search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;locale_dir&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;&lt;span class="nv"&gt;$root&lt;/span&gt;&lt;span class="o"&gt;)&lt;/span&gt;/grub/locale
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ru_RU
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;locale_dir&lt;/span&gt;&lt;span class="o"&gt;=(&lt;/span&gt;$root&lt;span class="o"&gt;)&lt;/span&gt;/grub/locale
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;lang&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ru_RU
   insmod gettext
 &lt;span class="k"&gt;fi&lt;/span&gt;
 terminal_output gfxterm
 &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;-1
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;-1
 &lt;span class="k"&gt;else&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;3
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;3
 &lt;span class="k"&gt;fi&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/00_header ###&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/00_header ###&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/05_debian_theme ###&lt;/span&gt;
-&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;menu_color_normal&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;white/black
-&lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;menu_color_highlight&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;black/light-gray
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/05_debian_theme ###&lt;/span&gt;
+&lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;menu_color_normal&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;white/black
+&lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;menu_color_highlight&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;black/light-gray
 &lt;span class="k"&gt;if&lt;/span&gt; background_color 44,0,30&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
   clear
 &lt;span class="k"&gt;fi&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/05_debian_theme ###&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/05_debian_theme ###&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/10_linux ###&lt;/span&gt;
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/10_linux ###&lt;/span&gt;
 &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;recordfail&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;1&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
   &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -e &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;/gfxblacklist.txt &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
     &lt;span class="k"&gt;if&lt;/span&gt; hwmatch &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;prefix&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt;/gfxblacklist.txt 3&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
       &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="si"&gt;${&lt;/span&gt;&lt;span class="nv"&gt;match&lt;/span&gt;&lt;span class="si"&gt;}&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;keep
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;keep
       &lt;span class="k"&gt;else&lt;/span&gt;
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
       &lt;span class="k"&gt;fi&lt;/span&gt;
     &lt;span class="k"&gt;else&lt;/span&gt;
-      &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
+      &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
     &lt;span class="k"&gt;fi&lt;/span&gt;
   &lt;span class="k"&gt;else&lt;/span&gt;
-    &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;keep
+    &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;keep
   &lt;span class="k"&gt;fi&lt;/span&gt;
 &lt;span class="k"&gt;else&lt;/span&gt;
-  &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
+  &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;linux_gfx_mode&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;text
 &lt;span class="k"&gt;fi&lt;/span&gt;
-&lt;span class="nb"&gt;export &lt;/span&gt;linux_gfx_mode
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="nv"&gt;$linux_gfx_mode&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; load_video&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
+&lt;span class="nb"&gt;export&lt;/span&gt; linux_gfx_mode
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;$&lt;span class="s2"&gt;linux_gfx_mode&amp;quot;&lt;/span&gt; !&lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;text&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; load_video&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;fi&lt;/span&gt;
 menuentry &lt;span class="s1"&gt;&amp;#39;Ubuntu, с Linux 3.0.0-14-generic&amp;#39;&lt;/span&gt; --class ubuntu --class gnu-linux --class gnu --class os &lt;span class="o"&gt;{&lt;/span&gt;
         recordfail
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;gfxpayload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;$linux_gfx_mode&lt;/span&gt;
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;gfxpayload&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;$linux_gfx_mode
         insmod gzio
         insmod part_msdos
         insmod ext2
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
         search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
         linux   /vmlinuz-3.0.0-14-generic &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;UUID&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;e12efc8c-8057-4a14-bdf0-448e26437e77 ro   quiet splash vt.handoff&lt;span class="o"&gt;=&lt;/span&gt;7
         initrd  /initrd.img-3.0.0-14-generic
@@ -877,55 +877,55 @@ menuentry &lt;span class="s1"&gt;&amp;#39;Ubuntu, с Linux 3.0.0-14-generic (р�
         insmod gzio
         insmod part_msdos
         insmod ext2
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
         search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
         &lt;span class="nb"&gt;echo&lt;/span&gt;    &lt;span class="s1"&gt;&amp;#39;Загружается Linux 3.0.0-14-generic ...&amp;#39;&lt;/span&gt;
         linux   /vmlinuz-3.0.0-14-generic &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="nv"&gt;UUID&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;e12efc8c-8057-4a14-bdf0-448e26437e77 ro recovery nomodeset
         &lt;span class="nb"&gt;echo&lt;/span&gt;    &lt;span class="s1"&gt;&amp;#39;Загружается начальный ramdisk ...&amp;#39;&lt;/span&gt;
         initrd  /initrd.img-3.0.0-14-generic
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/10_linux ###&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/10_linux ###&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/20_linux_xen ###&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/20_linux_xen ###&lt;/span&gt;
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/20_linux_xen ###&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/20_linux_xen ###&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/20_memtest86+ ###&lt;/span&gt;
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/20_memtest86+ ###&lt;/span&gt;
 menuentry &lt;span class="s2"&gt;&amp;quot;Memory test (memtest86+)&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
         insmod part_msdos
         insmod ext2
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
         search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
         linux16 /memtest86+.bin
 &lt;span class="o"&gt;}&lt;/span&gt;
 menuentry &lt;span class="s2"&gt;&amp;quot;Memory test (memtest86+, serial console 115200)&amp;quot;&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
         insmod part_msdos
         insmod ext2
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
         search --no-floppy --fs-uuid --set&lt;span class="o"&gt;=&lt;/span&gt;root aec1d4c6-8332-46b8-a024-244e5fa90df4
         linux16 /memtest86+.bin &lt;span class="nv"&gt;console&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;ttyS0,115200n8
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/20_memtest86+ ###&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/20_memtest86+ ###&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/30_os-prober ###&lt;/span&gt;
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/30_os-prober ###&lt;/span&gt;
 menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class gnu-linux --class gnu --class os &lt;span class="o"&gt;{&lt;/span&gt;
         insmod part_msdos
         insmod ext2
-        &lt;span class="nb"&gt;set &lt;/span&gt;&lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
+        &lt;span class="nb"&gt;set&lt;/span&gt; &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;(hd0,msdos1)&amp;#39;&lt;/span&gt;
         linux /gentoo-2.6.38-tuxonice &lt;span class="nv"&gt;root&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;/dev/sda6 &lt;span class="nv"&gt;resume&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;swap:/dev/sda1
 &lt;span class="o"&gt;}&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/30_os-prober ###&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/30_os-prober ###&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/40_custom ###&lt;/span&gt;
-&lt;span class="c"&gt;# This file provides an easy way to add custom menu entries.  Simply type the&lt;/span&gt;
-&lt;span class="c"&gt;# menu entries you want to add after this comment.  Be careful not to change&lt;/span&gt;
-&lt;span class="c"&gt;# the &amp;#39;exec tail&amp;#39; line above.&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/40_custom ###&lt;/span&gt;
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/40_custom ###&lt;/span&gt;
+&lt;span class="c1"&gt;# This file provides an easy way to add custom menu entries.  Simply type the&lt;/span&gt;
+&lt;span class="c1"&gt;# menu entries you want to add after this comment.  Be careful not to change&lt;/span&gt;
+&lt;span class="c1"&gt;# the &amp;#39;exec tail&amp;#39; line above.&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/40_custom ###&lt;/span&gt;
 
-&lt;span class="c"&gt;### BEGIN /etc/grub.d/41_custom ###&lt;/span&gt;
-&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -f  &lt;span class="nv"&gt;$prefix&lt;/span&gt;/custom.cfg &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-  &lt;span class="nb"&gt;source&lt;/span&gt; &lt;span class="nv"&gt;$prefix&lt;/span&gt;/custom.cfg&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="c1"&gt;### BEGIN /etc/grub.d/41_custom ###&lt;/span&gt;
+&lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="o"&gt;[&lt;/span&gt; -f  $prefix/custom.cfg &lt;span class="o"&gt;]&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+  &lt;span class="nb"&gt;source&lt;/span&gt; $prefix/custom.cfg&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="k"&gt;fi&lt;/span&gt;
-&lt;span class="c"&gt;### END /etc/grub.d/41_custom ###&lt;/span&gt;
+&lt;span class="c1"&gt;### END /etc/grub.d/41_custom ###&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Перезагружаюсь в Gentoo. Welcome home. Теперь начинается самое интересное ...&lt;/p&gt;
 &lt;/div&gt;
@@ -938,5 +938,5 @@ menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class
 который можно установить с пакетом &lt;code&gt;libtxc_dxtn&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Открытая реализация OpenGL - это mesa. С пакетом mesa-progs идет утилита
 glxinfo, с помощью нее можно узнать различные параметры:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;glxinfo | grep OpenGL
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;glxinfo | grep OpenGL
 &lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 01 Jan 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-01-01:gentoo/games.html</guid></item></channel></rss>

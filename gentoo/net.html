@@ -16,9 +16,18 @@
         <meta name="keywords" content="gentoo,wifi,bluetooth,ethernet" />
         <meta name="description" content="Настраиваю сетевые коммуникации в Gentoo." />
 
-    <!-- Enable latex plugin -->
-
-
+        <meta property="og:site_name" content="NX" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Сеть"/>
+        <meta property="og:url" content="http://blog.hoxnox.com/gentoo/net.html"/>
+        <meta property="og:description" content="Настраиваю сетевые коммуникации в Gentoo."/>
+        <meta property="article:published_time" content="2012-02-23" />
+            <meta property="article:section" content="gentoo" />
+            <meta property="article:tag" content="gentoo" />
+            <meta property="article:tag" content="wifi" />
+            <meta property="article:tag" content="bluetooth" />
+            <meta property="article:tag" content="ethernet" />
+            <meta property="article:author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
 
 
     <!-- Bootstrap -->
@@ -33,15 +42,11 @@
         <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
               title="NX RSS Feed"/>
 
-
-        <link href="http://blog.hoxnox.com/feeds/gentoo.atom.xml" type="application/atom+xml" rel="alternate"
-              title="NX gentoo ATOM Feed"/>
-
 </head>
 <body>
 
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+	<div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -83,13 +88,14 @@ NX            </a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+              <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
     </div>
 </div> <!-- /.navbar -->
-
+<!-- Banner -->
+<!-- End Banner -->
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
@@ -116,9 +122,6 @@ NX            </a>
 
 
 
-
-
-
 <span class="label label-default">Tags</span>
 	<a href="http://blog.hoxnox.com/tag/gentoo.html">gentoo</a>
         /
@@ -135,7 +138,7 @@ NX            </a>
 собранного ядра</a>, настраиваем сеть.</p>
 <p>Начну с общего. Для начала пропишу адреса <a class="reference external" href="http://ru.wikipedia.org/wiki/DNS">DNS</a> серверов, которые буду использовать. Для этого имеется
 /etc/resolv.conf</p>
-<div class="highlight"><pre>nameserver<span class="w"> </span><span class="mf">8.8.4.4</span><span class="w"></span>
+<div class="highlight"><pre><span></span>nameserver<span class="w"> </span><span class="mf">8.8.4.4</span><span class="w"></span>
 nameserver<span class="w"> </span><span class="mf">8.8.8.8</span><span class="w"></span>
 </pre></div>
 <div class="section" id="ethernet">
@@ -144,10 +147,10 @@ nameserver<span class="w"> </span><span class="mf">8.8.8.8</span><span class="w"
 гуглим настройку нашей сетевой карточки), то есть ifconfig показывает нам eth0 интерфейс. Далее всё
 просто, если в вашей сети имеется <a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP">dhcp</a>, то всё должно заработать из коробки. Максимум придётся
 включить eth0 интерфейс:</p>
-<div class="highlight"><pre>ifconfig eth0 up
+<div class="highlight"><pre><span></span>ifconfig eth0 up
 </pre></div>
 <p>Если <a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP">dhcp</a> отсутствует, задаём вручную IP и, возможно, <a class="reference external" href="http://ru.wikipedia.org/wiki/%D0%A8%D0%BB%D1%8E%D0%B7_%D0%BF%D0%BE_%D1%83%D0%BC%D0%BE%D0%BB%D1%87%D0%B0%D0%BD%D0%B8%D1%8E">шлюз по умолчанию</a></p>
-<div class="highlight"><pre>ifconfig eth0 192.168.1.2
+<div class="highlight"><pre><span></span>ifconfig eth0 192.168.1.2
 route add default gw 192.168.1.1
 </pre></div>
 </div>
@@ -170,7 +173,7 @@ route add default gw 192.168.1.1
 </blockquote>
 <p>Ставлю <a class="reference external" href="http://hostap.epitest.fi/wpa_supplicant/">wpa_supplicant</a>. Необходимо его настроить. Подробней о настройке wpa_supplicant можно
 почитать на <a class="reference external" href="http://hostap.epitest.fi/gitweb/gitweb.cgi?p=hostap.git;a=blob_plain;f=wpa_supplicant/wpa_supplicant.conf">официальном сайте</a>. В моём случае это простейший WEP со статическим паролем</p>
-<div class="highlight"><pre><span class="c"># /etc/wpa_supplicant/wpa_supplicant.conf</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="c"># /etc/wpa_supplicant/wpa_supplicant.conf</span><span class="w"></span>
 ctrl_interface=/var/run/wpa_supplicant<span class="w"></span>
 <span class="c"># ограничим доступ к настройкам WPA только для root</span><span class="w"></span>
 ctrl_interface_group=0<span class="w"></span>
@@ -187,7 +190,7 @@ network={<span class="w"></span>
 </pre></div>
 <p>Как и в большинстве роутеров, в моем имеется <a class="reference external" href="http://ru.wikipedia.org/wiki/DHCP">dhcp</a>. Буду использовать его, для этого корректируем
 /etc/conf.d/net.</p>
-<div class="highlight"><pre><span class="c">#/etc/conf.d/net</span><span class="w"></span>
+<div class="highlight"><pre><span></span><span class="c">#/etc/conf.d/net</span><span class="w"></span>
 <span class="c">#Wireless</span><span class="w"></span>
 module=&quot;wpa_supplicant&quot;<span class="w"></span>
 config_wlan0=&quot;dhcp&quot;<span class="w"></span>
@@ -203,7 +206,7 @@ dhcp_wlan0=&quot;nodns&quot;<span class="w"></span>
 </tbody>
 </table>
 <p>Создаём скрипт инициализации и добавляем его в автозапуск</p>
-<div class="highlight"><pre><span class="nb">cd</span> /etc/init.d
+<div class="highlight"><pre><span></span><span class="nb">cd</span> /etc/init.d
 cp net.lo net.wlan0
 rc-update add net.wlan0 default
 </pre></div>
@@ -220,19 +223,19 @@ postup(). Следует учесть, что postup должен отрабат
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre><span class="c">#/etc/conf.d/net</span>
-<span class="c">#Wireless</span>
+<div class="highlight"><pre><span></span><span class="c1">#/etc/conf.d/net</span>
+<span class="c1">#Wireless</span>
 <span class="nv">module</span><span class="o">=</span><span class="s2">&quot;wpa_supplicant&quot;</span>
 <span class="nv">config_wlan0</span><span class="o">=</span><span class="s2">&quot;dhcp&quot;</span>
 <span class="nv">dhcp_wlan0</span><span class="o">=</span><span class="s2">&quot;nodns&quot;</span>
 postup<span class="o">()</span> <span class="o">{</span>
-        <span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">IFVAR</span><span class="si">}</span> !<span class="o">=</span> <span class="s2">&quot;lo&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c"># prevent lo long wail</span>
+        <span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">IFVAR</span><span class="si">}</span> !<span class="o">=</span> <span class="s2">&quot;lo&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="c1"># prevent lo long wail</span>
                 /etc/init.d/ntp-client start
         <span class="k">fi</span>
 <span class="o">}</span>
 </pre></div>
 <p>Можно запускать</p>
-<div class="highlight"><pre>/etc/init.d/net.wlan0 start
+<div class="highlight"><pre><span></span>/etc/init.d/net.wlan0 start
 </pre></div>
 </div>
 <div class="section" id="id4">
@@ -247,53 +250,60 @@ postup<span class="o">()</span> <span class="o">{</span>
     <section class="comments" id="comments">
         <h2>Comments</h2>
 
-        <div id="hypercomments_widget"></div>
+        <div id="disqus_thread"></div>
         <script type="text/javascript">
-        _hcwp = window._hcwp || [];
-        _hcwp.push({widget:"Stream", widget_id: 27931});
-        (function() {
-        if("HC_LOAD_INIT" in window)return;
-        HC_LOAD_INIT = true;
-        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
-        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hcc, s.nextSibling);
-        })();
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'gentoo/net';
+                var disqus_url = 'http://blog.hoxnox.com/gentoo/net.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
         </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
     </section>
         </article>
     </section>
 
         </div>
-        <div class="col-sm-3 well well-sm" id="sidebar">
+        <div class="col-sm-3" id="sidebar">
+            <aside>
 
-<aside>
-    <section>
-        <ul class="list-group list-group-flush">
-                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
-                  <ul class="list-group" id="social">
-                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
-                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
-                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
-                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
-                  </ul>
-                </li>
-
-
-
-                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
-                    <ul class="list-group list-inline tagcloud" id="tags">
-                    </ul>
-                </li>    
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+              </ul>
+            </li>
 
 
 
-        </ul>
-    </section>
-
-</aside>        </div>
+            <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                <ul class="list-group list-inline tagcloud" id="tags">
+                </ul>
+            </li>
+    </ul>
+</section>
+            </aside>
+        </div>
     </div>
 </div>
 <footer>
@@ -316,6 +326,21 @@ postup<span class="o">()</span> <span class="o">{</span>
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
 <script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
 
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
     <!-- Google Analytics -->
     <script type="text/javascript">
 
@@ -333,5 +358,6 @@ postup<span class="o">()</span> <span class="o">{</span>
         })();
     </script>
     <!-- End Google Analytics Code -->
+
 </body>
 </html>

@@ -16,9 +16,18 @@
         <meta name="keywords" content="ssl,tls,security,cryptography" />
         <meta name="description" content="Описание протокола TLS на основе RFC-5246" />
 
-    <!-- Enable latex plugin -->
-
-
+        <meta property="og:site_name" content="NX" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Что такое SSL?"/>
+        <meta property="og:url" content="http://blog.hoxnox.com/sec/tls.html"/>
+        <meta property="og:description" content="Описание протокола TLS на основе RFC-5246"/>
+        <meta property="article:published_time" content="2012-08-14" />
+            <meta property="article:section" content="sec" />
+            <meta property="article:tag" content="ssl" />
+            <meta property="article:tag" content="tls" />
+            <meta property="article:tag" content="security" />
+            <meta property="article:tag" content="cryptography" />
+            <meta property="article:author" content="hoxnox@gmail.com" />
 
 
     <!-- Bootstrap -->
@@ -33,15 +42,11 @@
         <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
               title="NX RSS Feed"/>
 
-
-        <link href="http://blog.hoxnox.com/feeds/sec.atom.xml" type="application/atom+xml" rel="alternate"
-              title="NX sec ATOM Feed"/>
-
 </head>
 <body>
 
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+	<div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -83,13 +88,14 @@ NX            </a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+              <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
     </div>
 </div> <!-- /.navbar -->
-
+<!-- Banner -->
+<!-- End Banner -->
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
@@ -116,9 +122,6 @@ NX            </a>
 
 
 
-
-
-
 <span class="label label-default">Tags</span>
 	<a href="http://blog.hoxnox.com/tag/ssl.html">ssl</a>
         /
@@ -139,13 +142,13 @@ NX            </a>
 <div class="section" id="id2">
 <h3>Число</h3>
 <p>Все данные, представляемые в протоколе записываются в прямом порядке байт. То есть</p>
-<div class="highlight"><pre>value = (byte[0] &lt;&lt; 8*(n-1)) | (byte[1] &lt;&lt; 8*(n-2)) | ... | byte[n-1];
+<div class="highlight"><pre><span></span>value = (byte[0] &lt;&lt; 8*(n-1)) | (byte[1] &lt;&lt; 8*(n-2)) | ... | byte[n-1];
 </pre></div>
 </div>
 <div class="section" id="id3">
 <h3>Вектор</h3>
 <p>Запись вида</p>
-<div class="highlight"><pre>T T&#39;[n];
+<div class="highlight"><pre><span></span>T T&#39;[n];
 </pre></div>
 <p>означает определение нового типа T', который является вектором значений типа T фиксированной длины
 n. При этом n - <strong>количество байт</strong>, занимаемых новым типом T'.</p>
@@ -158,7 +161,7 @@ n. При этом n - <strong>количество байт</strong>, зани�
 </tbody>
 </table>
 <p>Пример:</p>
-<div class="highlight"><pre>opaque Datum[3]; /* Три байта, не интерпретируемые протоколом */
+<div class="highlight"><pre><span></span>opaque Datum[3]; /* Три байта, не интерпретируемые протоколом */
 Datum Data[9]; /* 9-байтный вектор значений типа Datum.*/
 
 /*
@@ -171,12 +174,12 @@ Datum Data[3];
 <!-- *** -->
 <p>Существует такое понятие как <em>вектор переменной длины</em>. Определение нового типа T' - вектор
 переменной длины от K до N байт, содержащий значения типа T.</p>
-<div class="highlight"><pre>T T&#39;&lt;K..N&gt;
+<div class="highlight"><pre><span></span>T T&#39;&lt;K..N&gt;
 </pre></div>
 <p>При кодировании таких векторов дополнительно приписывается его текущая длина. Записывается она в
 виде числа из M байт, где M - число байт, достаточных для хранения числа, отражающего максимальную
 длину вектора в байтах. Например:</p>
-<div class="highlight"><pre>opaque mandatory&lt;300..400&gt;;
+<div class="highlight"><pre><span></span>opaque mandatory&lt;300..400&gt;;
  /* вектор не менее 300, но не более 400 байт. Длина записывается числом в 2 байта (достаточно для
  хранения числа 400.*/
 uint16 longer&lt;0..800&gt;
@@ -193,7 +196,7 @@ uint16 longer&lt;0..800&gt;
 </tbody>
 </table>
 <p>Базовый тип данных - uint8. Определены также</p>
-<div class="highlight"><pre>uint8 uint16[2];
+<div class="highlight"><pre><span></span>uint8 uint16[2];
 uint8 uint24[3];
 uint8 uint32[4];
 uint8 uint64[8];
@@ -204,7 +207,7 @@ uint8 uint64[8];
 <div class="section" id="id4">
 <h3>Перечисление</h3>
 <p>Аналогично языку си:</p>
-<div class="highlight"><pre>enum { e1(v1), e2(v2), ..., en(vn) [[, (k)]] } Te;
+<div class="highlight"><pre><span></span>enum { e1(v1), e2(v2), ..., en(vn) [[, (k)]] } Te;
 </pre></div>
 <p>Соответственно объем, занимаемый одним значением типа &quot;перечисление&quot;, равен числу байт, необходимых
 для хранения максимального значения перечисления.</p>
@@ -218,20 +221,20 @@ uint8 uint64[8];
 </tbody>
 </table>
 <p>Пример:</p>
-<div class="highlight"><pre>enum { red(3), green(23), blue(1) } Color;
+<div class="highlight"><pre><span></span>enum { red(3), green(23), blue(1) } Color;
 
 Color color = Color.blue;
 Color color = blue;
 </pre></div>
 <p>Для перечислений, которые никогда не интерпретируются своими значениями последние можно опустить.
 Например:</p>
-<div class="highlight"><pre>enum{ low, medium, high } Amount;
+<div class="highlight"><pre><span></span>enum{ low, medium, high } Amount;
 </pre></div>
 </div>
 <div class="section" id="id5">
 <h3>Структура</h3>
 <p>Аналогично языку си:</p>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         T1 t1;
         T2 t2;
         ...
@@ -242,7 +245,7 @@ Color color = blue;
 <div class="section" id="id6">
 <h3>Вариант</h3>
 <p>Поля структуры могут варьироваться в соответствии с каким-либо перечислимым типом.</p>
-<div class="highlight"><pre>enum { e1, e2, ..., ek } E;
+<div class="highlight"><pre><span></span>enum { e1, e2, ..., ek } E;
 struct P
         T1 t1;
         T2 t2;
@@ -260,7 +263,7 @@ struct P
 <p>Например, мы можем определить структуру транспорт с полями &quot;скорость движения&quot; и &quot;количество мест&quot;. Если
 это автомобиль, то структура будет содержать поле &quot;объем двигателя&quot;, а для велосипеда определим
 &quot;количество скоростей&quot;.</p>
-<div class="highlight"><pre>enum { auto, bicycle } TransportType;
+<div class="highlight"><pre><span></span>enum { auto, bicycle } TransportType;
 
 struct Transport {
         int16 speed;
@@ -288,7 +291,7 @@ struct Transport {
 <h2>Кодирование криптографических опреаций</h2>
 <div class="section" id="id8">
 <h3>Цифровая подпись</h3>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         SignatureAndHashAlgorithm algorithm;
         opaque signature&lt;0..2^16-1&gt;;
 } DigitallySigned;
@@ -352,28 +355,28 @@ protcol), а затем по протоколу изменения параме�
 <ul>
 <li><p class="first">connection end (оконечная точка соединения)
 Является ли сущность клиентом или сервером в данном соединении.</p>
-<div class="highlight"><pre>enum { server, client } ConnectionEnd;
+<div class="highlight"><pre><span></span>enum { server, client } ConnectionEnd;
 </pre></div>
 </li>
 <li><p class="first">PRF algorithm (псевдослучайная функция)
 Алгоритм, используемый для генерации ключей из главного ключа (master key).</p>
-<div class="highlight"><pre>enum{ tls_prf_sha256 } PRFAlgorithm;
+<div class="highlight"><pre><span></span>enum{ tls_prf_sha256 } PRFAlgorithm;
 </pre></div>
 </li>
 <li><p class="first">bulk encryption algorithm (алгоритм шифрования)
 Спецификация включает в себя размер ключа, является ли шифрование блочными или AEAD, размер блока
 шифра (если имеется), и длины явного и неявного инициализирующих векторов.</p>
-<div class="highlight"><pre>enum { null, rc4, 3des, aes } BulkCipherAlgorithm;
+<div class="highlight"><pre><span></span>enum { null, rc4, 3des, aes } BulkCipherAlgorithm;
 </pre></div>
 </li>
 <li><p class="first">MAC algorithm (алгоритм имитовставки)
 Спецификация включает размер значения, возвращаемого алгоритмом.</p>
-<div class="highlight"><pre>enum { stream, block, aead } CipherType;
+<div class="highlight"><pre><span></span>enum { stream, block, aead } CipherType;
 </pre></div>
 </li>
 <li><p class="first">compression algorithm (алгоритм сжатия)
 Спецификация включает всю информацию, необходимую для сжатия</p>
-<div class="highlight"><pre>enum { null(0), (255) } CompressionMethod;
+<div class="highlight"><pre><span></span>enum { null(0), (255) } CompressionMethod;
 </pre></div>
 </li>
 <li><p class="first">master secret
@@ -386,7 +389,7 @@ protcol), а затем по протоколу изменения параме�
 32-байтное значение, вырабатываемое сервером</p>
 </li>
 </ul>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         ConnectionEnd       entity;
         PRFAlgorithm        prf_algorithm;
         BulkCipherAlgorithm bulk_cipher_algorithm;
@@ -434,7 +437,7 @@ protcol), а затем по протоколу изменения параме�
 <p>Уровень записи фрагментирует блоки в TLSPlaintext записи (см. ниже). Размер записи не может
 превышать 2^14 байт. Границы сообщения клиента не сохраняются. То есть в одной записи может
 содержаться несколько сообщений или наоборот в нескольких записях может быть одно сообщение.</p>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         uint8 major;
         uint8 minor;
 } ProtocolVersion;
@@ -478,7 +481,7 @@ data) могут (например для усложнения анализа т
 <p>Должно использоваться сжатие без потерь, не увеличивающее длину содержимого более чем на 1024 байт.
 Если при распаковке получился фрагмент, длина которого больше 2^14 байт (больше максимально
 возможного), то функция распаковки должна сообщить об ошибке.</p>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         ContentType type; /*** как и TLSPlaintext ***/
         ProtocolVersion version; /*** как и в TLSPlaintext ***/
         uint16 length; /*** не больше 2^14 + 1024 ***/
@@ -499,7 +502,7 @@ data) могут (например для усложнения анализа т
 <p>Функции шифрования и имитовставки преобразуют TLSCompressed структуру в TLSCiphertext. Функции
 расшифрования осуществляют обратную операцию. Имитовставка имеет номер для обнаружения пропущенных
 или повторяющихся сообщений.</p>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         ContentType type;
         ProtocolVersion version;
         uint16 length; /*** не превышет 2^14 + 2048 ***/
@@ -512,13 +515,13 @@ data) могут (например для усложнения анализа т
 </pre></div>
 <div class="section" id="id14">
 <h3>Пустой или стандартный потоковый шифр</h3>
-<div class="highlight"><pre>stream-ciphered struct {
+<div class="highlight"><pre><span></span>stream-ciphered struct {
         opaque Content[TLSCompressed.length];
         opaque MAC[SecurityParameters.mac_length];
 } GenericStreamCipher;
 </pre></div>
 <p>Имитовставка генерируется следующим образом:</p>
-<div class="highlight"><pre>  MAC(MAC_write_key, seq_num
+<div class="highlight"><pre><span></span>  MAC(MAC_write_key, seq_num
           + TLSCompressed.type
           + TLSCompressed.version
           + TLSCompressed.length
@@ -539,7 +542,7 @@ TODO:</td>
 </div>
 <div class="section" id="id15">
 <h3>Блочное шифрование</h3>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         /*** вектор инициализации ***/
         opaque IV(SecurityParameters.record_iv_length];
         block-ciphered struct {
@@ -566,7 +569,7 @@ TODO:</td>
 Таким образом дополнение должно состоять минимум из 8*11 - (81 + 1) = 6 байт. Оно может быть и
 больше: 6 + 8 байт, 6 + 8 + 8 байт, ..., 254 байта. Тогда последние 8 байт (для минимального
 дополнения) GenericBlockCipher будут</p>
-<div class="highlight"><pre>0x## 0x06 0x06 0x06 0x06 0x06 0x06 0x06
+<div class="highlight"><pre><span></span>0x## 0x06 0x06 0x06 0x06 0x06 0x06 0x06
 
 0x## - последний байт имитовставки
 </pre></div>
@@ -582,7 +585,7 @@ TODO:</td>
 <p>Многие приложения для обеспечения целостности используют имитовставку, а для обеспечения
 конфиденциальности какой-то алгоритм шифрования. При этом используется два независимых ключа. Идея
 AEAD состоит в том, чтобы заменить этот подход единым алгоритмом.</p>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         opaque nonce_explicit[SecurityParameters.record_iv_length];
         aead-ciphered struct {
                 opaque content[TLSCompressed.length];
@@ -590,7 +593,7 @@ AEAD состоит в том, чтобы заменить этот подход
 } GenericAEADCipher;
 </pre></div>
 <p>дополнительные подлинные данные определяются следующим образом:</p>
-<div class="highlight"><pre>additional_data = seq_num + TLSCompressed.type + TLSCompressed.version +
+<div class="highlight"><pre><span></span>additional_data = seq_num + TLSCompressed.type + TLSCompressed.version +
                 TLSCompressed.length;
 
 &quot;+&quot; - это конкатенация
@@ -604,13 +607,13 @@ AEAD состоит в том, чтобы заменить этот подход
 Некоторые AEAD шифры могут дополнительно нуждаться в клиентском и серверном инициализирующих
 векторах.</p>
 <p>раскрытие в последовательность байт:</p>
-<div class="highlight"><pre>key_block = PRF(SecurityParameters.master_secret,
+<div class="highlight"><pre><span></span>key_block = PRF(SecurityParameters.master_secret,
         &quot;key expansion&quot;,
         SecurityParameters.server_random +
         SecurityParameters.client_random);
 </pre></div>
 <p>разделение:</p>
-<div class="highlight"><pre>client_write_MAC_key[SecurityParameters.mac_key_length];
+<div class="highlight"><pre><span></span>client_write_MAC_key[SecurityParameters.mac_key_length];
 server_write_MAC_key[SecurityParameters.mac_key_length];
 client_write_key[SecurityParameters.enc_key_length];
 server_write_key[SecurityParameters.enc_key_length];
@@ -638,7 +641,7 @@ parameters) соединения на уровне записи для ауте�
 <h3>Протокол изменения параметров шифрования</h3>
 <p>Протокол состоит из одного сообщения, которое шифруется и сжимается по текущему (не <em>ожидаемому</em>, а
 текущему) состоянию. Сообщение состоит из одного байта 0x01.</p>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         enum { change_cipher_spec(1), (255) } type;
 } ChangeCipherSpec;
 </pre></div>
@@ -655,7 +658,7 @@ parameters) соединения на уровне записи для ауте�
 происходить какое-то общение между узлами, но идентификатор сессии становится недействительным.
 Таким образом, сессия не может использоваться для установления новых соединений. Сообщение тревоги
 шифруется и сжимается, как и остальные.</p>
-<div class="highlight"><pre>enum { warning(1), fatal(2), (255) } AlertLevel;
+<div class="highlight"><pre><span></span>enum { warning(1), fatal(2), (255) } AlertLevel;
 
 enum {
         close_notify(0),
@@ -811,7 +814,7 @@ struct {
 незамедлительно шлёт <cite>Finished</cite> сообщение зашифрованное новым шифром. В ответ сервер пошлёт своё
 сообщение <cite>ChangeCipherSpec</cite>, меняет шифр и шлёт <cite>Finished</cite>. С этого момента установление соединения
 закончено и можно обмениваться данными.</p>
-<div class="highlight"><pre>Client                        Server
+<div class="highlight"><pre><span></span>Client                        Server
 
 ClientHello        --------&gt;
                               ServerHello
@@ -837,7 +840,7 @@ Application Data   &lt;-------&gt;  Application Data
 соединение с помощью данной сессии, он пошлёт ServerHello с тем же идентификатором сессии, они
 меняют шифры посредством <cite>ChangeCipherSpec</cite> сообщений и обмениваются <cite>Finished</cite>. Если же сессия
 отсутствует в кэше сервера, то производится полная процедура установления соединения.</p>
-<div class="highlight"><pre>Client                        Server
+<div class="highlight"><pre><span></span>Client                        Server
 
 ClientHello        --------&gt;
                               ServerHello
@@ -849,7 +852,7 @@ Application Data   &lt;-------&gt;  Application Data
 </pre></div>
 <p>Протокол установления соединения на более низком уровне использует протокол TLS записи для передачи
 сообщений.</p>
-<div class="highlight"><pre>enum {
+<div class="highlight"><pre><span></span>enum {
         hello_request(0),
         client_hello(1),
         server_hello(2),
@@ -886,13 +889,13 @@ struct {
 соединение. Послав <cite>HelloRequest</cite> сервер должен дождаться какого-то результата процедуры
 установления соединения.</p>
 <p>Структура сообщения:</p>
-<div class="highlight"><pre>struct {} HelloRequest;
+<div class="highlight"><pre><span></span>struct {} HelloRequest;
 </pre></div>
 </div>
 <div class="section" id="clienthello">
 <h3>ClientHello</h3>
 <p>Структура сообщения:</p>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         ProtocolVersion client_version;
         Random random;
         SessionID session_id;
@@ -908,7 +911,7 @@ struct {
 </pre></div>
 <div class="section" id="random">
 <h4>Random</h4>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         uint32 gmt_unix_time;
         opaque random_bytes[28];
 } Random;
@@ -923,7 +926,7 @@ struct {
 <div class="section" id="sessionid">
 <h4>SessionID</h4>
 <p>Если не пусто, то продолжить сессию. Если пусто - начать новую.</p>
-<div class="highlight"><pre>opaque SessionID&lt;0..32&gt;;
+<div class="highlight"><pre><span></span>opaque SessionID&lt;0..32&gt;;
 </pre></div>
 </div>
 <div class="section" id="id21">
@@ -932,14 +935,14 @@ struct {
 &quot;набор шифрования&quot; содержит алгоритм распределения ключей, алгоритм шифрования (включая длину
 закрытого ключа), алгоритм имитовставки и псевдослучайную функцию. Сервер выберет подходящий набор,
 либо вернет критическую ошибку.</p>
-<div class="highlight"><pre>uint8 CipherSuite[2];
+<div class="highlight"><pre><span></span>uint8 CipherSuite[2];
 </pre></div>
 <p>Возможные варианты:</p>
 <p>Без шифрования (может использоваться только как инициализирующее значение).</p>
-<div class="highlight"><pre>CipherSuite TLS_NULL_WITH_NULL_NULL = { 0x00,0x00 };
+<div class="highlight"><pre><span></span>CipherSuite TLS_NULL_WITH_NULL_NULL = { 0x00,0x00 };
 </pre></div>
 <p>Для серверов, поддерживающих RSA (должен быть сертификат):</p>
-<div class="highlight"><pre>CipherSuite   TLS_RSA_WITH_NULL_MD5                ={  0x00, 0x01  };
+<div class="highlight"><pre><span></span>CipherSuite   TLS_RSA_WITH_NULL_MD5                ={  0x00, 0x01  };
 CipherSuite   TLS_RSA_WITH_NULL_SHA                ={  0x00, 0x02  };
 CipherSuite   TLS_RSA_WITH_NULL_SHA256             ={  0x00, 0x3B  };
 CipherSuite   TLS_RSA_WITH_RC4_128_MD5             ={  0x00, 0x04  };
@@ -951,7 +954,7 @@ CipherSuite   TLS_RSA_WITH_AES_128_CBC_SHA256      ={  0x00, 0x3C  };
 CipherSuite   TLS_RSA_WITH_AES_256_CBC_SHA256      ={  0x00, 0x3D  };
 </pre></div>
 <p>Диффи-Хэллман (у сервера должен быть серктификат, у клиента он тоже может быть запрошен).</p>
-<div class="highlight"><pre>CipherSuite   TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x0D   };
+<div class="highlight"><pre><span></span>CipherSuite   TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x0D   };
 CipherSuite   TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA     ={   0x00, 0x10   };
 CipherSuite   TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA    ={   0x00, 0x13   };
 CipherSuite   TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA    ={   0x00, 0x16   };
@@ -973,7 +976,7 @@ CipherSuite   TLS_DHE_DSS_WITH_AES_256_CBC_SHA256  ={   0x00, 0x6A   };
 CipherSuite   TLS_DHE_RSA_WITH_AES_256_CBC_SHA256  ={   0x00, 0x6B   };
 </pre></div>
 <p>Диффи-Хэллман (анонимно)</p>
-<div class="highlight"><pre>CipherSuite  TLS_DH_anon_WITH_RC4_128_MD5         =  {  0x00, 0x18  };
+<div class="highlight"><pre><span></span>CipherSuite  TLS_DH_anon_WITH_RC4_128_MD5         =  {  0x00, 0x18  };
 CipherSuite  TLS_DH_anon_WITH_3DES_EDE_CBC_SHA    =  {  0x00, 0x1B  };
 CipherSuite  TLS_DH_anon_WITH_AES_128_CBC_SHA     =  {  0x00, 0x34  };
 CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA     =  {  0x00, 0x3A  };
@@ -985,13 +988,13 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
 <div class="section" id="id22">
 <h4>Метод сжатия</h4>
 <p>Обязательно должен поддерживаться режим без сжатия.</p>
-<div class="highlight"><pre>enum { null(0), (255) } CompressionMethod;
+<div class="highlight"><pre><span></span>enum { null(0), (255) } CompressionMethod;
 </pre></div>
 </div>
 </div>
 <div class="section" id="serverhello">
 <h3>ServerHello</h3>
-<div class="highlight"><pre>struct {
+<div class="highlight"><pre><span></span>struct {
         ProtocolVersion server_version;
         Random random;
         SessionID session_id;
@@ -1031,53 +1034,60 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
     <section class="comments" id="comments">
         <h2>Comments</h2>
 
-        <div id="hypercomments_widget"></div>
+        <div id="disqus_thread"></div>
         <script type="text/javascript">
-        _hcwp = window._hcwp || [];
-        _hcwp.push({widget:"Stream", widget_id: 27931});
-        (function() {
-        if("HC_LOAD_INIT" in window)return;
-        HC_LOAD_INIT = true;
-        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
-        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hcc, s.nextSibling);
-        })();
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'sec/tls';
+                var disqus_url = 'http://blog.hoxnox.com/sec/tls.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
         </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
     </section>
         </article>
     </section>
 
         </div>
-        <div class="col-sm-3 well well-sm" id="sidebar">
+        <div class="col-sm-3" id="sidebar">
+            <aside>
 
-<aside>
-    <section>
-        <ul class="list-group list-group-flush">
-                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
-                  <ul class="list-group" id="social">
-                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
-                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
-                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
-                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
-                  </ul>
-                </li>
-
-
-
-                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
-                    <ul class="list-group list-inline tagcloud" id="tags">
-                    </ul>
-                </li>    
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+              </ul>
+            </li>
 
 
 
-        </ul>
-    </section>
-
-</aside>        </div>
+            <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                <ul class="list-group list-inline tagcloud" id="tags">
+                </ul>
+            </li>
+    </ul>
+</section>
+            </aside>
+        </div>
     </div>
 </div>
 <footer>
@@ -1100,6 +1110,21 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
 <script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
 
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
     <!-- Google Analytics -->
     <script type="text/javascript">
 
@@ -1117,5 +1142,6 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
         })();
     </script>
     <!-- End Google Analytics Code -->
+
 </body>
 </html>

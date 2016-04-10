@@ -16,9 +16,17 @@
         <meta name="keywords" content="ubuntu,gentoo,linux" />
         <meta name="description" content="Данная статья будет интересна тем, кто уже проникся философией *nix систем, успешно использует на своей рабочей машинке Ubuntu и чувствует, что её простота мешает ещё больше углубиться в мир открытого ПО." />
 
-    <!-- Enable latex plugin -->
-
-
+        <meta property="og:site_name" content="NX" />
+        <meta property="og:type" content="article"/>
+        <meta property="og:title" content="Плавный переход с Ubuntu на Gentoo"/>
+        <meta property="og:url" content="http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html"/>
+        <meta property="og:description" content="Данная статья будет интересна тем, кто уже проникся философией *nix систем, успешно использует на своей рабочей машинке Ubuntu и чувствует, что её простота мешает ещё больше углубиться в мир открытого ПО."/>
+        <meta property="article:published_time" content="2012-02-22" />
+            <meta property="article:section" content="gentoo" />
+            <meta property="article:tag" content="ubuntu" />
+            <meta property="article:tag" content="gentoo" />
+            <meta property="article:tag" content="linux" />
+            <meta property="article:author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
 
 
     <!-- Bootstrap -->
@@ -33,15 +41,11 @@
         <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
               title="NX RSS Feed"/>
 
-
-        <link href="http://blog.hoxnox.com/feeds/gentoo.atom.xml" type="application/atom+xml" rel="alternate"
-              title="NX gentoo ATOM Feed"/>
-
 </head>
 <body>
 
 <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
+	<div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
                 <span class="sr-only">Toggle navigation</span>
@@ -83,13 +87,14 @@ NX            </a>
                         </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+              <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
             </ul>
         </div>
         <!-- /.navbar-collapse -->
     </div>
 </div> <!-- /.navbar -->
-
+<!-- Banner -->
+<!-- End Banner -->
 <div class="container">
     <div class="row">
         <div class="col-sm-9">
@@ -113,9 +118,6 @@ NX            </a>
     <span class="published">
         <i class="fa fa-calendar"></i><time datetime="2012-02-22T00:00:00+04:00"> Ср 22 Февраль 2012</time>
     </span>
-
-
-
 
 
 
@@ -176,7 +178,7 @@ Linux'ом на борту.
 <p>Сначала настрою Ubutnu, чтобы она могла корректно работать в изменившихся условиях. Монтирую
 куда-нибудь ubutnu-раздел, правлю /etc/fstab и настройки grub2</p>
 <p>Получаю UUID соответствующих разделов:</p>
-<div class="highlight"><pre>mkdir /mnt/ubutnu
+<div class="highlight"><pre><span></span>mkdir /mnt/ubutnu
 mount /dev/disk/by-label/ubuntu /mnt/ubutntu
 ls -l /dev/disk/by-uuid
 ls -l /dev/disk/by-label
@@ -194,7 +196,7 @@ UUID=85b9d2ba-32a8-4172-89b8-7714eaf04dfe  none           swap    sw            
 UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime                 0       1
 </pre>
 <p>Монтирую /dev и /proc и chroot'юсь в Ubuntu</p>
-<div class="highlight"><pre>mount -t proc none /mnt/ubuntu/proc
+<div class="highlight"><pre><span></span>mount -t proc none /mnt/ubuntu/proc
 mount --rbind /dev /mnt/ubuntu/dev
 chroot /mnt/ubuntu
 </pre></div>
@@ -209,13 +211,13 @@ chroot /mnt/ubuntu
 </tr>
 </tbody>
 </table>
-<div class="highlight"><pre>mkdir /media/boot
+<div class="highlight"><pre><span></span>mkdir /media/boot
 mount /dev/disk/by-label/boot /media/boot
 grub-install --boot-directory<span class="o">=</span>/media/boot /dev/sda
 </pre></div>
 <p>В раздел boot копирую ядра, которые я бы хотел загружать. Папка /boot в Ubuntu мне уже не
 понадобится. Её можно удалить. На её место будет монтироваться boot раздел.</p>
-<div class="highlight"><pre>cp /boot/vmlinuz-3.0.0-14-generic <span class="se">\</span>
+<div class="highlight"><pre><span></span>cp /boot/vmlinuz-3.0.0-14-generic <span class="se">\</span>
    /boot/vmcoreinfo-3.0.0-14-generic <span class="se">\</span>
    /boot/System.map-3.0.0-14-generic <span class="se">\</span>
    /boot/initrd.img-3.0.0-14-generic <span class="se">\</span>
@@ -239,7 +241,7 @@ mount /dev/disk/by-label/boot /boot
 </tbody>
 </table>
 <p>Пересоздаю файл конфигурации</p>
-<div class="highlight"><pre>update-grub
+<div class="highlight"><pre><span></span>update-grub
 </pre></div>
 <p>Теперь перезагружаюсь в Ubuntu. В ней уже имеются настройки, которые я бы хотел перенести в
 Gentoo, работает сеть и вообще уютно.</p>
@@ -258,7 +260,7 @@ Gentoo, работает сеть и вообще уютно.</p>
 <p>Процесс установки отлично описан в <a class="reference external" href="http://www.gentoo.org/doc/ru/handbook/handbook-x86.xml?full=1">документации</a>, нам надо лишь слегка видоизменить его.
 Скачиваю свежий дистрибутив Gentoo - <a class="reference external" href="http://mirror.yandex.ru/gentoo-distfiles/releases/x86/current-stage3">stage3</a> и распаковываю в gentoo раздел. Также скачиваем и
 распаковываем <a class="reference external" href="http://mirror.yandex.ru/gentoo-distfiles/snapshots/portage-latest.tar.bz2">portage</a></p>
-<div class="highlight"><pre>tar xvjpf stage3-*.tar.bz2
+<div class="highlight"><pre><span></span>tar xvjpf stage3-*.tar.bz2
 tar xvjf /mnt/gentoo/portage-latest.tar.bz2 -C /mnt/gentoo/usr
 </pre></div>
 <p>Правим /mnt/gentoo/etc/fstab</p>
@@ -277,20 +279,20 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 /etc/grub.d Но пока что руки до этого не дошли. Просто вручную пишу конфигурацию /boot/grub/grub.cfg
 сохраняю копию где-нибудь, чтобы восстановить, если нагрянет update-grub. Ещё можно добавить нужные
 пункты загрузки в /etc/grub.d/40_custom.</p>
-<div class="highlight"><pre><span class="c"># /boot/grub/grub.cfg</span>
+<div class="highlight"><pre><span></span><span class="c1"># /boot/grub/grub.cfg</span>
 
-<span class="c">### BEGIN /etc/grub.d/00_header ###</span>
-<span class="k">if</span> <span class="o">[</span> -s <span class="nv">$prefix</span>/grubenv <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="nb">set </span><span class="nv">have_grubenv</span><span class="o">=</span><span class="nb">true</span>
-<span class="nb">  </span>load_env
+<span class="c1">### BEGIN /etc/grub.d/00_header ###</span>
+<span class="k">if</span> <span class="o">[</span> -s $prefix/grubenv <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">set</span> <span class="nv">have_grubenv</span><span class="o">=</span><span class="nb">true</span>
+  load_env
 <span class="k">fi</span>
-<span class="nb">set </span><span class="nv">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span>
+<span class="nb">set</span> <span class="nv">default</span><span class="o">=</span><span class="s2">&quot;0&quot;</span>
 <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">prev_saved_entry</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="nb">set </span><span class="nv">saved_entry</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">prev_saved_entry</span><span class="si">}</span><span class="s2">&quot;</span>
+  <span class="nb">set</span> <span class="nv">saved_entry</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">prev_saved_entry</span><span class="si">}</span><span class="s2">&quot;</span>
   save_env saved_entry
-  <span class="nb">set </span><span class="nv">prev_saved_entry</span><span class="o">=</span>
+  <span class="nb">set</span> <span class="nv">prev_saved_entry</span><span class="o">=</span>
   save_env prev_saved_entry
-  <span class="nb">set </span><span class="nv">boot_once</span><span class="o">=</span><span class="nb">true</span>
+  <span class="nb">set</span> <span class="nv">boot_once</span><span class="o">=</span><span class="nb">true</span>
 <span class="k">fi</span>
 
 <span class="k">function</span> savedefault <span class="o">{</span>
@@ -301,7 +303,7 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 <span class="o">}</span>
 
 <span class="k">function</span> recordfail <span class="o">{</span>
-  <span class="nb">set </span><span class="nv">recordfail</span><span class="o">=</span>1
+  <span class="nb">set</span> <span class="nv">recordfail</span><span class="o">=</span>1
   <span class="k">if</span> <span class="o">[</span> -n <span class="s2">&quot;</span><span class="si">${</span><span class="nv">have_grubenv</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> <span class="k">if</span> <span class="o">[</span> -z <span class="s2">&quot;</span><span class="si">${</span><span class="nv">boot_once</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> save_env recordfail<span class="p">;</span> <span class="k">fi</span><span class="p">;</span> <span class="k">fi</span>
 <span class="o">}</span>
 
@@ -314,63 +316,63 @@ UUID=f521ab66-3544-4d7e-b5d7-65cec1ec1172  /home          ext4    rw,noatime    
 
 insmod part_msdos
 insmod ext2
-<span class="nb">set </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos7)&#39;</span>
+<span class="nb">set</span> <span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos7)&#39;</span>
 search --no-floppy --fs-uuid --set<span class="o">=</span>root e12efc8c-8057-4a14-bdf0-448e26437e77
 <span class="k">if</span> loadfont /usr/share/grub/unicode.pf2 <span class="p">;</span> <span class="k">then</span>
-  <span class="nb">set </span><span class="nv">gfxmode</span><span class="o">=</span>auto
+  <span class="nb">set</span> <span class="nv">gfxmode</span><span class="o">=</span>auto
   load_video
   insmod gfxterm
   insmod part_msdos
   insmod ext2
-  <span class="nb">set </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
+  <span class="nb">set</span> <span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
   search --no-floppy --fs-uuid --set<span class="o">=</span>root aec1d4c6-8332-46b8-a024-244e5fa90df4
-  <span class="nb">set </span><span class="nv">locale_dir</span><span class="o">=(</span><span class="nv">$root</span><span class="o">)</span>/grub/locale
-  <span class="nb">set </span><span class="nv">lang</span><span class="o">=</span>ru_RU
+  <span class="nb">set</span> <span class="nv">locale_dir</span><span class="o">=(</span>$root<span class="o">)</span>/grub/locale
+  <span class="nb">set</span> <span class="nv">lang</span><span class="o">=</span>ru_RU
   insmod gettext
 <span class="k">fi</span>
 terminal_output gfxterm
 <span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="si">${</span><span class="nv">recordfail</span><span class="si">}</span><span class="s2">&quot;</span> <span class="o">=</span> <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="nb">set </span><span class="nv">timeout</span><span class="o">=</span>-1
+  <span class="nb">set</span> <span class="nv">timeout</span><span class="o">=</span>-1
 <span class="k">else</span>
-  <span class="nb">set </span><span class="nv">timeout</span><span class="o">=</span>3
+  <span class="nb">set</span> <span class="nv">timeout</span><span class="o">=</span>3
 <span class="k">fi</span>
-<span class="c">### END /etc/grub.d/00_header ###</span>
+<span class="c1">### END /etc/grub.d/00_header ###</span>
 
-<span class="c">### BEGIN /etc/grub.d/05_debian_theme ###</span>
-<span class="nb">set </span><span class="nv">menu_color_normal</span><span class="o">=</span>white/black
-<span class="nb">set </span><span class="nv">menu_color_highlight</span><span class="o">=</span>black/light-gray
+<span class="c1">### BEGIN /etc/grub.d/05_debian_theme ###</span>
+<span class="nb">set</span> <span class="nv">menu_color_normal</span><span class="o">=</span>white/black
+<span class="nb">set</span> <span class="nv">menu_color_highlight</span><span class="o">=</span>black/light-gray
 <span class="k">if</span> background_color 44,0,30<span class="p">;</span> <span class="k">then</span>
   clear
 <span class="k">fi</span>
-<span class="c">### END /etc/grub.d/05_debian_theme ###</span>
+<span class="c1">### END /etc/grub.d/05_debian_theme ###</span>
 
-<span class="c">### BEGIN /etc/grub.d/10_linux ###</span>
+<span class="c1">### BEGIN /etc/grub.d/10_linux ###</span>
 <span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">recordfail</span><span class="si">}</span> !<span class="o">=</span> <span class="m">1</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
   <span class="k">if</span> <span class="o">[</span> -e <span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>/gfxblacklist.txt <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
     <span class="k">if</span> hwmatch <span class="si">${</span><span class="nv">prefix</span><span class="si">}</span>/gfxblacklist.txt 3<span class="p">;</span> <span class="k">then</span>
       <span class="k">if</span> <span class="o">[</span> <span class="si">${</span><span class="nv">match</span><span class="si">}</span> <span class="o">=</span> <span class="m">0</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-        <span class="nb">set </span><span class="nv">linux_gfx_mode</span><span class="o">=</span>keep
+        <span class="nb">set</span> <span class="nv">linux_gfx_mode</span><span class="o">=</span>keep
       <span class="k">else</span>
-        <span class="nb">set </span><span class="nv">linux_gfx_mode</span><span class="o">=</span>text
+        <span class="nb">set</span> <span class="nv">linux_gfx_mode</span><span class="o">=</span>text
       <span class="k">fi</span>
     <span class="k">else</span>
-      <span class="nb">set </span><span class="nv">linux_gfx_mode</span><span class="o">=</span>text
+      <span class="nb">set</span> <span class="nv">linux_gfx_mode</span><span class="o">=</span>text
     <span class="k">fi</span>
   <span class="k">else</span>
-    <span class="nb">set </span><span class="nv">linux_gfx_mode</span><span class="o">=</span>keep
+    <span class="nb">set</span> <span class="nv">linux_gfx_mode</span><span class="o">=</span>keep
   <span class="k">fi</span>
 <span class="k">else</span>
-  <span class="nb">set </span><span class="nv">linux_gfx_mode</span><span class="o">=</span>text
+  <span class="nb">set</span> <span class="nv">linux_gfx_mode</span><span class="o">=</span>text
 <span class="k">fi</span>
-<span class="nb">export </span>linux_gfx_mode
-<span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span><span class="nv">$linux_gfx_mode</span><span class="s2">&quot;</span> !<span class="o">=</span> <span class="s2">&quot;text&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> load_video<span class="p">;</span> <span class="k">fi</span>
+<span class="nb">export</span> linux_gfx_mode
+<span class="k">if</span> <span class="o">[</span> <span class="s2">&quot;</span>$<span class="s2">linux_gfx_mode&quot;</span> !<span class="o">=</span> <span class="s2">&quot;text&quot;</span> <span class="o">]</span><span class="p">;</span> <span class="k">then</span> load_video<span class="p">;</span> <span class="k">fi</span>
 menuentry <span class="s1">&#39;Ubuntu, с Linux 3.0.0-14-generic&#39;</span> --class ubuntu --class gnu-linux --class gnu --class os <span class="o">{</span>
         recordfail
-        <span class="nb">set </span><span class="nv">gfxpayload</span><span class="o">=</span><span class="nv">$linux_gfx_mode</span>
+        <span class="nb">set</span> <span class="nv">gfxpayload</span><span class="o">=</span>$linux_gfx_mode
         insmod gzio
         insmod part_msdos
         insmod ext2
-        <span class="nb">set </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
+        <span class="nb">set</span> <span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
         search --no-floppy --fs-uuid --set<span class="o">=</span>root aec1d4c6-8332-46b8-a024-244e5fa90df4
         linux   /vmlinuz-3.0.0-14-generic <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>e12efc8c-8057-4a14-bdf0-448e26437e77 ro   quiet splash vt.handoff<span class="o">=</span>7
         initrd  /initrd.img-3.0.0-14-generic
@@ -380,55 +382,55 @@ menuentry <span class="s1">&#39;Ubuntu, с Linux 3.0.0-14-generic (режим в
         insmod gzio
         insmod part_msdos
         insmod ext2
-        <span class="nb">set </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
+        <span class="nb">set</span> <span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
         search --no-floppy --fs-uuid --set<span class="o">=</span>root aec1d4c6-8332-46b8-a024-244e5fa90df4
         <span class="nb">echo</span>    <span class="s1">&#39;Загружается Linux 3.0.0-14-generic ...&#39;</span>
         linux   /vmlinuz-3.0.0-14-generic <span class="nv">root</span><span class="o">=</span><span class="nv">UUID</span><span class="o">=</span>e12efc8c-8057-4a14-bdf0-448e26437e77 ro recovery nomodeset
         <span class="nb">echo</span>    <span class="s1">&#39;Загружается начальный ramdisk ...&#39;</span>
         initrd  /initrd.img-3.0.0-14-generic
 <span class="o">}</span>
-<span class="c">### END /etc/grub.d/10_linux ###</span>
+<span class="c1">### END /etc/grub.d/10_linux ###</span>
 
-<span class="c">### BEGIN /etc/grub.d/20_linux_xen ###</span>
-<span class="c">### END /etc/grub.d/20_linux_xen ###</span>
+<span class="c1">### BEGIN /etc/grub.d/20_linux_xen ###</span>
+<span class="c1">### END /etc/grub.d/20_linux_xen ###</span>
 
-<span class="c">### BEGIN /etc/grub.d/20_memtest86+ ###</span>
+<span class="c1">### BEGIN /etc/grub.d/20_memtest86+ ###</span>
 menuentry <span class="s2">&quot;Memory test (memtest86+)&quot;</span> <span class="o">{</span>
         insmod part_msdos
         insmod ext2
-        <span class="nb">set </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
+        <span class="nb">set</span> <span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
         search --no-floppy --fs-uuid --set<span class="o">=</span>root aec1d4c6-8332-46b8-a024-244e5fa90df4
         linux16 /memtest86+.bin
 <span class="o">}</span>
 menuentry <span class="s2">&quot;Memory test (memtest86+, serial console 115200)&quot;</span> <span class="o">{</span>
         insmod part_msdos
         insmod ext2
-        <span class="nb">set </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
+        <span class="nb">set</span> <span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
         search --no-floppy --fs-uuid --set<span class="o">=</span>root aec1d4c6-8332-46b8-a024-244e5fa90df4
         linux16 /memtest86+.bin <span class="nv">console</span><span class="o">=</span>ttyS0,115200n8
 <span class="o">}</span>
-<span class="c">### END /etc/grub.d/20_memtest86+ ###</span>
+<span class="c1">### END /etc/grub.d/20_memtest86+ ###</span>
 
-<span class="c">### BEGIN /etc/grub.d/30_os-prober ###</span>
+<span class="c1">### BEGIN /etc/grub.d/30_os-prober ###</span>
 menuentry <span class="s2">&quot;Gentoo&quot;</span> --class gnu-linux --class gnu --class os <span class="o">{</span>
         insmod part_msdos
         insmod ext2
-        <span class="nb">set </span><span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
+        <span class="nb">set</span> <span class="nv">root</span><span class="o">=</span><span class="s1">&#39;(hd0,msdos1)&#39;</span>
         linux /gentoo-2.6.38-tuxonice <span class="nv">root</span><span class="o">=</span>/dev/sda6 <span class="nv">resume</span><span class="o">=</span>swap:/dev/sda1
 <span class="o">}</span>
-<span class="c">### END /etc/grub.d/30_os-prober ###</span>
+<span class="c1">### END /etc/grub.d/30_os-prober ###</span>
 
-<span class="c">### BEGIN /etc/grub.d/40_custom ###</span>
-<span class="c"># This file provides an easy way to add custom menu entries.  Simply type the</span>
-<span class="c"># menu entries you want to add after this comment.  Be careful not to change</span>
-<span class="c"># the &#39;exec tail&#39; line above.</span>
-<span class="c">### END /etc/grub.d/40_custom ###</span>
+<span class="c1">### BEGIN /etc/grub.d/40_custom ###</span>
+<span class="c1"># This file provides an easy way to add custom menu entries.  Simply type the</span>
+<span class="c1"># menu entries you want to add after this comment.  Be careful not to change</span>
+<span class="c1"># the &#39;exec tail&#39; line above.</span>
+<span class="c1">### END /etc/grub.d/40_custom ###</span>
 
-<span class="c">### BEGIN /etc/grub.d/41_custom ###</span>
-<span class="k">if</span> <span class="o">[</span> -f  <span class="nv">$prefix</span>/custom.cfg <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
-  <span class="nb">source</span> <span class="nv">$prefix</span>/custom.cfg<span class="p">;</span>
+<span class="c1">### BEGIN /etc/grub.d/41_custom ###</span>
+<span class="k">if</span> <span class="o">[</span> -f  $prefix/custom.cfg <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+  <span class="nb">source</span> $prefix/custom.cfg<span class="p">;</span>
 <span class="k">fi</span>
-<span class="c">### END /etc/grub.d/41_custom ###</span>
+<span class="c1">### END /etc/grub.d/41_custom ###</span>
 </pre></div>
 <p>Перезагружаюсь в Gentoo. Welcome home. Теперь начинается самое интересное ...</p>
 </div>
@@ -439,53 +441,60 @@ menuentry <span class="s2">&quot;Gentoo&quot;</span> --class gnu-linux --class g
     <section class="comments" id="comments">
         <h2>Comments</h2>
 
-        <div id="hypercomments_widget"></div>
+        <div id="disqus_thread"></div>
         <script type="text/javascript">
-        _hcwp = window._hcwp || [];
-        _hcwp.push({widget:"Stream", widget_id: 27931});
-        (function() {
-        if("HC_LOAD_INIT" in window)return;
-        HC_LOAD_INIT = true;
-        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
-        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hcc, s.nextSibling);
-        })();
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+                    var disqus_identifier = 'gentoo/ubuntu-gentoo';
+                var disqus_url = 'http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html';
+
+            var disqus_config = function () {
+                this.language = "ru";
+            };
+
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function () {
+                var dsq = document.createElement('script');
+                dsq.type = 'text/javascript';
+                dsq.async = true;
+                dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
         </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by
+            Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 
     </section>
         </article>
     </section>
 
         </div>
-        <div class="col-sm-3 well well-sm" id="sidebar">
+        <div class="col-sm-3" id="sidebar">
+            <aside>
 
-<aside>
-    <section>
-        <ul class="list-group list-group-flush">
-                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
-                  <ul class="list-group" id="social">
-                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
-                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
-                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
-                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
-                  </ul>
-                </li>
-
-
-
-                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
-                    <ul class="list-group list-inline tagcloud" id="tags">
-                    </ul>
-                </li>    
+<section class="well well-sm">
+    <ul class="list-group list-group-flush">
+            <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+              <ul class="list-group" id="social">
+                <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+              </ul>
+            </li>
 
 
 
-        </ul>
-    </section>
-
-</aside>        </div>
+            <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                <ul class="list-group list-inline tagcloud" id="tags">
+                </ul>
+            </li>
+    </ul>
+</section>
+            </aside>
+        </div>
     </div>
 </div>
 <footer>
@@ -508,6 +517,21 @@ menuentry <span class="s2">&quot;Gentoo&quot;</span> --class gnu-linux --class g
 <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
 <script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
 
+    <!-- Disqus -->
+    <script type="text/javascript">
+        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+        var disqus_shortname = 'hxblog'; // required: replace example with your forum shortname
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function () {
+            var s = document.createElement('script');
+            s.async = true;
+            s.type = 'text/javascript';
+            s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+            (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+        }());
+    </script>
+    <!-- End Disqus Code -->
     <!-- Google Analytics -->
     <script type="text/javascript">
 
@@ -525,5 +549,6 @@ menuentry <span class="s2">&quot;Gentoo&quot;</span> --class gnu-linux --class g
         })();
     </script>
     <!-- End Google Analytics Code -->
+
 </body>
 </html>

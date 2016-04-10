@@ -5,7 +5,7 @@
 State (OSPF, IS-IS). Если на маршрутизаторе настроено несколько
 протоколов, то в силу вступает Administrative distance (AD). Это число от 0
 до 255, выражающее "меру доверия"&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Connected interface                                                  0
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Connected interface                                                  0
 Static route                                                         1
 Enhanced Interior Gateway Routing Protocol (EIGRP) summary route     5
 External Border Gateway Protocol (BGP)                              20
@@ -31,7 +31,7 @@ Unknown                                                            255
    же сегменте сети. R1 переходит в состояние INIT.&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;В пакеты вкладывается следующая информация:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Router ID
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Router ID
 Hello Interval
 Dead Interval
 Neighbors
@@ -104,14 +104,14 @@ Hello-пакеты, а каждые 30 минут рассылаются LSA —
 обновляется таблица маршрутизации. &lt;/p&gt;
 &lt;p&gt;Настраиваем&lt;/p&gt;
 &lt;p&gt;loopback&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;interface loo 0
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;interface loo 0
 ip address 172.16.255.1 255.255.255.255
 &lt;/pre&gt;&lt;/div&gt;</summary><category term="ospf"></category><category term="inet"></category><category term="routing"></category></entry><entry><title>Использование одного локального адреса для двух различных соединений</title><link href="http://blog.hoxnox.com/inet/tcp_commonlocaladdr.rst.html" rel="alternate"></link><updated>2012-10-31T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-10-31:inet/tcp_commonlocaladdr.rst.html</id><summary type="html">&lt;p&gt;Как выяснилось стэк TCP/IP Linux-3.3.8 идентифицирует соединение не только по локальному адресу, но
 и по удалённому. Следовательно можно использовать несколько сокетов, забинденных на один локальный
 арес, но соединенных с разными удалёнными адресами. Проверим данную гипотезу. Для этого получим 5
 HTML страниц с www.afrinic.net www.lacnic.net www.arin.net www.ripe.net и www.apnic.net по протоколу
 HTTP с сокетов, забинденных на один адрес.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;#include &amp;lt;nx_socket.h&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#include &amp;lt;nx_socket.h&amp;gt;
 #include &amp;lt;stdio.h&amp;gt;
 #include &amp;lt;stdlib.h&amp;gt;
 #include &amp;lt;memory.h&amp;gt;
@@ -301,7 +301,7 @@ int main(int argc, char * argv[])
 &lt;p&gt;IPv4 - это 32 разрядное число, записанное для удобства побайтно. Если рассмотреть данное
 число в его двоичном представлении, то 4 самых старших бита (0, 1, 2, 3) классифицируют все адреса
 на глобальные сети:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;   0   1                         7 8                                  31
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;   0   1                         7 8                                  31
   +---+--- ... -------------------+--- ... -----------------------------+
 A | 0 | Идентификатор сети (7bit) | Идентификатор хоста (24 bit)        |
   +---+--- ... -------------------+--- ... -----------------------------+
@@ -335,7 +335,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 начале - идентификатор сети, а остальное адрес. Таким образом часто встречаются записи IP адреса в
 виде 190.50.5.128/26. Это означает, что первые 26 бит адреса идентифицируют сеть, а остальное -
 хост. То есть&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;190.50.5.129/26 - адрес из сети 10111110 00110010 00000101 10 | 000000 (190.50.5.128)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;190.50.5.129/26 - адрес из сети 10111110 00110010 00000101 10 | 000000 (190.50.5.128)
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Таким образом можно гарантированно сказать, что перед нами идентификатор сети, а не хоста (не имея
 маски) только для глобальных сетей, то есть&lt;/p&gt;
@@ -368,17 +368,17 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;div class="section" id="tcp-ip"&gt;
 &lt;h3&gt;TCP/IP&lt;/h3&gt;
 &lt;p&gt;Сервер&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cm"&gt;/* определяет типы данных */&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;sys/types.h&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cm"&gt;/* определяет типы данных */&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 &lt;span class="cm"&gt;/* &amp;quot;Главный&amp;quot; по сокетам */&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 &lt;span class="cm"&gt;/* sockaddr_in struct, sin_family, sin_port, in_addr_t, in_port_t, ...*/&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
-&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;memory.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;string.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;errno.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;memory.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;string.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;errno.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="cm"&gt;/**@brief Получает от клиента последовательность байт, не длиннее 30 и печатает её на экран по&lt;/span&gt;
 &lt;span class="cm"&gt; * завершении соединения. Клиенту отправляет &amp;quot;Hi, dear!&amp;quot;*/&lt;/span&gt;
@@ -447,13 +447,13 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;/pre&gt;&lt;/div&gt;
 &lt;!-- *** --&gt;
 &lt;p&gt;Клиент&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;sys/types.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/types.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/socket.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;netinet/in.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 &lt;span class="cm"&gt;/* hton, ntoh и проч. */&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;memory.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;arpa/inet.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;memory.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -667,13 +667,13 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 задержать отправку ACK, чтобы послать её вместе с данными.&lt;/p&gt;
 &lt;p&gt;Алгоритм Нейгла в купе с отложенным подтверждением в резонансе дают нежелательные задержки. Поэтому
 часто его отключают. Отключение алгоритма Нейгла производится заданием опции TCP_NODELAY&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="n"&gt;setsockopt&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;IPPROTO_TCP&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;TCP_NODELAY&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;on&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;sizeof&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;on&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Но более правильным было бы проектировать приложение таким образом, чтобы было как можно меньше
 маленьких блоков. Лучше писать большие. Для этого можно объединять данные самостоятельно, а можно
 пользоваться аналогом write, работающим с несколькими буферами:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;sys/uio.h&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;sys/uio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 &lt;span class="kt"&gt;ssize_t&lt;/span&gt; &lt;span class="nf"&gt;writev&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;fd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;iovec&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;iov&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;cnt&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
 &lt;span class="kt"&gt;ssize_t&lt;/span&gt; &lt;span class="nf"&gt;readv&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;fd&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;iovec&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;iov&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;cnt&lt;/span&gt; &lt;span class="p"&gt;);&lt;/span&gt;
 
@@ -686,7 +686,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;/pre&gt;&lt;/div&gt;
 &lt;!-- *** --&gt;
 &lt;p&gt;В Winsock используется&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;WSAAPI&lt;/span&gt; &lt;span class="nf"&gt;WSAsend&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;SOCKET&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;WSAAPI&lt;/span&gt; &lt;span class="nf"&gt;WSAsend&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="n"&gt;SOCKET&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
                     &lt;span class="n"&gt;LPWSABUF&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
                     &lt;span class="n"&gt;DWORD&lt;/span&gt; &lt;span class="n"&gt;cnt&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
                     &lt;span class="n"&gt;LPDWORD&lt;/span&gt; &lt;span class="n"&gt;sent&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
@@ -707,7 +707,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;h2&gt;Таймаут при вызове connect&lt;/h2&gt;
 &lt;div class="section" id="alarm"&gt;
 &lt;h3&gt;alarm&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;alarm_hndlr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;sig&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="nf"&gt;alarm_hndlr&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;sig&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
       &lt;span class="k"&gt;return&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;span class="p"&gt;}&lt;/span&gt;
@@ -743,7 +743,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;/div&gt;
 &lt;div class="section" id="select"&gt;
 &lt;h3&gt;select&lt;/h3&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt; &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;**&lt;/span&gt;&lt;span class="n"&gt;argv&lt;/span&gt; &lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
       &lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;sockaddr_in&lt;/span&gt; &lt;span class="n"&gt;peer&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
       &lt;span class="n"&gt;INIT&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="c1"&gt;//&lt;/span&gt;
@@ -846,7 +846,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;/div&gt;
 &lt;div class="section" id="id5"&gt;
 &lt;h2&gt;Преобразование порядка байт&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;0x12345678 =&amp;gt; 12 34 56 78 - прямой порядок (big endian)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;0x12345678 =&amp;gt; 12 34 56 78 - прямой порядок (big endian)
 0x12345678 =&amp;gt; 78 56 34 12 - братный порядок (little endian)
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Сетевой порядок байт всегда прямой. Для преобразования числа из порядка платформы в сетевой порядок
@@ -871,16 +871,16 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;p&gt;Итак, допустим мы хотим удержать максимально возможное число соединений. Сколько же это? Первым
 параметром, в который мы уткнёмся - число одновременно открытых файлов на процесс операционной
 системы.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ulimit -a | grep open
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ulimit -a | grep open
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Следующая команда меняет это число в пределах сессии:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;ulimit -n 1048576
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ulimit -n 1048576
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Откуда берется константа - не знаю. В моей системе было так. Следует отметить, что для исполнения
 нужны специальные права.&lt;/p&gt;
 &lt;p&gt;Далее следует обратить внимание на количество оперативной памяти и иметь ввиду, что каждое открытое
 соединение откушает около 64Кб unswappable памяти. Таким образом, в моём случае:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;python -c&amp;quot;print(`free | awk &amp;#39;/-\/+.*/ {print $4}&amp;#39;`/64)&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;python -c&amp;quot;print(`free | awk &amp;#39;/-\/+.*/ {print $4}&amp;#39;`/64)&amp;quot;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;эта цифра была более 243422.0625. Значит будем пробовать открыть 200000 соединений. Не совсем всё
 так просто. Существует целый ряд настроек в net.ipv4.tcp (/proc/sys/net/ipv4).&lt;/p&gt;
@@ -891,7 +891,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 Максимум - максимальное число страниц, разрешённое для всех TCP сокетов. Так как мы замахиваемся
 на 200000 соединений, нам надо бы минимум (200000*64)/4 = 3200000. Зачем заставлять нервничать
 операционную систему.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;sudo sysctl -w net.ipv4.tcp_mem=&amp;quot;3200000 3300000 3400000&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;sudo sysctl -w net.ipv4.tcp_mem=&amp;quot;3200000 3300000 3400000&amp;quot;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;&lt;cite&gt;tcp_syncookies=0&lt;/cite&gt; - согласно рекомендациям разработчиков ядра
@@ -914,7 +914,7 @@ connection tracking (используется, к примеру в iptables).&l
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Итоговый скрипт подстройки ОС Linux&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;#!/bin/bash
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#!/bin/bash
 
 ulimit -n 1048576
 MAX_SOCKS=`python -c&amp;quot;print(\`free | awk &amp;#39;/-\/+.*/ {print $4}&amp;#39;\`//64&amp;quot;`
@@ -1111,7 +1111,7 @@ and Numbers). На сайте IANA можно найти следующие оч
 DNS серверы, к которым обращаются корневые для дальнейшего поиска в глубину. Например, за зону
 &amp;quot;&lt;cite&gt;ru.&lt;/cite&gt;&amp;quot; отвечают следующие &lt;em&gt;основные&lt;/em&gt; сервера:&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;d.dns.ripn.net.
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;d.dns.ripn.net.
 e.dns.ripn.net.
 f.dns.ripn.net.
 ns.ripn.net.
@@ -1192,7 +1192,7 @@ IPv4, либо IPv6. Использование данного номера пр
 &lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;&lt;strong&gt;HINFO&lt;/strong&gt; информация о хосте (тип железа и операционной системы).&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;example.com  IN  HINFO  &amp;quot;Watch Dog Hardware&amp;quot;  &amp;quot;Rabid OS&amp;quot;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;example.com  IN  HINFO  &amp;quot;Watch Dog Hardware&amp;quot;  &amp;quot;Rabid OS&amp;quot;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
 &lt;/li&gt;
@@ -1203,7 +1203,7 @@ IPv4, либо IPv6. Использование данного номера пр
 аналогично MX записям, содержат данные, описывающие методы доставки пакетов определенному хосту.
 Например следующая запись&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;housesitter.movie.edu.  IN  RT  10 relay.pink.com.
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;housesitter.movie.edu.  IN  RT  10 relay.pink.com.
                         IN  RT  20 delay.hp.com.
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
@@ -1216,7 +1216,7 @@ IPv4, либо IPv6. Использование данного номера пр
 и высоту над уровнем море.&lt;/p&gt;
 &lt;p&gt;Формат:&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&amp;lt;degrees&amp;gt; [minutes [seconds.&amp;lt;fractional seconds&amp;gt;]] (N|S|E|W)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&amp;lt;degrees&amp;gt; [minutes [seconds.&amp;lt;fractional seconds&amp;gt;]] (N|S|E|W)
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Высота над уровнем моря указывается в метрах.&lt;/p&gt;
 &lt;/blockquote&gt;
@@ -1229,7 +1229,7 @@ IPv4, либо IPv6. Использование данного номера пр
 &lt;h2&gt;Обратный поиск&lt;/h2&gt;
 &lt;p&gt;Существует другая задача - установить имя хоста по его IP адресу. Для этих целей можно использовать
 домен in-addr.arpa. В его зоне имеются &lt;em&gt;PTR&lt;/em&gt; ресурсные записи вида&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;XXX.XXX.XXX.XXX.in-addr.arpa
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;XXX.XXX.XXX.XXX.in-addr.arpa
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;где &lt;cite&gt;XXX.XXX.XXX.XXX&lt;/cite&gt; - IP адрес, записанный в обратном порядке, так как в IP-адресах старшие биты
 расположены в начале, а в символьных DNS-именах старшие (находящиеся ближе к корню) части
@@ -1300,14 +1300,14 @@ Extensions&lt;/p&gt;
 &lt;h3&gt;dig&lt;/h3&gt;
 &lt;p&gt;Существует порт под Windows. Примеры использования:&lt;/p&gt;
 &lt;p&gt;Получить IP-адрес хоста hoxnox1.otdel4.a&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;dig hoxnox1.otdel4.a
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;dig hoxnox1.otdel4.a
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Получить IP-адрес хоста hoxnox1.otdel4.a от DNS сервера 128.44.44.100, выводить только данные
 ресурсной записи.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;dig @128.44.44.100 +short hoxnox1.otdel4.a
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;dig @128.44.44.100 +short hoxnox1.otdel4.a
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Получить все записи зоны домена otdel4.a&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;dig @server4ibm otdel4.a axfr
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;dig @server4ibm otdel4.a axfr
 &lt;/pre&gt;&lt;/div&gt;
 &lt;table class="docutils field-list" frame="void" rules="none"&gt;
 &lt;col class="field-name" /&gt;
@@ -1319,13 +1319,13 @@ Extensions&lt;/p&gt;
 &lt;/table&gt;
 &lt;p&gt;Получить имя хоста с IP адресом 112.15.22.144 (с помощью обратного поиска по in-addr.arpa)
 (pdns1.ultradns.net с IP адресом 204.74.108.1 - &amp;quot;ближайший&amp;quot; DNS сервер к данному домену)&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;dig @pdns1.ultradns.net +short 144.22.15.112.in-addr.arpa PTR
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;dig @pdns1.ultradns.net +short 144.22.15.112.in-addr.arpa PTR
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id6"&gt;
 &lt;h2&gt;Структура сообщения&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;+---------------------+
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;+---------------------+
 |        Header       |
 +---------------------+
 |       Question      | the question for the name server
@@ -1338,7 +1338,7 @@ Extensions&lt;/p&gt;
 +---------------------+
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Header:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;                                1  1  1  1  1  1
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;                                1  1  1  1  1  1
   0  1  2  3  4  5  6  7  8  9  0  1  2  3  4  5
 +--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+--+
 |                      ID                       |
@@ -1384,7 +1384,7 @@ Extensions&lt;/p&gt;
 &lt;li&gt;пакет, используемый в качестве шлюза указанным хостом&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Пример получения ICMP пакетов, приходящих из внешней сети:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;tcpdump icmp and not src net localnet
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;tcpdump icmp and not src net localnet
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="traceroute"&gt;
@@ -1399,7 +1399,7 @@ Extensions&lt;/p&gt;
 &lt;p&gt;Генеротор трафика в сети, позволяющий подводить определенную статистику. Кроме того, ttcp позволяет
 организовать сетевой конвейер. Например, чтобы скопировать всю иерархию каталогов с хоста A на хост
 B, можно&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;На хосте A
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;На хосте A
 ttcp -rB | tar -xpf -
 
 На хосте B
@@ -1413,7 +1413,7 @@ ttcp -r | ttcp -t следующий узел
 &lt;h2&gt;lsof&lt;/h2&gt;
 &lt;p&gt;Эта программа дает информацию о захваченных ресурсах. В частности для сетевого программирования
 можно смотреть кто контролирует сокеты.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;lsof -i TCP
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;lsof -i TCP
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="netstat"&gt;

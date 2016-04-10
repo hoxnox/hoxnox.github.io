@@ -47,7 +47,7 @@ cmake со скриптами, расширяющими функциональн
 &lt;h3&gt;Рассмотрим оба способа на примере.&lt;/h3&gt;
 &lt;p&gt;Допустим мы работали над библиотекой &lt;cite&gt;core&lt;/cite&gt; и на определённом этапе работы получили следующее дерево
 проекта:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;.
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;.
 ├── cmake
 │   └── nx_lib.cmake
 ├── doc
@@ -79,20 +79,20 @@ cmake со скриптами, расширяющими функциональн
 &lt;div class="section" id="id4"&gt;
 &lt;h4&gt;Ветвление и удалённые репозитории&lt;/h4&gt;
 &lt;p&gt;Добавляем в проект &lt;cite&gt;a&lt;/cite&gt; новую ветку, содержимое которой - клон проекта &lt;cite&gt;core&lt;/cite&gt;.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git remote add core /repo/core.git
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git remote add core /repo/core.git
 git fetch core
 git checkout -b core@rmt core/master
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Мы использовали суффикс &lt;cite&gt;&amp;#64;rmt&lt;/cite&gt;, чтобы пометить ветку-подпроект и отличать её от обычных веток. В
 нашей текущей дериктории находится проект &lt;cite&gt;core&lt;/cite&gt;. Теперь в проекте &lt;cite&gt;a&lt;/cite&gt;, в директорию &lt;cite&gt;core&lt;/cite&gt; допишем
 файлы проекта &lt;cite&gt;core&lt;/cite&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git checkout master
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git checkout master
 git read-tree --prefix=core -u core@rmt
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Вот собственно и все. Теперь в суперпроекте &lt;cite&gt;a&lt;/cite&gt; есть директория с подпроектом &lt;cite&gt;core&lt;/cite&gt;. Причем фалы этой
 директории находятся под версионным контролем проекта &lt;cite&gt;а&lt;/cite&gt;. Если проект &lt;cite&gt;core&lt;/cite&gt; изменился, мы можем
 влить изменения следующим образом:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git checkout core@rmt
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git checkout core@rmt
 git pull
 git checkout master
 git merge --squash -s subtree --no-commit core@rmt
@@ -103,7 +103,7 @@ git merge --squash -s subtree --no-commit core@rmt
 &lt;a class="reference external" href="mailto:core&amp;#64;rmt"&gt;core&amp;#64;rmt&lt;/a&gt; и отправить изменения. Существует одна загвоздка - не существует коммита, который бы
 указывал на директорию &lt;cite&gt;core&lt;/cite&gt;. Его придется создать низкоуровневой командой &lt;cite&gt;commit-tree&lt;/cite&gt;. Этот
 &amp;quot;оторванный&amp;quot; коммит в последующем примкнет к истории в ветке &lt;cite&gt;core&amp;#64;rmt&lt;/cite&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$&amp;gt;echo &amp;quot;core-changes&amp;quot; | git commit-tree HEAD:core
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$&amp;gt;echo &amp;quot;core-changes&amp;quot; | git commit-tree HEAD:core
 485a320dae49bc6b08c4b5d363d0674b1369b2a6
 $&amp;gt;git checkout core@rmt
 $&amp;gt;git merge 485a32
@@ -111,7 +111,7 @@ $&amp;gt;git push core core@rmt:master
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Еще одна частая ситуация - разделяемые подпроекты. Допустим теперь мы работаем над проектом &lt;cite&gt;super&lt;/cite&gt;,
 который зависит от подпроекта &lt;cite&gt;core&lt;/cite&gt;. Мы уже знаем как действовать...&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git remote add core /repo/core.git
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git remote add core /repo/core.git
 git fetch core
 git checkout -b core@rmt core/master
 git checkout master
@@ -120,7 +120,7 @@ git read-tree --prefix=core -u core@rmt
 &lt;p&gt;Теперь мы хотели бы добавить подпроект &lt;cite&gt;a&lt;/cite&gt;, но так, чтобы зависимость &lt;cite&gt;a&lt;/cite&gt; от &lt;cite&gt;core&lt;/cite&gt; не
 дублировалась, но подпроекты &lt;cite&gt;a&lt;/cite&gt; и &lt;cite&gt;core&lt;/cite&gt; сохраняли возможность
 подтягивать изменения и отправлять. Сначала добавим подпроект &lt;cite&gt;a&lt;/cite&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git remote add core /repo/core.git
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git remote add core /repo/core.git
 git fetch core
 git checkout -b core@rmt core/master
 git checkout master
@@ -129,7 +129,7 @@ git read-tree --prefix=core -u core@rmt
 &lt;p&gt;Пользуясь тем, что в отличии от подмодулей, вся информация о подпроектах инкапсулирована в
 подветках, а не в файлах, заменяем папку &lt;cite&gt;core&lt;/cite&gt; подпроекта &lt;cite&gt;a&lt;/cite&gt; на симлинк и сообщаем git, чтобы он
 игнорил данный путь.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git reset a/core/*
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git reset a/core/*
 git rm -r a/core
 ln -s ../core a/core
 git add a/core
@@ -140,14 +140,14 @@ git commit -m&amp;quot;add a as subproject&amp;quot;
 &lt;p&gt;Очень важно в ветке &lt;a class="reference external" href="mailto:a&amp;#64;rmt"&gt;a&amp;#64;rmt&lt;/a&gt; также заменить директорию core на символическую ссылку. Иначе когда-нибудь
 случайно поменяете какой-нибудь файл в папке core и не сможете сменить ветку на master, так как
 имеются изменения, которые нельзя закоммитить так как они игнорятся.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git checkout a@rmt
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git checkout a@rmt
 rm -r core
 ln -s ../core core
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;И напоследок следует упомянуть маленькую, но очень важную деталь. При таком подходе подпроекты не
 обязаны располагаться в отдельной папке, что позволяет подпроектам быть совсем маленькими. Пусть к
 примеру имеется очередная реализация строки в C++:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$&amp;gt;ls -la string
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$&amp;gt;ls -la string
 .git string.cpp  string.hpp
 $&amp;gt;cd proj/src
 git remote add string /repo/string
@@ -159,15 +159,15 @@ git read-tree --prefix= -u string@rmt
 &lt;p&gt;Потрясающе! Мы добавили файлы в дерево проекта, но при этом можем управлять ими как подпроектом с
 помощью ветки &lt;cite&gt;string&amp;#64;rmt&lt;/cite&gt;!&lt;/p&gt;
 &lt;p&gt;И напоследок вернёмся к нашему &lt;cite&gt;super&lt;/cite&gt;. Все подпроекты в нём - это ветки с суффиксом &lt;cite&gt;&amp;#64;rmt&lt;/cite&gt;:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;$&amp;gt;git branch | grep @rmt
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;$&amp;gt;git branch | grep @rmt
   a@rmt
   core@rmt
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Изменения в подпроекте &lt;cite&gt;core&lt;/cite&gt; можно получить так:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git diff-tree -p HEAD:core core@rmt
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git diff-tree -p HEAD:core core@rmt
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Изменения в удаленном подпроекте &lt;cite&gt;core&lt;/cite&gt; можно получить так:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git diff-tree -p HEAD:core core/master
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git diff-tree -p HEAD:core core/master
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="section" id="id5"&gt;

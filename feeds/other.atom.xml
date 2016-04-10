@@ -1,5 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/other.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2014-10-31T00:00:00+03:00</updated><entry><title>YaC 2014</title><link href="http://blog.hoxnox.com/devel/YaC.html" rel="alternate"></link><updated>2014-10-31T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-31:devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/other.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2016-04-10T00:00:00+03:00</updated><entry><title>Using gnu make to parallel jobs</title><link href="http://blog.hoxnox.com/other/make-parallel.html" rel="alternate"></link><updated>2016-04-10T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-04-10:other/make-parallel.html</id><summary type="html">&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
+in source building. I'll show you interesting example. Suppose we have 5
+servers: A, B, C, D, and E. There are some &lt;code&gt;*.tar.gz&lt;/code&gt; files in the home
+directory on each server. Every file has the following name syntax
+&lt;code&gt;&amp;lt;prefix&amp;gt;-&amp;lt;number&amp;gt;.tar.gz&lt;/code&gt;. I want to download these files and do it
+simultaneously in 4 jobs. Also I want to have ability to abort
+downloading and resume it from the place where I stopped. It's easy with
+help of the following Makefile:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="x"&gt;1 all : &lt;/span&gt;&lt;span class="p"&gt;$(&lt;/span&gt;&lt;span class="err"&gt;shell&lt;/span&gt; &lt;span class="err"&gt;for&lt;/span&gt; &lt;span class="err"&gt;i&lt;/span&gt; &lt;span class="err"&gt;in&lt;/span&gt; &lt;span class="err"&gt;A&lt;/span&gt; &lt;span class="err"&gt;B&lt;/span&gt; &lt;span class="err"&gt;C&lt;/span&gt; &lt;span class="err"&gt;D&lt;/span&gt; &lt;span class="err"&gt;E;&lt;/span&gt; &lt;span class="err"&gt;do&lt;/span&gt; &lt;span class="err"&gt;ssh&lt;/span&gt; &lt;span class="p"&gt;$$&lt;/span&gt;&lt;span class="nv"&gt;i&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;ls *.tar.gz&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;|&lt;/span&gt; &lt;span class="err"&gt;awk&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;{print \&amp;quot;$$i...\&amp;quot;\$$0}&amp;quot;&lt;/span&gt;&lt;span class="err"&gt;;&lt;/span&gt; &lt;span class="err"&gt;done&lt;/span&gt; &lt;span class="err"&gt;|&lt;/span&gt; &lt;span class="err"&gt;sort&lt;/span&gt; &lt;span class="err"&gt;-n&lt;/span&gt; &lt;span class="err"&gt;-t-&lt;/span&gt; &lt;span class="err"&gt;-k2&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="x"&gt;2&lt;/span&gt;
+&lt;span class="x"&gt;3 .SECONDARY:&lt;/span&gt;
+&lt;span class="x"&gt;4&lt;/span&gt;
+&lt;span class="x"&gt;5 %.tar.gz:&lt;/span&gt;
+&lt;span class="x"&gt;6   @echo &lt;/span&gt;&lt;span class="p"&gt;$(&lt;/span&gt;&lt;span class="err"&gt;subst&lt;/span&gt; &lt;span class="err"&gt;...&lt;/span&gt;&lt;span class="p"&gt;,:&lt;/span&gt;&lt;span class="err"&gt;~/&lt;/span&gt;&lt;span class="p"&gt;,$&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="x"&gt;7   @rsync -Prh &lt;/span&gt;&lt;span class="p"&gt;$(&lt;/span&gt;&lt;span class="err"&gt;subst&lt;/span&gt; &lt;span class="err"&gt;...&lt;/span&gt;&lt;span class="p"&gt;,:&lt;/span&gt;&lt;span class="err"&gt;~/&lt;/span&gt;&lt;span class="p"&gt;,$&lt;/span&gt;&lt;span class="err"&gt;@&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="x"&gt; &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="x"&gt;@.partial&lt;/span&gt;
+&lt;span class="x"&gt;8   @mv &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="x"&gt;@.partial &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="x"&gt;@&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;In the first line we form the files list. Every item consists of server
+name and file name divided by "...". The list is sorted by "-&lt;number&gt;"
+part for the file name. So the download order will be:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;A:~/file-1.tar.gz -&amp;gt; ./A...file-1.tar.gz
+B:~/file-1.tar.gz -&amp;gt; ./B...file-1.tar.gz
+... 
+E:~/file-1.tar.gz -&amp;gt; ./E...file-1.tar.gz
+A:~/file-2.tar.gz -&amp;gt; ./A...file-2.tar.gz
+B:~/file-2.tar.gz -&amp;gt; ./B...file-2.tar.gz
+...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We can choose almost any separator. Keep in mind - the resulting name is
+exactly the file name on the local machine.&lt;/p&gt;
+&lt;p&gt;In the fifth line we tell make utility what to do with every &lt;code&gt;*.tar.gz&lt;/code&gt;
+item not present as the local file. It should do two steps - rsync file
+with &lt;code&gt;.partial&lt;/code&gt; suffix and rename it. So when we abort and resume &lt;code&gt;make&lt;/code&gt;
+will skip all fully downloaded files and start with these, not present
+at local machine, including &lt;code&gt;.partial&lt;/code&gt; (rsync smart enough to continue
+with them).&lt;/p&gt;
+&lt;p&gt;Instruction in the third line tells &lt;code&gt;make&lt;/code&gt; not to delete intermediate
+results.&lt;/p&gt;</summary><category term="make"></category><category term="rsync"></category><category term="parallel download"></category></entry><entry><title>YaC 2014</title><link href="http://blog.hoxnox.com/devel/YaC.html" rel="alternate"></link><updated>2014-10-31T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-31:devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
 компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
 Security". Прослушал следующие доклады:&lt;/p&gt;
 &lt;ol&gt;
@@ -74,7 +115,7 @@ Security". Прослушал следующие доклады:&lt;/p&gt;
 &lt;li&gt;00 - блок B типа&lt;/li&gt;
 &lt;li&gt;01 - блок C типа&lt;/li&gt;
 &lt;/ul&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Порядок нумерации бит в блоке:
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Порядок нумерации бит в блоке:
               ...      89ABCDEF 01234567
     +--------+--------+--------+--------+
     |   3    |   2    |   1    |   0    |
@@ -86,7 +127,7 @@ Security". Прослушал следующие доклады:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;В к-свёртке каждое натуральное число N представлено парой чисел A и B в виде
 N = 30*A + B, где&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;if(N%30 == 0)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;if(N%30 == 0)
         A = N/30 - 1
         B = 30
 else
@@ -95,7 +136,7 @@ else
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;При этом натуральное A будем называть индексом, а натуральное B &amp;lt;=30
 остатком. Остаток B представляется в памяти числом (1 &amp;lt;&amp;lt; 32) + (1 &amp;lt;&amp;lt; (30 - B)) (см. таблицу)&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;Пример представления остатка
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Пример представления остатка
 b     двоичное представление                  запись в файле
 1     10100000 00000000 00000000 00000000     0x00 0x00 0x00 0xA0
 2     10010000 00000000 00000000 00000000     0x00 0x00 0x00 0x90
@@ -120,7 +161,7 @@ b     двоичное представление                  запись 
 &lt;h3&gt;Пример создания к-свёртки из последовательности&lt;/h3&gt;
 &lt;p&gt;Свернём следующую последовательность из 97 элементов:
 61, 65, 90, 91, 92, 93, ...,154, 156, 157, ..., 184, 193&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;N1  = 61,  N1  = 30*2 + 1,  (2, 1)
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;N1  = 61,  N1  = 30*2 + 1,  (2, 1)
 N2  = 65,  N2  = 30*2 + 5,  (2, 5)
 N3  = 90,  N3  = 30*2 + 30  (2, 30)
 N4  = 91,  N4  = 30*3 + 1   (3, 1)
@@ -142,7 +183,7 @@ N96 = 184, N96 = 30*6 + 4   (6, 4)
 N97 = 193, N97 = 30*6 + 13  (6, 13)
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Группируем:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;(2, {1, 5, 30})
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;(2, {1, 5, 30})
 (3, {1, 2, ..., 30})
 (4, {1, 2, ..., 30})
 (5, {1, 2, 3, 4, 6, 7, ..., 30})
@@ -152,28 +193,28 @@ N97 = 193, N97 = 30*6 + 13  (6, 13)
 можно представить блоком типа C: &lt;cite&gt;0x3fffff + 2&lt;/cite&gt;. Индексы, начиная со 2 идут
 друг за другом, поэтому можно их не записывать. Таким образом свёртка
 записывается в следующем виде:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;1. Индекс 2
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;1. Индекс 2
 2. Сумма остатков 1, 5, 30
 3. C-блок 0x3fffff + 2
 4. Сумма остатков 1, 2, 3, 4, 6, 7, ..., 30
 5. Сумма остатков 1, 2, 3, 4, 13
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;В бинарной системе счисления (группировка по 4 байта)&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;1. 00000000 00000000 00000000 00000010
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;1. 00000000 00000000 00000000 00000010
 2. 10100010 00000000 00000000 00000001
 3. 01000000 00000000 00000000 00000010
 4. 10111101 11111111 11111111 11111111
 5. 10111100 00000010 00000000 00000000
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;В шестнадцатеричной:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;1. 0x00 0x00 0x00 0x02
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;1. 0x00 0x00 0x00 0x02
 2. 0xA2 0x00 0x00 0x01
 3. 0x40 0x00 0x00 0x02
 4. 0xBD 0xFF 0xFF 0xFF
 5. 0xBC 0x02 0x00 0x00
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Итого, дамп памяти в прямом порядке байт данной свёртки будет выглядеть так:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;00000000 02 00 00 00 01 00 00 A2 02 00 00 40
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;00000000 02 00 00 00 01 00 00 A2 02 00 00 40
 00000010 FF FF FF BD 00 00 02 BC
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
@@ -194,26 +235,26 @@ N97 = 193, N97 = 30*6 + 13  (6, 13)
 порядку. Блоки типа B и C увеличивают значение индекса не на единицу, а на
 число, записанное в этом блоке (не считая биты, определяющие тип блока).&lt;/p&gt;
 &lt;p&gt;Пример нумерации блоков в свёртке:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;        A               B               A               A               C
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;        A               B               A               A               C
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 |x00 x1F x03 x80|x02 x00 x00 x00|x00 x02 x00 xB8|x10 xD3 xA1 x80|x03 x00 x00 x40|
 +---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+---+
 i=0             ==&amp;gt;             i=i+2=2         i=i+1=3         i=i+3=6
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Раскроем к-свёртку&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;00000000 01 00 00 00 FF FF F7 86 00 00 00 BE
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;00000000 01 00 00 00 FF FF F7 86 00 00 00 BE
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Разбиваем на блоки:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;01 00 00 00 | FF FF F7 86 | 00 00 00 BE
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;01 00 00 00 | FF FF F7 86 | 00 00 00 BE
      B             A             A
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Блоки типа A и их индексы:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;в файле       соотв. двоичное число                   индекс
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;в файле       соотв. двоичное число                   индекс
 FF FF F7 86   10000110 11110111 11111111 11111111     1
 00 00 00 BE   10111110 00000000 00000000 00000000     2
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Остатки FF FF F7 86:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;10000100 00000000 00000000 00000000   4
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;10000100 00000000 00000000 00000000   4
 10000010 00000000 00000000 00000000   5
 10000000 10000000 00000000 00000000   7
 10000000 10000000 00000000 00000000   8
@@ -225,14 +266,14 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 10000000 00000000 00000000 00000001   30
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Остатки 00 00 00 BE:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;10100000 00000000 00000000 00000000   1
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;10100000 00000000 00000000 00000000   1
 10010000 00000000 00000000 00000000   2
 10001000 00000000 00000000 00000000   3
 10000100 00000000 00000000 00000000   4
 10000010 00000000 00000000 00000000   5
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Соответствующая последовательность:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;1*30 + 4  = 34
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;1*30 + 4  = 34
 1*30 + 5  = 35
 1*30 + 7  = 37
 1*30 + 8  = 38
@@ -315,8 +356,8 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;p&gt;Функции дробления процессов:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;fork + execl&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;unistd.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;unistd.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -338,7 +379,7 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;li&gt;&lt;p class="first"&gt;system
 Аналогична запуску fork + exec, но родительский процесс засыпает на время запуска оболчки с
 сыновним процессом. То есть родительский и сыновний процессы синхронны.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;stdlib.h&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdlib.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -355,13 +396,13 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 * обмениваться дескрипторами файлов
 * установить для сыновнего процесса идентификатор группы
 * установить стратегию планирования сыновнего процесса отличной от стратегии родителя&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;spawn.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;spawn.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;argc&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="kt"&gt;char&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;argv&lt;/span&gt;&lt;span class="p"&gt;[])&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
-    &lt;span class="kt"&gt;posix_spawnattr_t&lt;/span&gt; &lt;span class="n"&gt;attr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="kt"&gt;posix_spawn_file_actions_t&lt;/span&gt; &lt;span class="n"&gt;file_actions&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;posix_spawnattr_t&lt;/span&gt; &lt;span class="n"&gt;attr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;posix_spawn_file_actions_t&lt;/span&gt; &lt;span class="n"&gt;file_actions&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
     &lt;span class="kt"&gt;pid_t&lt;/span&gt; &lt;span class="n"&gt;pid&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
     &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;args&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;dig&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;@server4ibm&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;+short&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;hoxnox1.otdel4.a&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;
     &lt;span class="kt"&gt;char&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="k"&gt;const&lt;/span&gt; &lt;span class="n"&gt;args2&lt;/span&gt;&lt;span class="p"&gt;[]&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;dig&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;@server4ibm&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;+short&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;hoxnox1.otdel4.a&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;};&lt;/span&gt;
@@ -389,7 +430,7 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;p&gt;Функции по работе с ресурсами:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;Лимитирование&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;rlimit&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;struct&lt;/span&gt; &lt;span class="n"&gt;rlimit&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="kt"&gt;rlim_t&lt;/span&gt; &lt;span class="n"&gt;rlim_cur&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
     &lt;span class="kt"&gt;rlim_t&lt;/span&gt; &lt;span class="n"&gt;rlim_max&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
@@ -427,8 +468,8 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;/div&gt;
 &lt;div class="section" id="pthread"&gt;
 &lt;h2&gt;Pthread&lt;/h2&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="cp"&gt;#include &amp;lt;pthread.h&amp;gt;&lt;/span&gt;
-&lt;span class="cp"&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;pthread.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;stdio.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
 
 &lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="nf"&gt;dig1&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="kt"&gt;void&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;arg&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
@@ -447,7 +488,7 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;
     &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;N&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="kt"&gt;pthread_t&lt;/span&gt; &lt;span class="n"&gt;threadA&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;threadB&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="n"&gt;pthread_t&lt;/span&gt; &lt;span class="n"&gt;threadA&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;threadB&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
     &lt;span class="n"&gt;pthread_create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;threadA&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dig1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
     &lt;span class="n"&gt;pthread_create&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;threadB&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;dig2&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="o"&gt;&amp;amp;&lt;/span&gt;&lt;span class="n"&gt;N&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
     &lt;span class="n"&gt;pthread_join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;threadA&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="nb"&gt;NULL&lt;/span&gt;&lt;span class="p"&gt;);&lt;/span&gt;
@@ -520,7 +561,7 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;p&gt;Мьютекс позволяет процессу или потоку при входе в критический участок заблокировать какой-либо
 объект (см. &lt;cite&gt;lock&lt;/cite&gt;, &lt;cite&gt;timedlock&lt;/cite&gt;, &lt;cite&gt;unlock&lt;/cite&gt;, &lt;cite&gt;trylock&lt;/cite&gt;, &lt;cite&gt;destroy&lt;/cite&gt;).&lt;/p&gt;
 &lt;p&gt;Перед использованием мьютекс должен быть проинициализирован или значениями по умолчанию:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;pthread_mutex_t&lt;/span&gt; &lt;span class="n"&gt;mutex&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PTHREAD_MUTEX_INITIALIZER&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;pthread_mutex_t&lt;/span&gt; &lt;span class="n"&gt;mutex&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;PTHREAD_MUTEX_INITIALIZER&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;или с помощью соответствующей структуры &lt;cite&gt;pthread_mutexattr_t&lt;/cite&gt;.&lt;/p&gt;
 &lt;p&gt;Атрибуты&lt;/p&gt;
@@ -532,9 +573,9 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;li&gt;тип (&lt;cite&gt;type&lt;/cite&gt;)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Пример использования разделяемого мьютекса:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="kt"&gt;pthread_mutex_t&lt;/span&gt; &lt;span class="n"&gt;mutex1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-&lt;span class="kt"&gt;pthread_mutexattr_t&lt;/span&gt; &lt;span class="n"&gt;mutex_attr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="n"&gt;result&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;pthread_mutex_t&lt;/span&gt; &lt;span class="n"&gt;mutex1&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+&lt;span class="n"&gt;pthread_mutexattr_t&lt;/span&gt; &lt;span class="n"&gt;mutex_attr&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
 
 &lt;span class="kt"&gt;int&lt;/span&gt; &lt;span class="nf"&gt;main&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="p"&gt;{&lt;/span&gt;

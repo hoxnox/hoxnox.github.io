@@ -3,7 +3,7 @@
 &lt;li&gt;&lt;p class="first"&gt;Change the origin of the repository&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Edit &lt;cite&gt;.git/config&lt;/cite&gt; file:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;...
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
 [remote &amp;quot;origin&amp;quot;]
 url = &amp;lt;line to  change&amp;gt;
 ...
@@ -12,25 +12,25 @@ url = &amp;lt;line to  change&amp;gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;Cancel previous commit&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git reset HEAD^
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git reset HEAD^
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;Commit, rewriting previus&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git commit --amend
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git commit --amend
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;Remove from staged, but keep the file&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git rm --chached &amp;lt;file&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git rm --chached &amp;lt;file&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;Remote repo&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git remote add frank http://frnak.com/git/project
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git remote add frank http://frnak.com/git/project
 git remote add pb git://github.com/paulboone/ticgit.git
 git remote -v
 git remote show origin
@@ -41,10 +41,10 @@ git remote show frank
 &lt;li&gt;&lt;p class="first"&gt;Working with remote branches&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Push your local branch to the origin&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git push origin &amp;lt;branchname&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git push origin &amp;lt;branchname&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Delete branch from the origin&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git push origin :&amp;lt;branchname&amp;gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git push origin :&amp;lt;branchname&amp;gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
 &lt;/li&gt;
@@ -59,21 +59,21 @@ git push origin --tags&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;Autocomplete (gentoo)&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;echo &amp;quot;source /usr/share/bash-completion/git&amp;quot; &amp;gt;&amp;gt; ~/.bashrc
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;echo &amp;quot;source /usr/share/bash-completion/git&amp;quot; &amp;gt;&amp;gt; ~/.bashrc
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
 &lt;/li&gt;
 &lt;li&gt;&lt;p class="first"&gt;Подпроекты
 1. подмодули (много подводных камней)&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git update-index --skip-worktree core .gitmodules
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git update-index --skip-worktree core .gitmodules
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/blockquote&gt;
 &lt;ol class="arabic" start="2"&gt;
 &lt;li&gt;&lt;p class="first"&gt;Поддеревья (можно хранить в отдельной ветке клон удаленного репозитория и, когда надо, сливать
 эту ветку с основной&lt;/p&gt;
 &lt;blockquote&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git remote add core_remote /repo/core.git
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git remote add core_remote /repo/core.git
 git fetch core_remote
 git checkout -b core_branch core_remote/master
 git checkout master
@@ -102,7 +102,7 @@ git diff-tree -p core_remote/master
 &lt;/dd&gt;
 &lt;/dl&gt;
 &lt;p&gt;Если git merge срабатывает не в то поддререво используем &amp;quot;ручное управление&amp;quot;. Пример:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;git merge --squash --no-commit -s recursive -X subtree=src -X theirs nx_socket@rmt
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;git merge --squash --no-commit -s recursive -X subtree=src -X theirs nx_socket@rmt
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
