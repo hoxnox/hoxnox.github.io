@@ -106,20 +106,20 @@ trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
 
 
 &lt;p&gt;After starting gmond and gmetad, you can get statistic:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
-&lt;span class="err"&gt;CLUSTER&lt;/span&gt; &lt;span class="err"&gt;INFORMATION&lt;/span&gt;
-       &lt;span class="err"&gt;Name:&lt;/span&gt; &lt;span class="err"&gt;jassy&lt;/span&gt;
-      &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;1&lt;/span&gt;
-&lt;span class="err"&gt;Gexec&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
- &lt;span class="err"&gt;Dead&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
-  &lt;span class="err"&gt;Localtime:&lt;/span&gt; &lt;span class="err"&gt;Thu&lt;/span&gt; &lt;span class="err"&gt;Oct&lt;/span&gt; &lt;span class="err"&gt;22&lt;/span&gt; &lt;span class="err"&gt;22:46:08&lt;/span&gt; &lt;span class="err"&gt;2015&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;☯ ~  gstat
+CLUSTER INFORMATION
+       Name: jassy
+      Hosts: 1
+Gexec Hosts: 0
+ Dead Hosts: 0
+  Localtime: Thu Oct &lt;span class="m"&gt;22&lt;/span&gt; 22:46:08 2015
 
-&lt;span class="err"&gt;☭&lt;/span&gt;  &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;nc&lt;/span&gt; &lt;span class="err"&gt;192.168.30.3&lt;/span&gt; &lt;span class="err"&gt;8651&lt;/span&gt;
-&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="err"&gt;xml&lt;/span&gt; &lt;span class="err"&gt;version=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;encoding=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;standalone=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
-&lt;span class="k"&gt;&amp;lt;!DOCTYPE&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="k"&gt;[&lt;/span&gt;
-   &lt;span class="k"&gt;&amp;lt;!ELEMENT&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;GRID&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;CLUSTER&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;HOST&lt;/span&gt;&lt;span class="o"&gt;)*&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+☭  ~  nc 192.168.30.3 8651
+&amp;lt;?xml &lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;encoding&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;standalone&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;?&amp;gt;
+&amp;lt;!DOCTYPE GANGLIA_XML &lt;span class="o"&gt;[&lt;/span&gt;
+   &amp;lt;!ELEMENT GANGLIA_XML &lt;span class="o"&gt;(&lt;/span&gt;GRID&lt;span class="p"&gt;|&lt;/span&gt;CLUSTER&lt;span class="p"&gt;|&lt;/span&gt;HOST&lt;span class="o"&gt;)&lt;/span&gt;*&amp;gt;
 
-    &lt;span class="err"&gt;...&lt;/span&gt;
+    ...
 &lt;/pre&gt;&lt;/div&gt;
 
 
