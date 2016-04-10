@@ -138,14 +138,14 @@ directory on each server. Every file has the following name syntax
 simultaneously in 4 jobs. Also I want to have ability to abort
 downloading and resume it from the place where I stopped. It's easy with
 help of the following Makefile:</p>
-<div class="highlight"><pre><span></span><span class="x">1 all : </span><span class="p">$(</span><span class="err">shell</span> <span class="err">for</span> <span class="err">i</span> <span class="err">in</span> <span class="err">A</span> <span class="err">B</span> <span class="err">C</span> <span class="err">D</span> <span class="err">E;</span> <span class="err">do</span> <span class="err">ssh</span> <span class="p">$$</span><span class="nv">i</span> <span class="s2">&quot;ls *.tar.gz&quot;</span> <span class="err">|</span> <span class="err">awk</span> <span class="s2">&quot;{print \&quot;$$i...\&quot;\$$0}&quot;</span><span class="err">;</span> <span class="err">done</span> <span class="err">|</span> <span class="err">sort</span> <span class="err">-n</span> <span class="err">-t-</span> <span class="err">-k2</span><span class="p">)</span><span class="x"></span>
-<span class="x">2</span>
-<span class="x">3 .SECONDARY:</span>
-<span class="x">4</span>
-<span class="x">5 %.tar.gz:</span>
-<span class="x">6   @echo </span><span class="p">$(</span><span class="err">subst</span> <span class="err">...</span><span class="p">,:</span><span class="err">~/</span><span class="p">,$</span><span class="err">@</span><span class="p">)</span><span class="x"></span>
-<span class="x">7   @rsync -Prh </span><span class="p">$(</span><span class="err">subst</span> <span class="err">...</span><span class="p">,:</span><span class="err">~/</span><span class="p">,$</span><span class="err">@</span><span class="p">)</span><span class="x"> </span><span class="p">$</span><span class="x">@.partial</span>
-<span class="x">8   @mv </span><span class="p">$</span><span class="x">@.partial </span><span class="p">$</span><span class="x">@</span>
+<div class="highlight"><pre><span></span><span class="nf">all </span><span class="o">:</span> <span class="k">$(</span><span class="nv">shell</span> <span class="nv">for</span> <span class="nv">i</span> <span class="nv">in</span> <span class="nv">A</span> <span class="nv">B</span> <span class="nv">C</span> <span class="nv">D</span> <span class="nv">E</span>; <span class="nv">do</span> <span class="nv">ssh</span> <span class="k">$$</span><span class="nv">i</span> &quot;<span class="nv">ls</span> *.<span class="nv">tar</span>.<span class="nv">gz</span>&quot; | <span class="nv">awk</span> &quot;{<span class="nv">print</span> \&quot;<span class="k">$$</span><span class="nv">i</span>...\&quot;\<span class="k">$$</span>0}&quot;; <span class="nv">done</span> | <span class="nv">sort</span> -<span class="nv">n</span> -<span class="nv">t</span>- -<span class="nv">k</span>2<span class="k">)</span>
+
+<span class="nf">.SECONDARY</span><span class="o">:</span>
+
+<span class="nf">%.tar.gz</span><span class="o">:</span>
+    @echo <span class="k">$(</span>subst ...,:~/,<span class="nv">$@</span><span class="k">)</span>
+    @rsync -Prh <span class="k">$(</span>subst ...,:~/,<span class="nv">$@</span><span class="k">)</span> <span class="nv">$@</span>.partial
+    @mv <span class="nv">$@</span>.partial <span class="nv">$@</span>
 </pre></div>
 
 
