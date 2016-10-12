@@ -1,5 +1,348 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/rss.xml" rel="self"></atom:link><lastBuildDate>Sun, 10 Apr 2016 00:00:00 +0300</lastBuildDate><item><title>Using gnu make to parallel jobs</title><link>http://blog.hoxnox.com/other/make-parallel.html</link><description>&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
+<rss version="2.0"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><lastBuildDate>Tue, 11 Oct 2016 00:00:00 +0300</lastBuildDate><item><title>TLS authenticated web application with nginx and easy-rsa-2.0</title><link>http://blog.hoxnox.com/inet/ssl_nginx.md.html</link><description>&lt;p&gt;This cheat sheet helps to set up web server with TLS authentication.
+We'll use our own certificate authority.&lt;/p&gt;
+&lt;p&gt;As a prerequisite You have to own the server and the domain, pointed to this server.&lt;/p&gt;
+&lt;h2&gt;Prepare easy-rsa&lt;/h2&gt;
+&lt;p&gt;We need to create several cipher keys. OpenSSL can do it for us, but it's not the
+easiest tool. Much simpler way is to use &lt;code&gt;easy-rsa&lt;/code&gt;. It
+comes with openvpn in Debian-8. Make a local copy and apply some changes:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cp -r /usr/share/doc/openvpn/examples/easy-rsa/2.0 /etc/.keys-infrastructure
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;edit vars:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gi"&gt;+++ /usr/share/doc/openvpn/examples/easy-rsa/2.0/vars   2011-07-01 12:31:26.000000000 +0400&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -26,8 +26,7 @@&lt;/span&gt;
+ # This variable should point to
+ # the openssl.cnf file included
+ # with easy-rsa.
+&lt;span class="gd"&gt;-#export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`&lt;/span&gt;
+&lt;span class="gd"&gt;-export KEY_CONFIG=$EASY_RSA/openssl-1.0.0.cnf&lt;/span&gt;
+&lt;span class="gi"&gt;+export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`&lt;/span&gt;
+
+ # Edit this variable to point to
+ # your soon-to-be-created key
+&lt;span class="gu"&gt;@@ -51,13 +50,13 @@&lt;/span&gt;
+ # down TLS negotiation performance
+ # as well as the one-time DH parms
+ # generation process.
+&lt;span class="gd"&gt;-export KEY_SIZE=4096&lt;/span&gt;
+&lt;span class="gi"&gt;+export KEY_SIZE=1024&lt;/span&gt;
+
+ # In how many days should the root CA key expire?
+ export CA_EXPIRE=3650
+
+ # In how many days should certificates expire?
+&lt;span class="gd"&gt;-export KEY_EXPIRE=365&lt;/span&gt;
+&lt;span class="gi"&gt;+export KEY_EXPIRE=3650&lt;/span&gt;
+
+ # These are the default values for fields
+ # which will be placed in the certificate.
+&lt;span class="gu"&gt;@@ -65,11 +64,11 @@&lt;/span&gt;
+ export KEY_COUNTRY=&amp;quot;US&amp;quot;
+ export KEY_PROVINCE=&amp;quot;CA&amp;quot;
+ export KEY_CITY=&amp;quot;SanFrancisco&amp;quot;
+&lt;span class="gd"&gt;-export KEY_ORG=&amp;quot;ACME&amp;quot;&lt;/span&gt;
+&lt;span class="gd"&gt;-export KEY_EMAIL=&amp;quot;info@example.com&amp;quot;&lt;/span&gt;
+&lt;span class="gd"&gt;-export KEY_ALTNAME=&amp;quot;example.com&amp;quot;&lt;/span&gt;
+&lt;span class="gi"&gt;+export KEY_ORG=&amp;quot;Fort-Funston&amp;quot;&lt;/span&gt;
+&lt;span class="gi"&gt;+export KEY_EMAIL=&amp;quot;me@myhost.mydomain&amp;quot;&lt;/span&gt;
+&lt;span class="gi"&gt;+export KEY_EMAIL=mail@host.domain&lt;/span&gt;
+ export KEY_CN=changeme
+ export KEY_NAME=changeme
+&lt;span class="gd"&gt;-export KEY_OU=IT Department&lt;/span&gt;
+&lt;span class="gi"&gt;+export KEY_OU=changeme&lt;/span&gt;
+ export PKCS11_MODULE_PATH=changeme
+&lt;span class="gd"&gt;-export PKCS11_PIN=7266&lt;/span&gt;
+&lt;span class="gi"&gt;+export PKCS11_PIN=1234&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;edit openssl-1.0.0.cnf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gd"&gt;--- openssl-1.0.0.cnf   2016-10-11 09:56:47.895473062 +0300&lt;/span&gt;
+&lt;span class="gi"&gt;+++ /usr/share/doc/openvpn/examples/easy-rsa/2.0/openssl-1.0.0.cnf      2011-07-01 12:31:26.000000000 +0400&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -182,7 +182,7 @@&lt;/span&gt;
+ # keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+ # This will be displayed in Netscape&amp;#39;s comment listbox.
+&lt;span class="gd"&gt;-nsComment                      = &amp;quot;ACME certfication&amp;quot;&lt;/span&gt;
+&lt;span class="gi"&gt;+nsComment                      = &amp;quot;Easy-RSA Generated Certificate&amp;quot;&lt;/span&gt;
+
+ # PKIX recommendations harmless if included in all certificates.
+ subjectKeyIdentifier=hash
+&lt;span class="gu"&gt;@@ -193,10 +193,10 @@&lt;/span&gt;
+
+ # This stuff is for subjectAltName and issuerAltname.
+ # Import the email address.
+&lt;span class="gd"&gt;-subjectAltName = &amp;quot;DNS.1:example.com,DNS.2:*.example.com&amp;quot;&lt;/span&gt;
+&lt;span class="gi"&gt;+# subjectAltName=email:copy&lt;/span&gt;
+
+ # Copy subject details
+&lt;span class="gd"&gt;-issuerAltName=issuer:copy&lt;/span&gt;
+&lt;span class="gi"&gt;+# issuerAltName=issuer:copy&lt;/span&gt;
+
+ #nsCaRevocationUrl             = http://www.domain.dom/ca-crl.pem
+ #nsBaseUrl
+&lt;span class="gu"&gt;@@ -210,8 +210,7 @@&lt;/span&gt;
+ # JY ADDED -- Make a cert with nsCertType set to &amp;quot;server&amp;quot;
+ basicConstraints=CA:FALSE
+ nsCertType                     = server
+&lt;span class="gd"&gt;-nsComment                      = &amp;quot;ACME certification&amp;quot;&lt;/span&gt;
+&lt;span class="gd"&gt;-subjectAltName=&amp;quot;DNS.1:example.com,DNS.2:*.example.com&amp;quot;&lt;/span&gt;
+&lt;span class="gi"&gt;+nsComment                      = &amp;quot;Easy-RSA Generated Server Certificate&amp;quot;&lt;/span&gt;
+ subjectKeyIdentifier=hash
+ authorityKeyIdentifier=keyid,issuer:always
+ extendedKeyUsage=serverAuth
+&lt;span class="gu"&gt;@@ -251,9 +250,9 @@&lt;/span&gt;
+ # nsCertType = sslCA, emailCA
+
+ # Include email address in subject alt name: another PKIX recommendation
+&lt;span class="gd"&gt;-subjectAltName=&amp;quot;DNS.1:example.com,DNS.2:*.example.com&amp;quot;&lt;/span&gt;
+&lt;span class="gi"&gt;+# subjectAltName=email:copy&lt;/span&gt;
+ # Copy issuer details
+&lt;span class="gd"&gt;-issuerAltName=issuer:copy&lt;/span&gt;
+&lt;span class="gi"&gt;+# issuerAltName=issuer:copy&lt;/span&gt;
+
+ # DER hex encoding of an extension: beware experts only!
+ # obj=DER:02:03
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;pkitool:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gi"&gt;+++ /usr/share/doc/openvpn/examples/easy-rsa/2.0/pkitool        2011-04-27 13:52:59.000000000 +0400&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -322,7 +322,7 @@&lt;/span&gt;
+
+     # Build root CA
+     if [ $DO_ROOT -eq 1 ]; then
+&lt;span class="gd"&gt;-       $OPENSSL req $BATCH -days $CA_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE -sha256 \&lt;/span&gt;
+&lt;span class="gi"&gt;+       $OPENSSL req $BATCH -days $CA_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE -sha1 \&lt;/span&gt;
+            -x509 -keyout &amp;quot;$CA.key&amp;quot; -out &amp;quot;$CA.crt&amp;quot; -config &amp;quot;$KEY_CONFIG&amp;quot; &amp;amp;&amp;amp; \
+            chmod 0600 &amp;quot;$CA.key&amp;quot;
+     else        
+&lt;span class="gu"&gt;@@ -347,7 +347,7 @@&lt;/span&gt;
+                echo &amp;quot;Generating key pair on PKCS#11 token...&amp;quot;
+                $PKCS11TOOL --module &amp;quot;$PKCS11_MODULE_PATH&amp;quot; --keypairgen \
+                        --login --pin &amp;quot;$PKCS11_PIN&amp;quot; \
+&lt;span class="gd"&gt;-                       --key-type rsa:4096 \&lt;/span&gt;
+&lt;span class="gi"&gt;+                       --key-type rsa:1024 \&lt;/span&gt;
+                        --slot &amp;quot;$PKCS11_SLOT&amp;quot; --id &amp;quot;$PKCS11_ID&amp;quot; --label &amp;quot;$PKCS11_LABEL&amp;quot; || exit 1
+                PKCS11_ARGS=&amp;quot;-engine pkcs11 -keyform engine -key $PKCS11_SLOT:$PKCS11_ID&amp;quot;
+        fi
+&lt;span class="gu"&gt;@@ -356,7 +356,7 @@&lt;/span&gt;
+        ( [ $DO_REQ -eq 0 ] || $OPENSSL req $BATCH -days $KEY_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE \
+                -keyout &amp;quot;$FN.key&amp;quot; -out &amp;quot;$FN.csr&amp;quot; $REQ_EXT -config &amp;quot;$KEY_CONFIG&amp;quot; $PKCS11_ARGS ) &amp;amp;&amp;amp; \
+            ( [ $DO_CA -eq 0 ]  || $OPENSSL ca $BATCH -days $KEY_EXPIRE -out &amp;quot;$FN.crt&amp;quot; \
+&lt;span class="gd"&gt;-               -in &amp;quot;$FN.csr&amp;quot; $CA_EXT -md sha256 -config &amp;quot;$KEY_CONFIG&amp;quot; ) &amp;amp;&amp;amp; \&lt;/span&gt;
+&lt;span class="gi"&gt;+               -in &amp;quot;$FN.csr&amp;quot; $CA_EXT -md sha1 -config &amp;quot;$KEY_CONFIG&amp;quot; ) &amp;amp;&amp;amp; \&lt;/span&gt;
+            ( [ $DO_P12 -eq 0 ] || $OPENSSL pkcs12 -export -inkey &amp;quot;$FN.key&amp;quot; \
+                -in &amp;quot;$FN.crt&amp;quot; -certfile &amp;quot;$CA.crt&amp;quot; -out &amp;quot;$FN.p12&amp;quot; $NODES_P12 ) &amp;amp;&amp;amp; \
+            ( [ $DO_CA -eq 0 -o $DO_P11 -eq 1 ]  || chmod 0600 &amp;quot;$FN.key&amp;quot; ) &amp;amp;&amp;amp; \
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Creating key infrastructure&lt;/h2&gt;
+&lt;p&gt;First thing to do is to build certificate authority. It can sign other
+certificates and validate them.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@debian:/etc/.keys-infrastructure# ./build-ca
+Generating a 4096 bit RSA private key
+...................................................................++
+....................++
+writing new private key to &amp;#39;ca.key&amp;#39;
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter &amp;#39;.&amp;#39;, the field will be left blank.
+-----
+Country Name (2 letter code) [US]:
+State or Province Name (full name) [CA]:
+Locality Name (eg, city) [SanFrancisco]:
+Organization Name (eg, company) [ACME]:
+Organizational Unit Name (eg, section) [IT]:IT Department
+Common Name (eg, your name or your server&amp;#39;s hostname) [changeme]:exmaple.com
+Name [changeme]:ca
+Email Address [info@example.com]:
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Next we'll build and sign key and certificate for our server.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@debian:/etc/.keys-infrastructure# ./build-key-server my-nginx
+Generating a 4096 bit RSA private key
+...........................++
+.................
+writing new private key to &amp;#39;my-nginx.key&amp;#39;
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter &amp;#39;.&amp;#39;, the field will be left blank.
+-----
+Country Name (2 letter code) [US]:
+State or Province Name (full name) [CA]:
+Locality Name (eg, city) [SanFrancisco]:
+Organization Name (eg, company) [ACME]:
+Organizational Unit Name (eg, section) [IT]:IT Department
+Common Name (eg, your name or your server&amp;#39;s hostname) [nginx]:example.com
+Name [changeme]:nginx
+Email Address [info@example.com]:
+
+Please enter the following &amp;#39;extra&amp;#39; attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject&amp;#39;s Distinguished Name is as follows
+countryName           :PRINTABLE:&amp;#39;US&amp;#39;
+stateOrProvinceName   :PRINTABLE:&amp;#39;CA&amp;#39;
+localityName          :PRINTABLE:&amp;#39;SanFrancisco&amp;#39;
+organizationName      :PRINTABLE:&amp;#39;ACME&amp;#39;
+organizationalUnitName:PRINTABLE:&amp;#39;IT Department&amp;#39;
+commonName            :PRINTABLE:&amp;#39;exmaple.com&amp;#39;
+name                  :PRINTABLE:&amp;#39;nginx&amp;#39;
+emailAddress          :IA5STRING:&amp;#39;info@exmaple.com&amp;#39;
+Certificate is to be certified until Oct 11 07:00:59 2017 GMT (365 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Managing clients&lt;/h2&gt;
+&lt;p&gt;When client connects to our server, she must provide signed certificate.
+To be able to encrypt data, she also must have private key. Let's create
+it&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@debian:/etc/.keys-infrastructure# ./build-key alice
+Generating a 4096 bit RSA private key
+....................................
+......++
+writing new private key to &amp;#39;alice.key&amp;#39;
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter &amp;#39;.&amp;#39;, the field will be left blank.
+-----
+Country Name (2 letter code) [US]:
+State or Province Name (full name) [CA]:
+Locality Name (eg, city) [SanFrancisco]:
+Organization Name (eg, company) [ACME]:
+Organizational Unit Name (eg, section) [IT]:IT Department
+Common Name (eg, your name or your server&amp;#39;s hostname) [alice]:
+Name [changeme]:alice
+Email Address [info@example.com]:alice@example.com
+
+Please enter the following &amp;#39;extra&amp;#39; attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+Using configuration from /etc/.proxymator-keys/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject&amp;#39;s Distinguished Name is as follows
+countryName           :PRINTABLE:&amp;#39;US&amp;#39;
+stateOrProvinceName   :PRINTABLE:&amp;#39;CA&amp;#39;
+localityName          :PRINTABLE:&amp;#39;SanFrancisco&amp;#39;
+organizationName      :PRINTABLE:&amp;#39;ACME&amp;#39;
+organizationalUnitName:PRINTABLE:&amp;#39;IT Department&amp;#39;
+commonName            :PRINTABLE:&amp;#39;alice&amp;#39;
+name                  :PRINTABLE:&amp;#39;alice&amp;#39;
+emailAddress          :IA5STRING:&amp;#39;alice@example.com&amp;#39;
+Certificate is to be certified until Oct 11 07:02:12 2017 GMT (365 days)
+Sign the certificate? [y/n]:y
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated&lt;/p&gt;
+&lt;p&gt;Sometimes cilent need &lt;code&gt;p12&lt;/code&gt; certificate with private key in it. You can
+get it with the following command:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;openssl pkcs12 -export -in alice.crt -inkey alice.key -out alice.p12 -CAfile ca.crt -caname ACME
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;We would call &lt;code&gt;revoke-full&lt;/code&gt; if we decided to restrict Alice access to
+the server. This command will update &lt;code&gt;crl.pem&lt;/code&gt; file, containing revoke
+certificates.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@debian:/etc/.proxymator-keys# ./revoke-full unwanted
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
+Revoking Certificate 02.
+Data Base Updated
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
+alice.crt: C = US, ST = CA, L = SanFrancisco, O = ACME, OU = IT Department, CN = alice, name = alice, emailAddress = alice@example.com
+error 23 at 0 depth lookup:certificate revoked
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Note the "error 23" in the last line. It is normal -
+it indicates that a certificate verification of the revoked certificate
+failed.&lt;/p&gt;
+&lt;h2&gt;Setting up nginx server&lt;/h2&gt;
+&lt;p&gt;Nginx server configuration section:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;server&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="kn"&gt;listen&lt;/span&gt; &lt;span class="n"&gt;127.0.0.1&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="mi"&gt;443&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kn"&gt;server_name&lt;/span&gt; &lt;span class="s"&gt;localhost&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="kn"&gt;ssl&lt;/span&gt; &lt;span class="no"&gt;on&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kn"&gt;ssl_certificate&lt;/span&gt; &lt;span class="s"&gt;/etc/ssl/nginx/nginx.crt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kn"&gt;ssl_certificate_key&lt;/span&gt; &lt;span class="s"&gt;/etc/ssl/nginx/nginx.key&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kn"&gt;ssl_client_certificate&lt;/span&gt; &lt;span class="s"&gt;/etc/ssl/nginx/ca.crt&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kn"&gt;ssl_crl&lt;/span&gt; &lt;span class="s"&gt;/etc/ssl/nginx/crl.pem&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kn"&gt;ssl_verify_client&lt;/span&gt; &lt;span class="no"&gt;on&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="kn"&gt;access_log&lt;/span&gt; &lt;span class="s"&gt;/var/log/nginx/localhost.ssl_access_log&lt;/span&gt; &lt;span class="s"&gt;main&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="kn"&gt;error_log&lt;/span&gt; &lt;span class="s"&gt;/var/log/nginx/localhost.ssl_error_log&lt;/span&gt; &lt;span class="s"&gt;info&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+    &lt;span class="kn"&gt;location&lt;/span&gt; &lt;span class="s"&gt;/&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="kn"&gt;root&lt;/span&gt; &lt;span class="s"&gt;/var/www/localhost/htdocs&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Client examples&lt;/h2&gt;
+&lt;h3&gt;Browser&lt;/h3&gt;
+&lt;p&gt;Alice need to import ca.crt in the Certificate Authorities section and
+allow it to identify cites. In Personal section she need to import her
+&lt;code&gt;p12&lt;/code&gt; certificate.&lt;/p&gt;
+&lt;h3&gt;Curl&lt;/h3&gt;
+&lt;p&gt;We need to add private key into Alice's certificate. We can just
+concatenate it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cp alice.crt alice.pem
+cat alice.key &amp;gt;&amp;gt; alice.pem
+curl --cacert ca.crt -E hoxnox.pem https://example.com
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;Python&lt;/h3&gt;
+&lt;p&gt;It's very easy with help of &lt;a href="http://docs.python-requests.org"&gt;Requests library&lt;/a&gt;.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;rs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://example.com&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;verify&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/path/to/ca.crt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cert&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/path/to/alice.crt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;/path/to/alice.key&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 11 Oct 2016 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2016-10-11:inet/ssl_nginx.md.html</guid><category>tls</category><category>ssl</category><category>https</category><category>nginx</category><category>easy-rsa</category></item><item><title>Switching server off on power lost.</title><link>http://blog.hoxnox.com/admin/linux-ups-fake-data.html</link><description>&lt;p&gt;electricity when UPS has no data interface.&lt;/p&gt;
+&lt;p&gt;My home server is connected to the UPS, but it is very simple - it
+hasn't data interface. So when the power had switched off my server can't
+figure it out unless UPS's battery is full. I have found a very simple
+solution, which helps safely shutdown my Linux box on power lost. All I
+need - plug the switch near the server directly into power socket. When the power is
+lost, switch turns off, so LAN card in the server, connected to the
+switch will be noticed about carrier lost. Every minute server checks
+link between switch and LAN card. In case it's lost, the server is
+turned down:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;* * * * *  grep -q 0 /sys/class/net/eth0/carrier &amp;amp;&amp;amp; /sbin/shutdown -h now
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That's all. So simple, but very effective.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 07 May 2016 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2016-05-07:admin/linux-ups-fake-data.html</guid><category>ups</category><category>linux</category><category>link</category></item><item><title>Using gnu make to parallel jobs</title><link>http://blog.hoxnox.com/other/make-parallel.html</link><description>&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
 in source building. I'll show you interesting example. Suppose we have 5
 servers: A, B, C, D, and E. There are some &lt;code&gt;*.tar.gz&lt;/code&gt; files in the home
 directory on each server. Every file has the following name syntax
@@ -40,7 +383,7 @@ will skip all fully downloaded files and start with these, not present
 at local machine, including &lt;code&gt;.partial&lt;/code&gt; (rsync smart enough to continue
 with them).&lt;/p&gt;
 &lt;p&gt;Instruction in the third line tells &lt;code&gt;make&lt;/code&gt; not to delete intermediate
-results.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 10 Apr 2016 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2016-04-10:other/make-parallel.html</guid><category>make</category><category>rsync</category><category>parallel download</category></item><item><title>Awesome wm key bindings integration</title><link>http://blog.hoxnox.com/gentoo/awm-key-integration.html</link><description>&lt;p&gt;I'm using &lt;a href="http://awesome.naquadah.org/"&gt;awesome window manager&lt;/a&gt; on my
+results.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 10 Apr 2016 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2016-04-10:other/make-parallel.html</guid><category>make</category><category>rsync</category><category>parallel download</category></item><item><title>Awesome wm key bindings integration</title><link>http://blog.hoxnox.com/gentoo/awm-key-integration.html</link><description>&lt;p&gt;I'm using &lt;a href="http://awesome.naquadah.org/"&gt;awesome window manager&lt;/a&gt; on my
 gentoo desktop. My configuration evaluate from time to time, like vim's
 does for example. These instruments highly optimized for my habits, it
 is right in my fingers. In this post I'll show how to extend awesome wm
@@ -50,10 +393,10 @@ of &lt;code&gt;root.fake_input&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Tmux multiplexer has it's own panes and you can switch between them with
 combination of prefix and arrow keys. Almost the same we have in awesome
 wm. The key of head aches is "almost". It's very hard to switch between
-different hot keys. The problem can be solved the problem in awesome
+different hot keys. The problem can be solved in awesome's
 configuration file. All needed is to check client while switching to
 next window. If the client is tmux - don't switch, send "prefix + arrow"
-instead. The solutions is very easy and effective. The code above&lt;/p&gt;
+instead. The solution is very easy and effective. The code is below&lt;/p&gt;
 &lt;p&gt;.tmux.conf&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;set-option -g prefix m-a
 set-option -g repeat-time 0
@@ -65,71 +408,71 @@ bind-key up select-pane -t:.-
 
 
 &lt;p&gt;rc.lua:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
 
-&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="k"&gt;then&lt;/span&gt;
-         &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+function is_tmux(c)
+    if string.find(string.lower(c.name), &amp;quot;tmux&amp;quot;) ~= nil
+    or string.find(string.lower(c.class), &amp;quot;tmux&amp;quot;) ~= nil
+    then
+         return true
+    end
+    return false
+end
 
-&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;waiter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timer&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;up&amp;#39;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;down&amp;#39;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+function send_tmux_command(cmd)
+    keygrabber.stop()
+    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+    root.fake_input(&amp;quot;key_press&amp;quot;, 38)
+    root.fake_input(&amp;quot;key_release&amp;quot;, 38)
+    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    waiter = timer({timeout = 0.01})
+    if cmd == &amp;#39;up&amp;#39; then
+        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
+            waiter:stop()
+            root.fake_input(&amp;quot;key_press&amp;quot;, 116)
+            root.fake_input(&amp;quot;key_release&amp;quot;, 116)
+            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        end)
+    end
+    if cmd == &amp;#39;down&amp;#39; then
+        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
+            waiter:stop()
+            root.fake_input(&amp;quot;key_press&amp;quot;, 111)
+            root.fake_input(&amp;quot;key_release&amp;quot;, 111)
+            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        end)
+    end
+    waiter:start()
+end
 
-&lt;span class="n"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
-    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;j&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-                &lt;span class="n"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;down&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="k"&gt;else&lt;/span&gt;
-                &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-            &lt;span class="k"&gt;end&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
-    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;k&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-                &lt;span class="n"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;up&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="k"&gt;else&lt;/span&gt;
-                &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-            &lt;span class="k"&gt;end&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+globalkeys = awful.util.table.join(
+    awful.key({ modkey,           }, &amp;quot;j&amp;quot;,
+        function()
+            if is_tmux(client.focus) then
+                send_tmux_command(&amp;#39;down&amp;#39;)
+            else
+                awful.client.focus.byidx(1)
+                if client.focus then client.focus:raise() end
+            end
+        end),
+    awful.key({ modkey,           }, &amp;quot;k&amp;quot;,
+        function()
+            if is_tmux(client.focus) then
+                send_tmux_command(&amp;#39;up&amp;#39;)
+            else
+                awful.client.focus.byidx(-1)
+                if client.focus then client.focus:raise() end
+            end
+        end))
 
-&lt;span class="o"&gt;...&lt;/span&gt;
+...
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;h2&gt;proposal #2&lt;/h2&gt;
 &lt;p&gt;There is common recommendation to use vim's native layout switching
-(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;), when you have more than one keyboard layout to use.
+(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;) when you have more than one keyboard layout to use.
 It solves problems with hot keys in vim. Other applications uses
 system-wide switcher with it's own key bindings. Similar to the proposal #1
 we can tune awesome wm configuration:&lt;/p&gt;
@@ -140,30 +483,30 @@ cnoremap &amp;lt;M-=&amp;gt; &amp;lt;C-^&amp;gt;
 
 
 &lt;p&gt;rc.lua&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;function is_vim(c)
+    if string.find(string.lower(c.name), &amp;quot;vim&amp;quot;) ~= nil
+    or string.find(string.lower(c.class), &amp;quot;vim&amp;quot;) ~= nil
+    then
+        return true;
+    end
+    return false
+end
 
-&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="n"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;else&lt;/span&gt;
-        &lt;span class="n"&gt;mylswitcher&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;switch&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+function switch_key_layout_vimspecial()
+    if is_vim(client.focus) then
+        keygrabber.stop()
+        root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        root.fake_input(&amp;quot;key_press&amp;quot;, 21)
+        root.fake_input(&amp;quot;key_release&amp;quot;, 21)
+        root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    else
+        mylswitcher.switch()
+    end
+end
 
-&lt;span class="n"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;globalkeys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;space&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="n"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 16 Mar 2016 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2016-03-16:gentoo/awm-key-integration.html</guid><category>gentoo</category><category>vim</category><category>tmux</category><category>key bindings</category></item><item><title>Linux desktop on high resolution display</title><link>http://blog.hoxnox.com/gentoo/hires.html</link><description>&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
+globalkeys = awful.util.table.join(globalkeys,
+    awful.key({modkey, }, &amp;quot;space&amp;quot;, function () switch_key_layout_vimspecial() end))
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 16 Mar 2016 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2016-03-16:gentoo/awm-key-integration.html</guid><category>gentoo</category><category>vim</category><category>tmux</category><category>key bindings</category></item><item><title>Linux desktop on high resolution display</title><link>http://blog.hoxnox.com/gentoo/hires.html</link><description>&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
 But when my gentoo booted I was very disappointed - it looked very ugly.
 Some apps looked normal - thunderbird, Telegram, but most was unusable
 like gimp - with tiny icons and broken fonts. It takes some time to tune
@@ -261,7 +604,7 @@ it.&lt;/p&gt;
 
 &lt;p&gt;This module comes in standard gnome theme pack:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;emerge -av --quiet gnome-themes-standard
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 13 Mar 2016 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2016-03-13:gentoo/hires.html</guid><category>getnoo</category><category>high resolution</category><category>xorg</category><category>gtk</category></item><item><title>Stop using root to launch sniffers</title><link>http://blog.hoxnox.com/admin/capabilities.html</link><description>&lt;p&gt;I developed another sniffer and find myself executing testcase through
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 13 Mar 2016 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2016-03-13:gentoo/hires.html</guid><category>getnoo</category><category>high resolution</category><category>xorg</category><category>gtk</category></item><item><title>Stop using root to launch sniffers</title><link>http://blog.hoxnox.com/admin/capabilities.html</link><description>&lt;p&gt;I developed another sniffer and find myself executing testcase through
 &lt;code&gt;sudo&lt;/code&gt;. While something bad not happen, I decided to look through
 &lt;code&gt;capabilities functionality&lt;/code&gt; in Linux kernel. Very interesting things
 written in the manual:&lt;/p&gt;
@@ -327,7 +670,7 @@ sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /bin/bash
 
 &lt;p&gt;But, wait... bash, java? Really? It can be even dangerous, than invoking
 &lt;code&gt;sudo&lt;/code&gt;. You will call '&lt;code&gt;sudo&lt;/code&gt;' only once, but capabilities will stay here
-until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 13 Nov 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-11-13:admin/capabilities.html</guid><category>capabilities</category><category>tcpdump</category><category>privileges</category></item><item><title>Ganglia, iostat and gentoo</title><link>http://blog.hoxnox.com/admin/ganglia.html</link><description>&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
+until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 13 Nov 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-11-13:admin/capabilities.html</guid><category>capabilities</category><category>tcpdump</category><category>privileges</category></item><item><title>Ganglia, iostat and gentoo</title><link>http://blog.hoxnox.com/admin/ganglia.html</link><description>&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
 tracking machines (sys-cluster/ganglia) and use web frontend
 (sys-clusted/ganglia-web) to see pretty graphics. After installing
 backend, you must configure /etc/ganglia/gmond.conf&lt;/p&gt;
@@ -368,20 +711,20 @@ trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
 
 
 &lt;p&gt;After starting gmond and gmetad, you can get statistic:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;☯ ~  gstat
-CLUSTER INFORMATION
-       Name: jassy
-      Hosts: 1
-Gexec Hosts: 0
- Dead Hosts: 0
-  Localtime: Thu Oct &lt;span class="m"&gt;22&lt;/span&gt; 22:46:08 2015
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
+&lt;span class="err"&gt;CLUSTER&lt;/span&gt; &lt;span class="err"&gt;INFORMATION&lt;/span&gt;
+       &lt;span class="err"&gt;Name:&lt;/span&gt; &lt;span class="err"&gt;jassy&lt;/span&gt;
+      &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;1&lt;/span&gt;
+&lt;span class="err"&gt;Gexec&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+ &lt;span class="err"&gt;Dead&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+  &lt;span class="err"&gt;Localtime:&lt;/span&gt; &lt;span class="err"&gt;Thu&lt;/span&gt; &lt;span class="err"&gt;Oct&lt;/span&gt; &lt;span class="err"&gt;22&lt;/span&gt; &lt;span class="err"&gt;22:46:08&lt;/span&gt; &lt;span class="err"&gt;2015&lt;/span&gt;
 
-☭  ~  nc 192.168.30.3 8651
-&amp;lt;?xml &lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;encoding&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;standalone&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;?&amp;gt;
-&amp;lt;!DOCTYPE GANGLIA_XML &lt;span class="o"&gt;[&lt;/span&gt;
-   &amp;lt;!ELEMENT GANGLIA_XML &lt;span class="o"&gt;(&lt;/span&gt;GRID&lt;span class="p"&gt;|&lt;/span&gt;CLUSTER&lt;span class="p"&gt;|&lt;/span&gt;HOST&lt;span class="o"&gt;)&lt;/span&gt;*&amp;gt;
+&lt;span class="err"&gt;☭&lt;/span&gt;  &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;nc&lt;/span&gt; &lt;span class="err"&gt;192.168.30.3&lt;/span&gt; &lt;span class="err"&gt;8651&lt;/span&gt;
+&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="err"&gt;xml&lt;/span&gt; &lt;span class="err"&gt;version=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;encoding=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;standalone=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;&amp;lt;!DOCTYPE&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="k"&gt;[&lt;/span&gt;
+   &lt;span class="k"&gt;&amp;lt;!ELEMENT&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;GRID&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;CLUSTER&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;HOST&lt;/span&gt;&lt;span class="o"&gt;)*&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
 
-    ...
+    &lt;span class="err"&gt;...&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -441,7 +784,7 @@ src_install()
 &lt;p&gt;There is one problem - ganglia-modules-linux provides better multicpu
 module. So I had to add
 &lt;code&gt;COLLISION_IGNORE="/usr/lib/ganglia/modmulticpu.so"&lt;/code&gt; into my portage
-configuration.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-22:admin/ganglia.html</guid><category>gentoo</category><category>ebuild</category><category>ganglia</category><category>iostat</category></item><item><title>SSH forwarding example</title><link>http://blog.hoxnox.com/admin/ssh-passthrough.html</link><description>&lt;p&gt;Suppose we have the following network topology: server with two
+configuration.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Oct 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-10-22:admin/ganglia.html</guid><category>gentoo</category><category>ebuild</category><category>ganglia</category><category>iostat</category></item><item><title>SSH forwarding example</title><link>http://blog.hoxnox.com/admin/ssh-passthrough.html</link><description>&lt;p&gt;Suppose we have the following network topology: server with two
 interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two
 interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface
 128.4.1.1. Server acts as a gateway into 192.168.3.0/24 for passthrough-pc
@@ -457,7 +800,7 @@ passthrough-pc:&lt;/p&gt;
 &lt;p&gt;That's all. We done:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ssh -p 54321 -i &amp;lt;key&amp;gt; 128.4.1.82
 sshfs -p54321 -o IdentityDile=&amp;lt;key&amp;gt; 128.4.1.82:/path /mountpoint
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 16 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</guid><category>ssh</category><category>forwarding</category></item><item><title>WiFi access point with wpa_supplicant</title><link>http://blog.hoxnox.com/gentoo/wifi-hotspot.html</link><description>&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 16 Oct 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</guid><category>ssh</category><category>forwarding</category></item><item><title>WiFi access point with wpa_supplicant</title><link>http://blog.hoxnox.com/gentoo/wifi-hotspot.html</link><description>&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
 and it has a wifi card which is managed by &lt;code&gt;wpa_supplicant&lt;/code&gt;, you can
 easily setup this computer as WiFi access point. You even don't need
 &lt;a href="http://w1.fi/hostapd"&gt;hostapd&lt;/a&gt; - just &lt;code&gt;wpa_supplicant&lt;/code&gt; and dhcp server
@@ -529,7 +872,7 @@ sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168
 
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;That's all! Now you can connect to your Access Point. All these &lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 01 May 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-05-01:gentoo/wifi-hotspot.html</guid><category>wpa_supplicant</category><category>gentoo</category><category>wifi hotspot</category><category>access point</category></item><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+&lt;p&gt;That's all! Now you can connect to your Access Point. All these &lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 01 May 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-05-01:gentoo/wifi-hotspot.html</guid><category>wpa_supplicant</category><category>gentoo</category><category>wifi hotspot</category><category>access point</category></item><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
 in that case my wife's employer would agree to offset the costs. The
 second challenge - it must be integrated into home network. Every home
@@ -606,7 +949,7 @@ In the printer adding dialog use the following path:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 28 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</guid><category>cups</category><category>gentoo</category><category>printserver</category><category>kyocera</category><category>ppd</category></item><item><title>Анализ CFLOW трафика</title><link>http://blog.hoxnox.com/devel/cflow-analysis.html</link><description>&lt;p&gt;Допустим имеется pcap файл, содержащий CFLOW трафик. Нам необходимо
+&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 28 Mar 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</guid><category>cups</category><category>gentoo</category><category>printserver</category><category>kyocera</category><category>ppd</category></item><item><title>Анализ CFLOW трафика</title><link>http://blog.hoxnox.com/devel/cflow-analysis.html</link><description>&lt;p&gt;Допустим имеется pcap файл, содержащий CFLOW трафик. Нам необходимо
 получить информацию об анонсируемых шаблонах (какие, в каком фрейме) и о
 данных (сколько DataSet'ов, сколько Flow).&lt;/p&gt;
 &lt;p&gt;Для этих целей реализован постдиссектор (см. в конце).&lt;/p&gt;
@@ -763,7 +1106,7 @@ tshark начинает понимать как правильно разбир�
     end
     init_listener()
 end
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 26 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-26:devel/cflow-analysis.html</guid><category>cflow</category><category>devel</category><category>lua</category><category>tshark</category><category>pcap</category></item><item><title>Suspend по таймеру, resume по клавиатуре</title><link>http://blog.hoxnox.com/gentoo/suspend-resume.html</link><description>&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 26 Mar 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-03-26:devel/cflow-analysis.html</guid><category>cflow</category><category>devel</category><category>lua</category><category>tshark</category><category>pcap</category></item><item><title>Suspend по таймеру, resume по клавиатуре</title><link>http://blog.hoxnox.com/gentoo/suspend-resume.html</link><description>&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;BIOS машинки в S3 не должен отключать USB&lt;/li&gt;
 &lt;li&gt;Ядро должно быть настроено на работу с ACPI&lt;/li&gt;
@@ -782,14 +1125,14 @@ end
 &lt;/ul&gt;
 &lt;p&gt;Дополняем .xintrc:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xautolock -time 30 -locker &amp;quot;sudo pm-suspend&amp;quot; -detectsleep &amp;amp;
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 20 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-20:gentoo/suspend-resume.html</guid><category>gentoo</category><category>suspend</category><category>acpi</category><category>resume</category></item><item><title>Концепция Web User Interface</title><link>http://blog.hoxnox.com/devel/webui-concept.html</link><description>&lt;p&gt;Самым простым интерфейсом взаимодействия пользователя с приложением
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 20 Mar 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-03-20:gentoo/suspend-resume.html</guid><category>gentoo</category><category>suspend</category><category>acpi</category><category>resume</category></item><item><title>Концепция Web User Interface</title><link>http://blog.hoxnox.com/devel/webui-concept.html</link><description>&lt;p&gt;Самым простым интерфейсом взаимодействия пользователя с приложением
 является командная строка. Приложение принимает на вход определённые
 параметры, приложение возвращает результат в стандартный вывод. Если
 пользователь впервые сталкивается с приложением, он должен будет изучить
 все возможные варианты&lt;/p&gt;
 &lt;p&gt;Пользователь вводит URL приложения, ему отвечает nginx. В ответе есть
 поле для ввода данных. По нажатию на "submit" сервер должен запустить
-приложение. Это можно сделать с помощью cgi, fcgi или же в&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 05 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-05:devel/webui-concept.html</guid><category>web</category><category>microservices</category><category>http</category></item><item><title>Анализ протоколов</title><link>http://blog.hoxnox.com/sec/proto-analisys.html</link><description>&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
+приложение. Это можно сделать с помощью cgi, fcgi или же в&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 05 Mar 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-03-05:devel/webui-concept.html</guid><category>web</category><category>microservices</category><category>http</category></item><item><title>Анализ протоколов</title><link>http://blog.hoxnox.com/sec/proto-analisys.html</link><description>&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
 разобраться в том, какой инструментарий может нам в этом помочь.
 Рассмотрим простую задачу - есть pcap файл с HTTP страфиком (см.
 &lt;a href="https://www.ietf.org/rfc/rfc2616.txt"&gt;RFC2616&lt;/a&gt;). Мы хотим получить все
@@ -874,7 +1217,7 @@ gentoo не так-то просто сделать. НО Робин Сомме�
 часть. Наиболее перспективными кажутся идеи, положенные в основу binpac. Но к
 сожалению по нему не так много информации. Создаётся ощущение, что идеи
 развиваются в рамках проекта Hilti, но последний слишком сырой.
-Диссекторы Xplico перестают существовать как open-source проект.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 03 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-03:sec/proto-analisys.html</guid><category>bro</category><category>hilti</category><category>binpac</category><category>binpac++</category><category>binpacpp</category><category>xplico</category><category>wireshark</category><category>snort</category></item><item><title>Сравнение двух подходов к визуализации записанного HTTP трафика - MITM и Реконструкция.</title><link>http://blog.hoxnox.com/sec/http_mitm_vs_rebuilding.html</link><description>&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
+Диссекторы Xplico перестают существовать как open-source проект.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 03 Mar 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-03-03:sec/proto-analisys.html</guid><category>bro</category><category>hilti</category><category>binpac</category><category>binpac++</category><category>binpacpp</category><category>xplico</category><category>wireshark</category><category>snort</category></item><item><title>Сравнение двух подходов к визуализации записанного HTTP трафика - MITM и Реконструкция.</title><link>http://blog.hoxnox.com/sec/http_mitm_vs_rebuilding.html</link><description>&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
 решена. Более подробно об этой задаче можно прочитать
 &lt;a href="http://blog.hoxnox.com/sec/http_restoring.html"&gt;в первой статье на тему визуализации HTTP трафика&lt;/a&gt;.
 Как уже было упомянуто существует два подхода к разрешению
@@ -938,7 +1281,7 @@ MITM же напротив реализуется необходимо тесн�
 менее сложность
 реализации и зависимость качества представления от неё перевешивают чашу
 весов в сторону MITM, не смотря на неочевидность формы полученного
-результата.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 18 Feb 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-02-18:sec/http_mitm_vs_rebuilding.html</guid><category>http</category><category>xplico</category><category>mitm</category></item><item><title>Визуализация записанного ранее HTTP трафика</title><link>http://blog.hoxnox.com/sec/http_restoring.html</link><description>&lt;p&gt;В проблеме "визуализации" собранного трафика необходимо решить две
+результата.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 18 Feb 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-02-18:sec/http_mitm_vs_rebuilding.html</guid><category>http</category><category>xplico</category><category>mitm</category></item><item><title>Визуализация записанного ранее HTTP трафика</title><link>http://blog.hoxnox.com/sec/http_restoring.html</link><description>&lt;p&gt;В проблеме "визуализации" собранного трафика необходимо решить две
 задачи:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Классификация трафика&lt;/li&gt;
@@ -1194,7 +1537,7 @@ B, а B в свою очередь встроен в A, необходимо с�
 
 &lt;p&gt;В котором в свою очередь блок base64 представляет собой image/gif
 изображение:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bang" src="data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==" title="Bang!" /&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 18 Feb 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-02-18:sec/http_restoring.html</guid><category>http</category><category>pcap</category><category>traffic</category><category>xplico</category><category>forensic analysis</category></item><item><title>G-CPAN</title><link>http://blog.hoxnox.com/gentoo/g-cpan.html</link><description>&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
+&lt;p&gt;&lt;img alt="bang" src="data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==" title="Bang!" /&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 18 Feb 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-02-18:sec/http_restoring.html</guid><category>http</category><category>pcap</category><category>traffic</category><category>xplico</category><category>forensic analysis</category></item><item><title>G-CPAN</title><link>http://blog.hoxnox.com/gentoo/g-cpan.html</link><description>&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
 я разбираюсь как свинья в апельсинах, тем не менее я знаю о
 существовании единого репозитория &lt;a href="http://www.cpan.org/"&gt;CPAN&lt;/a&gt;. В то же
 время я понимаю боль управления зависимостями и плюшки, которые нам
@@ -1265,7 +1608,7 @@ perl-module. В исходнике видна переменная myconf, зн�
 &lt;li&gt;???&lt;/li&gt;
 &lt;li&gt;???&lt;/li&gt;
 &lt;li&gt;PROFIT!!!&lt;/li&gt;
-&lt;/ul&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 04 Feb 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-02-04:gentoo/g-cpan.html</guid><category>gentoo</category><category>g-cpan</category><category>cpan</category><category>perl</category></item><item><title>irtoy</title><link>http://blog.hoxnox.com/gentoo/irtoy.html</link><description>&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
+&lt;/ul&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 04 Feb 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-02-04:gentoo/g-cpan.html</guid><category>gentoo</category><category>g-cpan</category><category>cpan</category><category>perl</category></item><item><title>irtoy</title><link>http://blog.hoxnox.com/gentoo/irtoy.html</link><description>&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
 v2&lt;/a&gt;. Целый день убил
 на то, чтобы разобраться как завести эту штуку под LIRC'ом.&lt;/p&gt;
 &lt;p&gt;Чтобы работать с девайсом в ядре должна быть поддержка CONFIG_USB_ACM.&lt;/p&gt;
@@ -1353,7 +1696,7 @@ ffff001100000000 00 down RemoteXXX.conf
     &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;irCode&lt;/span&gt;
     &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="n"&gt;toy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transmit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;irCode&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 18 Jan 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-01-18:gentoo/irtoy.html</guid><category>lirc</category><category>irtoy</category><category>xbmc</category><category>bose</category></item><item><title>YaC 2014</title><link>http://blog.hoxnox.com/devel/YaC.html</link><description>&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 18 Jan 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-01-18:gentoo/irtoy.html</guid><category>lirc</category><category>irtoy</category><category>xbmc</category><category>bose</category></item><item><title>YaC 2014</title><link>http://blog.hoxnox.com/devel/YaC.html</link><description>&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
 компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
 Security". Прослушал следующие доклады:&lt;/p&gt;
 &lt;ol&gt;
@@ -1413,7 +1756,7 @@ Security". Прослушал следующие доклады:&lt;/p&gt;
    filesystem, shared IPC, host networking, share device nodes),
    обнаружение служб (srvice discovery).&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 31 Oct 2014 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2014-10-31:devel/YaC.html</guid><category>YaC</category></item><item><title>Немного подробней об SNMP</title><link>http://blog.hoxnox.com/devel/snmp-ext.html</link><description>&lt;p&gt;SNMP - простой протокол сетевого управления. Он включает следующие
+&lt;/ol&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 31 Oct 2014 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2014-10-31:devel/YaC.html</guid><category>YaC</category></item><item><title>Немного подробней об SNMP</title><link>http://blog.hoxnox.com/devel/snmp-ext.html</link><description>&lt;p&gt;SNMP - простой протокол сетевого управления. Он включает следующие
 элементы: некоторое количество узлов, способных отвечать на запросы
 (агенты), как минимум один генератор команд (менеджер) и протокол, с
 помощью которого они взаимодействуют. На данный момент актуальна версия
@@ -1575,7 +1918,7 @@ contextName, contextEngineID, тип и конкретный элемент.&lt;
 ifDescr. Для того, чтобы идентифицировать первый индерфейс на устройстве
 X, необходимо задать snmpEngineID SNMP сущности, которая имеет доступ к
 управляющей информации на устройстве X, название контекста (устройство
-X), тип управляемого объекта (ifDescr) и конкретный элемент (1).&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 11 Oct 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-10-11:devel/snmp-ext.html</guid><category>snmp</category><category>pdu</category><category>rfc</category></item><item><title>SNMP</title><link>http://blog.hoxnox.com/devel/snmp.html</link><description>&lt;p&gt;&lt;strong&gt;SNMP&lt;/strong&gt; - протокол, позволяющий по сети управлять различными устройствами и
+X), тип управляемого объекта (ifDescr) и конкретный элемент (1).&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 11 Oct 2014 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2014-10-11:devel/snmp-ext.html</guid><category>snmp</category><category>pdu</category><category>rfc</category></item><item><title>SNMP</title><link>http://blog.hoxnox.com/devel/snmp.html</link><description>&lt;p&gt;&lt;strong&gt;SNMP&lt;/strong&gt; - протокол, позволяющий по сети управлять различными устройствами и
 системами. Кроме того можно получать различные данные, как в режиме
 запрос/ответ, так и в режиме уведомления.&lt;/p&gt;
 &lt;p&gt;Не смотря на свое название &lt;code&gt;SNMP&lt;/code&gt; не так уж прост. Для понимания всех
@@ -1690,7 +2033,7 @@ ebuild'ы&lt;/a&gt;. Надо бы и
 
 &lt;p&gt;или snmpGet из snmp++:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;snmpGet 127.0.0.1 1.3.6.1.3.100.2.1.0 -v3 -sl2 -snMD5 -authMD5 -uaMD5UserAuthPassword -P4160
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 10 Oct 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-10-10:devel/snmp.html</guid><category>zabbix</category><category>snmp</category><category>agent++</category></item><item><title>etoken в корпоративных сетях</title><link>http://blog.hoxnox.com/gentoo/etoken.html</link><description>&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 10 Oct 2014 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2014-10-10:devel/snmp.html</guid><category>zabbix</category><category>snmp</category><category>agent++</category></item><item><title>etoken в корпоративных сетях</title><link>http://blog.hoxnox.com/gentoo/etoken.html</link><description>&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
 (работает через куку по SSL). Для красноглазых имеется openconnect (в
 генте есть в портежах).&lt;/p&gt;
 &lt;p&gt;Наш ключик:
@@ -1722,7 +2065,7 @@ http://www.it-lines.ru/blogs/linux/nastrojka-etoken-v-gentoo-linux&lt;/p&gt;
 &lt;p&gt;Тут https://www.mayrhofer.eu.org/aladdin-etoken-under-linux товарищ
 рассказывает как можно с помощью opencs
 (https://www.opensc-project.org/opensc/wiki/AladdinEtokenPro#Linux) c
-этим делом общаться.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 01 Sep 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-09-01:gentoo/etoken.html</guid><category>getnoo</category><category>etoken</category><category>enterprise</category></item><item><title>Динамическая маршрутизация</title><link>http://blog.hoxnox.com/inet/ospf.html</link><description>&lt;p&gt;Существует 2 вида протоколов динамической маршрутизации - EGP и IGP.
+этим делом общаться.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 01 Sep 2014 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2014-09-01:gentoo/etoken.html</guid><category>getnoo</category><category>etoken</category><category>enterprise</category></item><item><title>Динамическая маршрутизация</title><link>http://blog.hoxnox.com/inet/ospf.html</link><description>&lt;p&gt;Существует 2 вида протоколов динамической маршрутизации - EGP и IGP.
 Внешний и внутренний соответственно. Внешний только один - BGP.
 Внутренние, в свою очередь, делятся на Distance-Vector (RIP, EIGRP) и Link
 State (OSPF, IS-IS). Если на маршрутизаторе настроено несколько
@@ -1829,7 +2172,7 @@ Hello-пакеты, а каждые 30 минут рассылаются LSA —
 &lt;p&gt;loopback&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;interface loo 0
 ip address 172.16.255.1 255.255.255.255
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 14 Feb 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-02-14:inet/ospf.html</guid><category>ospf</category><category>inet</category><category>routing</category></item><item><title>QEMU</title><link>http://blog.hoxnox.com/virtual/qemu.html</link><description>&lt;p&gt;Создать диск: &lt;/p&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 14 Feb 2014 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2014-02-14:inet/ospf.html</guid><category>ospf</category><category>inet</category><category>routing</category></item><item><title>QEMU</title><link>http://blog.hoxnox.com/virtual/qemu.html</link><description>&lt;p&gt;Создать диск: &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -1876,7 +2219,7 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
 драйверами, простой сетью (без низкоуровневых вещей типа icmp) и без
 графики (управление по ssh).&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-system-i386 -enable-kvm -cpu host -drive file=/media/data/vbox/Debian7.i386.virtio.survey.qcow2,index=0,media=disk,if=virtio -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::28955-:22 -nographic
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 04 Jan 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-01-04:virtual/qemu.html</guid><category>qemu</category></item><item><title>Использование одного локального адреса для двух различных соединений</title><link>http://blog.hoxnox.com/inet/tcp_commonlocaladdr.rst.html</link><description>&lt;p&gt;Как выяснилось стэк TCP/IP Linux-3.3.8 идентифицирует соединение не только по локальному адресу, но
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 04 Jan 2014 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2014-01-04:virtual/qemu.html</guid><category>qemu</category></item><item><title>Использование одного локального адреса для двух различных соединений</title><link>http://blog.hoxnox.com/inet/tcp_commonlocaladdr.rst.html</link><description>&lt;p&gt;Как выяснилось стэк TCP/IP Linux-3.3.8 идентифицирует соединение не только по локальному адресу, но
 и по удалённому. Следовательно можно использовать несколько сокетов, забинденных на один локальный
 арес, но соединенных с разными удалёнными адресами. Проверим данную гипотезу. Для этого получим 5
 HTML страниц с www.afrinic.net www.lacnic.net www.arin.net www.ripe.net и www.apnic.net по протоколу
@@ -2066,7 +2409,7 @@ int main(int argc, char * argv[])
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 31 Oct 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-10-31:inet/tcp_commonlocaladdr.rst.html</guid><category>tcp</category></item><item><title>ODBC</title><link>http://blog.hoxnox.com/devel/odbc.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 31 Oct 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-10-31:inet/tcp_commonlocaladdr.rst.html</guid><category>tcp</category></item><item><title>ODBC</title><link>http://blog.hoxnox.com/devel/odbc.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Введение&lt;/h2&gt;
 &lt;p&gt;Для тех кто не в курсе, ODBC позволяет абстрагироваться от интерфейса конкретной СУБД. Это некоторая
 прослойка, в которой вы можете настроить источник данных, дать ему имя и общаться с ним на уровне
@@ -2162,7 +2505,7 @@ Database=test
 &lt;li&gt;libodbc++ reference : &lt;a class="reference external" href="http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html"&gt;http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kim Merder &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 28 Sep 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-09-28:devel/odbc.html</guid><category>database</category><category>odbc</category><category>c++</category></item><item><title>Об организации проектов C++</title><link>http://blog.hoxnox.com/devel/repo_org.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Kim Merder &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 28 Sep 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-09-28:devel/odbc.html</guid><category>database</category><category>odbc</category><category>c++</category></item><item><title>Об организации проектов C++</title><link>http://blog.hoxnox.com/devel/repo_org.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Структура репоризитория и проекта&lt;/h2&gt;
 &lt;p&gt;Все C/C++ проекты храняться в едином репозитории, работа которого опирается на систему контроля
 версий git. Каждый проект представляет собой git-репозиторий (как правило bare).&lt;/p&gt;
@@ -2339,7 +2682,7 @@ git read-tree --prefix= -u string@rmt
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 20 Sep 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-09-20:devel/repo_org.html</guid><category>git</category><category>management</category></item><item><title>TLS - практика</title><link>http://blog.hoxnox.com/sec/ssl_practice.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 20 Sep 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-09-20:devel/repo_org.html</guid><category>git</category><category>management</category></item><item><title>TLS - практика</title><link>http://blog.hoxnox.com/sec/ssl_practice.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Установление соединения&lt;/h2&gt;
 &lt;p&gt;Первое, что мы сделаем - пошлём простейший пакет, содержащий ClinetHello.&lt;/p&gt;
 &lt;p&gt;Итак, структура простейшего ClientHello&lt;/p&gt;
@@ -2371,7 +2714,7 @@ CipherSuite = { 0x00, 0x00, 0x00, 0x0D, 0x00, 0x10, 0x00, 0x13, 0x00, 0x16, 0x00
 CompressionMethod = 0x0
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Thu, 16 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-16:sec/ssl_practice.html</guid><category>tls</category><category>ssl</category><category>security</category><category>cryptography</category><category>protocol</category><category>c++</category></item><item><title>Что такое SSL?</title><link>http://blog.hoxnox.com/sec/tls.html</link><description>&lt;p&gt;SSL - это протокол, позволяющий устанавливать защищенные соединения. На основе SSL 3.0 был
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Thu, 16 Aug 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-08-16:sec/ssl_practice.html</guid><category>tls</category><category>ssl</category><category>security</category><category>cryptography</category><category>protocol</category><category>c++</category></item><item><title>Что такое SSL?</title><link>http://blog.hoxnox.com/sec/tls.html</link><description>&lt;p&gt;SSL - это протокол, позволяющий устанавливать защищенные соединения. На основе SSL 3.0 был
 разработан TLS. Сейчас, когда говорят об SSL имеют ввиду TLS. TLS - основа безопасности в Интернете.&lt;/p&gt;
 &lt;p&gt;Как только клиент и сервер решили общаться по протоколу SSL, первое что они делают - процедура
 установления соединения (рукопожатие - handshake).&lt;/p&gt;
@@ -3265,7 +3608,7 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
 &lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Tue, 14 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-14:sec/tls.html</guid><category>ssl</category><category>tls</category><category>security</category><category>cryptography</category></item><item><title>Учим Midnight Commander запоминать последнюю директорию</title><link>http://blog.hoxnox.com/gentoo/mc_last_dir.html</link><description>&lt;p&gt;Для этих целей существует опция -P, которая сообщает mc записать состояние перед выходом в заданный
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Tue, 14 Aug 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-08-14:sec/tls.html</guid><category>ssl</category><category>tls</category><category>security</category><category>cryptography</category></item><item><title>Учим Midnight Commander запоминать последнюю директорию</title><link>http://blog.hoxnox.com/gentoo/mc_last_dir.html</link><description>&lt;p&gt;Для этих целей существует опция -P, которая сообщает mc записать состояние перед выходом в заданный
 файл. Кроме того, в состав дистрибутива входит специальный скрипт mc-wrapper.sh, который
 автоматизирует процесс закрывания/открывания mc нужным образом.&lt;/p&gt;
 &lt;p&gt;В gentoo данный скрипт лежит в&lt;/p&gt;
@@ -3278,7 +3621,7 @@ $ qlist mc | grep mc-wrapper
 &lt;p&gt;..code-block:: none&lt;/p&gt;
 &lt;blockquote&gt;
 alias mc='. /usr/libexec/mc/mc-wrapper.sh'&lt;/blockquote&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 03 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-03:gentoo/mc_last_dir.html</guid><category>gentoo</category><category>mc</category></item><item><title>git cheat sheet</title><link>http://blog.hoxnox.com/chsheets/git-en.html</link><description>&lt;ul&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 03 Aug 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-08-03:gentoo/mc_last_dir.html</guid><category>gentoo</category><category>mc</category></item><item><title>git cheat sheet</title><link>http://blog.hoxnox.com/chsheets/git-en.html</link><description>&lt;ul&gt;
 &lt;li&gt;&lt;p class="first"&gt;Change the origin of the repository&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;Edit &lt;cite&gt;.git/config&lt;/cite&gt; file:&lt;/p&gt;
@@ -3385,7 +3728,7 @@ git diff-tree -p core_remote/master
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 02 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-02:chsheets/git-en.html</guid><category>git</category></item><item><title>Прикручиваем hypercomments к pelican'у</title><link>http://blog.hoxnox.com/blog/hypercomments.html</link><description>&lt;p&gt;Отличительно особенностью &lt;a class="reference external" href="http://hypercomments.com/"&gt;hypercomments&lt;/a&gt; от других систем комментирования является возможность
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 02 Aug 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-08-02:chsheets/git-en.html</guid><category>git</category></item><item><title>Прикручиваем hypercomments к pelican'у</title><link>http://blog.hoxnox.com/blog/hypercomments.html</link><description>&lt;p&gt;Отличительно особенностью &lt;a class="reference external" href="http://hypercomments.com/"&gt;hypercomments&lt;/a&gt; от других систем комментирования является возможность
 выделить кусок текста и прокомментировать его.&lt;/p&gt;
 &lt;p&gt;Ясно, что javascript'овая функция и ключевой div блок, предлагаемые для вставки:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hypercomments_widget&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
@@ -3405,7 +3748,7 @@ git diff-tree -p core_remote/master
 ./pelican-themes/bootstrap/templates/disqus.html
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;В первом заменяем соответствующий блок div, во втором - javascript.&lt;/p&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 25 Jul 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-07-25:blog/hypercomments.html</guid><category>blog</category><category>comments</category><category>web 2.0</category></item><item><title>К-свёртка</title><link>http://blog.hoxnox.com/other/kconvol.html</link><description>&lt;div class="section" id="id2"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 25 Jul 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-07-25:blog/hypercomments.html</guid><category>blog</category><category>comments</category><category>web 2.0</category></item><item><title>К-свёртка</title><link>http://blog.hoxnox.com/other/kconvol.html</link><description>&lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Понятие к-свёртки&lt;/h2&gt;
 &lt;p&gt;Рассмотрим множества не повторяющихся
 натуральных чисел. Причем чаще всего
@@ -3601,7 +3944,7 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 соответствующим блоком типа A даст ответ принадлежит ли данный системный номер свёртке.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 07 Jun 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-06-07:other/kconvol.html</guid><category>algorithm</category><category>container</category></item><item><title>boost chrono</title><link>http://blog.hoxnox.com/cxx/boost.chrono.html</link><description>&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 07 Jun 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-06-07:other/kconvol.html</guid><category>algorithm</category><category>container</category></item><item><title>boost chrono</title><link>http://blog.hoxnox.com/cxx/boost.chrono.html</link><description>&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#include &amp;lt;boost/chrono.hpp&amp;gt;
 #include &amp;lt;cmath&amp;gt;
 
@@ -3629,7 +3972,7 @@ int main()
 &lt;li&gt;nanoseconds&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 04 Jun 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-06-04:cxx/boost.chrono.html</guid><category>cxx</category><category>boost</category><category>chrono</category><category>time</category></item><item><title>Samba и домен</title><link>http://blog.hoxnox.com/internet/samba_domen.html</link><description>&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 04 Jun 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-06-04:cxx/boost.chrono.html</guid><category>cxx</category><category>boost</category><category>chrono</category><category>time</category></item><item><title>Samba и домен</title><link>http://blog.hoxnox.com/internet/samba_domen.html</link><description>&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
 пользователя на контроллер домена. Для этого необходимо собрать её с ключём ads. Затем настроить
 керберос (/etc/krb5.conf)&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[libdefaults]
@@ -3647,7 +3990,7 @@ int main()
 realm = example.com
 password server = server.example.com
 &lt;/pre&gt;&lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 19 Apr 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-04-19:internet/samba_domen.html</guid><category>samba</category><category>ads</category><category>DC</category></item><item><title>IPv4 адресация в интернете</title><link>http://blog.hoxnox.com/inet/ipv4.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 19 Apr 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-04-19:internet/samba_domen.html</guid><category>samba</category><category>ads</category><category>DC</category></item><item><title>IPv4 адресация в интернете</title><link>http://blog.hoxnox.com/inet/ipv4.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Структура IPv4&lt;/h2&gt;
 &lt;p&gt;IPv4 - это 32 разрядное число, записанное для удобства побайтно. Если рассмотреть данное
 число в его двоичном представлении, то 4 самых старших бита (0, 1, 2, 3) классифицируют все адреса
@@ -3714,7 +4057,7 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;p&gt;Итого, всего адресов хостов в сети Интернет не более 2^7*(2^24-2) + 2^16(2^16-2) + 2^21*(2^8-2) =
 &lt;cite&gt;3 753 869 056&lt;/cite&gt;.&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 03 Apr 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-04-03:inet/ipv4.html</guid><category>Internet</category><category>IPv4</category></item><item><title>Программирование сетевых приложений (TCP/IP) на C/C++</title><link>http://blog.hoxnox.com/inet/tcp_programming.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Tue, 03 Apr 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-04-03:inet/ipv4.html</guid><category>Internet</category><category>IPv4</category></item><item><title>Программирование сетевых приложений (TCP/IP) на C/C++</title><link>http://blog.hoxnox.com/inet/tcp_programming.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Простейшие примеры&lt;/h2&gt;
 &lt;div class="section" id="tcp-ip"&gt;
 &lt;h3&gt;TCP/IP&lt;/h3&gt;
@@ -4298,7 +4641,7 @@ sysctl -w net.ipv4.tcp_tw_reuse=0
 &lt;p&gt;Эффективное программирование TCP/IP ( Йон Снейдер )
 &lt;a class="reference external" href="http://ru.fractalizer.ru/frpost_197"&gt;http://ru.fractalizer.ru/frpost_197&lt;/a&gt;/настройка-ядра-linux-для-поддержки-большо/&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 02 Apr 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-04-02:inet/tcp_programming.html</guid><category>UML</category><category>fork</category><category>exec</category><category>system</category><category>posix_spawn</category><category>C</category></item><item><title>Неорганизованные пометки по параллельному программированию.</title><link>http://blog.hoxnox.com/other/parallel_notes.html</link><description>&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 02 Apr 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-04-02:inet/tcp_programming.html</guid><category>UML</category><category>fork</category><category>exec</category><category>system</category><category>posix_spawn</category><category>C</category></item><item><title>Неорганизованные пометки по параллельному программированию.</title><link>http://blog.hoxnox.com/other/parallel_notes.html</link><description>&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
 &lt;table border="1" class="docutils"&gt;
 &lt;colgroup&gt;
 &lt;col width="36%" /&gt;
@@ -4624,7 +4967,7 @@ sysctl -w net.ipv4.tcp_tw_reuse=0
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 28 Mar 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-03-28:other/parallel_notes.html</guid><category>UML</category><category>fork</category><category>exec</category><category>system</category><category>posix_spawn</category><category>C</category></item><item><title>Маршрутизация</title><link>http://blog.hoxnox.com/inet/route.html</link><description>&lt;div class="section" id="id2"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 28 Mar 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-03-28:other/parallel_notes.html</guid><category>UML</category><category>fork</category><category>exec</category><category>system</category><category>posix_spawn</category><category>C</category></item><item><title>Маршрутизация</title><link>http://blog.hoxnox.com/inet/route.html</link><description>&lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Основные понятия&lt;/h2&gt;
 &lt;p&gt;Без посторонней помощи компьютеры могут обмениваться пакетами только в рамках своей подсети. Для
 межсетевого взаимодействия им необходим маршрутизатор. Если несколько подсетей управляются одним
@@ -4705,7 +5048,7 @@ BGP). Часто операторы организуют точки обмена
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 26 Mar 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-03-26:inet/route.html</guid><category>route</category></item><item><title>DNS и Интернет</title><link>http://blog.hoxnox.com/inet/dns_internet.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 26 Mar 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-03-26:inet/route.html</guid><category>route</category></item><item><title>DNS и Интернет</title><link>http://blog.hoxnox.com/inet/dns_internet.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Главные по именам&lt;/h2&gt;
 &lt;p&gt;Выработкой правил функционирования DNS в Интернете занимается организация под названием &lt;a class="reference external" href="http://iana.org"&gt;IANA&lt;/a&gt;
 (Internet Assigned Numbers Authority), управляемая &lt;a class="reference external" href="http://icann.org"&gt;ICANN&lt;/a&gt; (Internet Corporation for Assigned Names
@@ -4817,7 +5160,7 @@ ns5.msk-ix.net.
 зоны которых могут являться копией зон оригинальных корневых серверов, а могут иметь свои записи,
 получая таким образом свой &amp;quot;альтернативный Интернет&amp;quot;.&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 23 Mar 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-03-23:inet/dns_internet.html</guid><category>DNS</category><category>internet</category></item><item><title>Кто ты такой, DNS?</title><link>http://blog.hoxnox.com/inet/dns.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 23 Mar 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-03-23:inet/dns_internet.html</guid><category>DNS</category><category>internet</category></item><item><title>Кто ты такой, DNS?</title><link>http://blog.hoxnox.com/inet/dns.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Основные понятия&lt;/h2&gt;
 &lt;p&gt;Не секрет, что каждая машина в сети, работающая по протоколу IP, уникально идентифицируется либо
 IPv4, либо IPv6. Использование данного номера при организации работы в сети имеет ряд существенных
@@ -5040,7 +5383,7 @@ Extensions&lt;/p&gt;
 &lt;li&gt;RFC1034, RFC1035&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Mar 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-03-22:inet/dns.html</guid><category>DNS</category><category>internet</category><category>DNS-zone</category><category>dig</category><category>nslookup</category></item><item><title>Сеть</title><link>http://blog.hoxnox.com/gentoo/net.html</link><description>&lt;p&gt;Без сети в Gentoo-desktop катастрофически тяжело. Поэтому еще до того, как я начну настройку и
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Mar 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-03-22:inet/dns.html</guid><category>DNS</category><category>internet</category><category>DNS-zone</category><category>dig</category><category>nslookup</category></item><item><title>Сеть</title><link>http://blog.hoxnox.com/gentoo/net.html</link><description>&lt;p&gt;Без сети в Gentoo-desktop катастрофически тяжело. Поэтому еще до того, как я начну настройку и
 установку программного обеспечения, сразу после получения более-менее работающего &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;собственноручно
 собранного ядра&lt;/a&gt;, настраиваем сеть.&lt;/p&gt;
 &lt;p&gt;Начну с общего. Для начала пропишу адреса &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DNS"&gt;DNS&lt;/a&gt; серверов, которые буду использовать. Для этого имеется
@@ -5150,7 +5493,7 @@ postup&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
 &lt;p&gt;Настройка bluetooth - тема для &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;отдельного разговора&lt;/a&gt;. Если вкратце, необходимо настроить поддержку
 железа в ядре. Настроить &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/RFCOMM"&gt;rfcomm&lt;/a&gt;, поставить &lt;a class="reference external" href="http://ppp.samba.org/"&gt;pppd&lt;/a&gt;, написать &lt;a class="reference external" href="http://sysoev.ru/pppd/connect.html"&gt;скрипт дозвона&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 23 Feb 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-02-23:gentoo/net.html</guid><category>gentoo</category><category>wifi</category><category>bluetooth</category><category>ethernet</category></item><item><title>Плавный переход с Ubuntu на Gentoo</title><link>http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html</link><description>&lt;div class="section" id="id1"&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 23 Feb 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-02-23:gentoo/net.html</guid><category>gentoo</category><category>wifi</category><category>bluetooth</category><category>ethernet</category></item><item><title>Плавный переход с Ubuntu на Gentoo</title><link>http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Мотивация&lt;/h2&gt;
 &lt;p&gt;В своё время, когда я начинал свой путь в мир открытого ПО с FreeBSD, мне очень понравилась
 концепция &lt;em&gt;&amp;quot;собери все сам&amp;quot;&lt;/em&gt;, она позволяет вскрыть новые пласты знаний и получить драгоценный опыт.
@@ -5454,7 +5797,7 @@ menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Перезагружаюсь в Gentoo. Welcome home. Теперь начинается самое интересное ...&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 22 Feb 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-02-22:gentoo/ubuntu-gentoo.html</guid><category>ubuntu</category><category>gentoo</category><category>linux</category></item><item><title>Wine</title><link>http://blog.hoxnox.com/gentoo/games.html</link><description>&lt;h1&gt;wine&lt;/h1&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Wed, 22 Feb 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-02-22:gentoo/ubuntu-gentoo.html</guid><category>ubuntu</category><category>gentoo</category><category>linux</category></item><item><title>Wine</title><link>http://blog.hoxnox.com/gentoo/games.html</link><description>&lt;h1&gt;wine&lt;/h1&gt;
 &lt;p&gt;Wine позволяет играться. Есть замечательный сайт
 [winehq][http://winehq.org], на котором можно найти особенности запуска
 той или иной игрушки под wine'ом. В том числе параметры системного
@@ -5464,7 +5807,7 @@ menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class
 &lt;p&gt;Открытая реализация OpenGL - это mesa. С пакетом mesa-progs идет утилита
 glxinfo, с помощью нее можно узнать различные параметры:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;glxinfo | grep OpenGL
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 01 Jan 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-01-01:gentoo/games.html</guid></item><item><title>Утилиты для работы с TCP/IP</title><link>http://blog.hoxnox.com/inet/tcp_utils.html</link><description>&lt;div class="section" id="ping"&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 01 Jan 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-01-01:gentoo/games.html</guid></item><item><title>Утилиты для работы с TCP/IP</title><link>http://blog.hoxnox.com/inet/tcp_utils.html</link><description>&lt;div class="section" id="ping"&gt;
 &lt;h2&gt;ping&lt;/h2&gt;
 &lt;p&gt;Посылает ICMP запросы и читает ответы. Все гениальное - просто.&lt;/p&gt;
 &lt;/div&gt;
@@ -5522,4 +5865,4 @@ ttcp -r | ttcp -t следующий узел
 &lt;p&gt;Ядро ОС ведет разнообразную статистику об объектах, имеющих отношение к сети. Эту информацию можно
 получить с помощью программы netstat.&lt;/p&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 01 Jan 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-01-01:inet/tcp_utils.html</guid></item></channel></rss>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sun, 01 Jan 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-01-01:inet/tcp_utils.html</guid></item></channel></rss>

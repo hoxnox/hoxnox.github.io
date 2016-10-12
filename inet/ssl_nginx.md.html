@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>TLS authenticated web application with nginx and easy-rsa-2.0 - NX</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="http://blog.hoxnox.com/inet/ssl_nginx.md.html">
+
+        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+        <meta name="keywords" content="tls,ssl,https,nginx,easy-rsa" />
+        <meta name="description" content="Cheat sheet helps to set up web server with TLS authentication." />
+
+    <!-- Enable latex plugin -->
+
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="http://blog.hoxnox.com/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://blog.hoxnox.com/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/style.css" type="text/css"/>
+
+        <link href="http://blog.hoxnox.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX ATOM Feed"/>
+        <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
+              title="NX RSS Feed"/>
+
+
+        <link href="http://blog.hoxnox.com/feeds/inet.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX inet ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://blog.hoxnox.com/" class="navbar-brand">
+NX            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/admin.html">Admin</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/blog.html">Blog</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/chsheets.html">Chsheets</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/cxx.html">Cxx</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/devel.html">Devel</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/gentoo.html">Gentoo</a>
+                        </li>
+                        <li class="active">
+                            <a href="http://blog.hoxnox.com/category/inet.html">Inet</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/other.html">Other</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/sec.html">Sec</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="http://blog.hoxnox.com/inet/ssl_nginx.md.html"
+                       rel="bookmark"
+                       title="Permalink to TLS authenticated web application with nginx and easy-rsa-2.0">
+                        TLS authenticated web application with nginx and easy-rsa-2.0
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2016-10-11T00:00:00+03:00"> Вт 11 Октябрь 2016</time>
+    </span>
+
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://blog.hoxnox.com/tag/tls.html">tls</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/ssl.html">ssl</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/https.html">https</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/nginx.html">nginx</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/easy-rsa.html">easy-rsa</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <p>This cheat sheet helps to set up web server with TLS authentication.
+We'll use our own certificate authority.</p>
+<p>As a prerequisite You have to own the server and the domain, pointed to this server.</p>
+<h2>Prepare easy-rsa</h2>
+<p>We need to create several cipher keys. OpenSSL can do it for us, but it's not the
+easiest tool. Much simpler way is to use <code>easy-rsa</code>. It
+comes with openvpn in Debian-8. Make a local copy and apply some changes:</p>
+<div class="highlight"><pre><span></span>cp -r /usr/share/doc/openvpn/examples/easy-rsa/2.0 /etc/.keys-infrastructure
+</pre></div>
+
+
+<p>edit vars:</p>
+<div class="highlight"><pre><span></span><span class="gi">+++ /usr/share/doc/openvpn/examples/easy-rsa/2.0/vars   2011-07-01 12:31:26.000000000 +0400</span>
+<span class="gu">@@ -26,8 +26,7 @@</span>
+ # This variable should point to
+ # the openssl.cnf file included
+ # with easy-rsa.
+<span class="gd">-#export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`</span>
+<span class="gd">-export KEY_CONFIG=$EASY_RSA/openssl-1.0.0.cnf</span>
+<span class="gi">+export KEY_CONFIG=`$EASY_RSA/whichopensslcnf $EASY_RSA`</span>
+
+ # Edit this variable to point to
+ # your soon-to-be-created key
+<span class="gu">@@ -51,13 +50,13 @@</span>
+ # down TLS negotiation performance
+ # as well as the one-time DH parms
+ # generation process.
+<span class="gd">-export KEY_SIZE=4096</span>
+<span class="gi">+export KEY_SIZE=1024</span>
+
+ # In how many days should the root CA key expire?
+ export CA_EXPIRE=3650
+
+ # In how many days should certificates expire?
+<span class="gd">-export KEY_EXPIRE=365</span>
+<span class="gi">+export KEY_EXPIRE=3650</span>
+
+ # These are the default values for fields
+ # which will be placed in the certificate.
+<span class="gu">@@ -65,11 +64,11 @@</span>
+ export KEY_COUNTRY=&quot;US&quot;
+ export KEY_PROVINCE=&quot;CA&quot;
+ export KEY_CITY=&quot;SanFrancisco&quot;
+<span class="gd">-export KEY_ORG=&quot;ACME&quot;</span>
+<span class="gd">-export KEY_EMAIL=&quot;info@example.com&quot;</span>
+<span class="gd">-export KEY_ALTNAME=&quot;example.com&quot;</span>
+<span class="gi">+export KEY_ORG=&quot;Fort-Funston&quot;</span>
+<span class="gi">+export KEY_EMAIL=&quot;me@myhost.mydomain&quot;</span>
+<span class="gi">+export KEY_EMAIL=mail@host.domain</span>
+ export KEY_CN=changeme
+ export KEY_NAME=changeme
+<span class="gd">-export KEY_OU=IT Department</span>
+<span class="gi">+export KEY_OU=changeme</span>
+ export PKCS11_MODULE_PATH=changeme
+<span class="gd">-export PKCS11_PIN=7266</span>
+<span class="gi">+export PKCS11_PIN=1234</span>
+</pre></div>
+
+
+<p>edit openssl-1.0.0.cnf</p>
+<div class="highlight"><pre><span></span><span class="gd">--- openssl-1.0.0.cnf   2016-10-11 09:56:47.895473062 +0300</span>
+<span class="gi">+++ /usr/share/doc/openvpn/examples/easy-rsa/2.0/openssl-1.0.0.cnf      2011-07-01 12:31:26.000000000 +0400</span>
+<span class="gu">@@ -182,7 +182,7 @@</span>
+ # keyUsage = nonRepudiation, digitalSignature, keyEncipherment
+
+ # This will be displayed in Netscape&#39;s comment listbox.
+<span class="gd">-nsComment                      = &quot;ACME certfication&quot;</span>
+<span class="gi">+nsComment                      = &quot;Easy-RSA Generated Certificate&quot;</span>
+
+ # PKIX recommendations harmless if included in all certificates.
+ subjectKeyIdentifier=hash
+<span class="gu">@@ -193,10 +193,10 @@</span>
+
+ # This stuff is for subjectAltName and issuerAltname.
+ # Import the email address.
+<span class="gd">-subjectAltName = &quot;DNS.1:example.com,DNS.2:*.example.com&quot;</span>
+<span class="gi">+# subjectAltName=email:copy</span>
+
+ # Copy subject details
+<span class="gd">-issuerAltName=issuer:copy</span>
+<span class="gi">+# issuerAltName=issuer:copy</span>
+
+ #nsCaRevocationUrl             = http://www.domain.dom/ca-crl.pem
+ #nsBaseUrl
+<span class="gu">@@ -210,8 +210,7 @@</span>
+ # JY ADDED -- Make a cert with nsCertType set to &quot;server&quot;
+ basicConstraints=CA:FALSE
+ nsCertType                     = server
+<span class="gd">-nsComment                      = &quot;ACME certification&quot;</span>
+<span class="gd">-subjectAltName=&quot;DNS.1:example.com,DNS.2:*.example.com&quot;</span>
+<span class="gi">+nsComment                      = &quot;Easy-RSA Generated Server Certificate&quot;</span>
+ subjectKeyIdentifier=hash
+ authorityKeyIdentifier=keyid,issuer:always
+ extendedKeyUsage=serverAuth
+<span class="gu">@@ -251,9 +250,9 @@</span>
+ # nsCertType = sslCA, emailCA
+
+ # Include email address in subject alt name: another PKIX recommendation
+<span class="gd">-subjectAltName=&quot;DNS.1:example.com,DNS.2:*.example.com&quot;</span>
+<span class="gi">+# subjectAltName=email:copy</span>
+ # Copy issuer details
+<span class="gd">-issuerAltName=issuer:copy</span>
+<span class="gi">+# issuerAltName=issuer:copy</span>
+
+ # DER hex encoding of an extension: beware experts only!
+ # obj=DER:02:03
+</pre></div>
+
+
+<p>pkitool:</p>
+<div class="highlight"><pre><span></span><span class="gi">+++ /usr/share/doc/openvpn/examples/easy-rsa/2.0/pkitool        2011-04-27 13:52:59.000000000 +0400</span>
+<span class="gu">@@ -322,7 +322,7 @@</span>
+
+     # Build root CA
+     if [ $DO_ROOT -eq 1 ]; then
+<span class="gd">-       $OPENSSL req $BATCH -days $CA_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE -sha256 \</span>
+<span class="gi">+       $OPENSSL req $BATCH -days $CA_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE -sha1 \</span>
+            -x509 -keyout &quot;$CA.key&quot; -out &quot;$CA.crt&quot; -config &quot;$KEY_CONFIG&quot; &amp;&amp; \
+            chmod 0600 &quot;$CA.key&quot;
+     else        
+<span class="gu">@@ -347,7 +347,7 @@</span>
+                echo &quot;Generating key pair on PKCS#11 token...&quot;
+                $PKCS11TOOL --module &quot;$PKCS11_MODULE_PATH&quot; --keypairgen \
+                        --login --pin &quot;$PKCS11_PIN&quot; \
+<span class="gd">-                       --key-type rsa:4096 \</span>
+<span class="gi">+                       --key-type rsa:1024 \</span>
+                        --slot &quot;$PKCS11_SLOT&quot; --id &quot;$PKCS11_ID&quot; --label &quot;$PKCS11_LABEL&quot; || exit 1
+                PKCS11_ARGS=&quot;-engine pkcs11 -keyform engine -key $PKCS11_SLOT:$PKCS11_ID&quot;
+        fi
+<span class="gu">@@ -356,7 +356,7 @@</span>
+        ( [ $DO_REQ -eq 0 ] || $OPENSSL req $BATCH -days $KEY_EXPIRE $NODES_REQ -new -newkey rsa:$KEY_SIZE \
+                -keyout &quot;$FN.key&quot; -out &quot;$FN.csr&quot; $REQ_EXT -config &quot;$KEY_CONFIG&quot; $PKCS11_ARGS ) &amp;&amp; \
+            ( [ $DO_CA -eq 0 ]  || $OPENSSL ca $BATCH -days $KEY_EXPIRE -out &quot;$FN.crt&quot; \
+<span class="gd">-               -in &quot;$FN.csr&quot; $CA_EXT -md sha256 -config &quot;$KEY_CONFIG&quot; ) &amp;&amp; \</span>
+<span class="gi">+               -in &quot;$FN.csr&quot; $CA_EXT -md sha1 -config &quot;$KEY_CONFIG&quot; ) &amp;&amp; \</span>
+            ( [ $DO_P12 -eq 0 ] || $OPENSSL pkcs12 -export -inkey &quot;$FN.key&quot; \
+                -in &quot;$FN.crt&quot; -certfile &quot;$CA.crt&quot; -out &quot;$FN.p12&quot; $NODES_P12 ) &amp;&amp; \
+            ( [ $DO_CA -eq 0 -o $DO_P11 -eq 1 ]  || chmod 0600 &quot;$FN.key&quot; ) &amp;&amp; \
+</pre></div>
+
+
+<h2>Creating key infrastructure</h2>
+<p>First thing to do is to build certificate authority. It can sign other
+certificates and validate them.</p>
+<div class="highlight"><pre><span></span>root@debian:/etc/.keys-infrastructure# ./build-ca
+Generating a 4096 bit RSA private key
+...................................................................++
+....................++
+writing new private key to &#39;ca.key&#39;
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter &#39;.&#39;, the field will be left blank.
+-----
+Country Name (2 letter code) [US]:
+State or Province Name (full name) [CA]:
+Locality Name (eg, city) [SanFrancisco]:
+Organization Name (eg, company) [ACME]:
+Organizational Unit Name (eg, section) [IT]:IT Department
+Common Name (eg, your name or your server&#39;s hostname) [changeme]:exmaple.com
+Name [changeme]:ca
+Email Address [info@example.com]:
+</pre></div>
+
+
+<p>Next we'll build and sign key and certificate for our server.</p>
+<div class="highlight"><pre><span></span>root@debian:/etc/.keys-infrastructure# ./build-key-server my-nginx
+Generating a 4096 bit RSA private key
+...........................++
+.................
+writing new private key to &#39;my-nginx.key&#39;
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter &#39;.&#39;, the field will be left blank.
+-----
+Country Name (2 letter code) [US]:
+State or Province Name (full name) [CA]:
+Locality Name (eg, city) [SanFrancisco]:
+Organization Name (eg, company) [ACME]:
+Organizational Unit Name (eg, section) [IT]:IT Department
+Common Name (eg, your name or your server&#39;s hostname) [nginx]:example.com
+Name [changeme]:nginx
+Email Address [info@example.com]:
+
+Please enter the following &#39;extra&#39; attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject&#39;s Distinguished Name is as follows
+countryName           :PRINTABLE:&#39;US&#39;
+stateOrProvinceName   :PRINTABLE:&#39;CA&#39;
+localityName          :PRINTABLE:&#39;SanFrancisco&#39;
+organizationName      :PRINTABLE:&#39;ACME&#39;
+organizationalUnitName:PRINTABLE:&#39;IT Department&#39;
+commonName            :PRINTABLE:&#39;exmaple.com&#39;
+name                  :PRINTABLE:&#39;nginx&#39;
+emailAddress          :IA5STRING:&#39;info@exmaple.com&#39;
+Certificate is to be certified until Oct 11 07:00:59 2017 GMT (365 days)
+Sign the certificate? [y/n]:y
+
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
+</pre></div>
+
+
+<h2>Managing clients</h2>
+<p>When client connects to our server, she must provide signed certificate.
+To be able to encrypt data, she also must have private key. Let's create
+it</p>
+<div class="highlight"><pre><span></span>root@debian:/etc/.keys-infrastructure# ./build-key alice
+Generating a 4096 bit RSA private key
+....................................
+......++
+writing new private key to &#39;alice.key&#39;
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter &#39;.&#39;, the field will be left blank.
+-----
+Country Name (2 letter code) [US]:
+State or Province Name (full name) [CA]:
+Locality Name (eg, city) [SanFrancisco]:
+Organization Name (eg, company) [ACME]:
+Organizational Unit Name (eg, section) [IT]:IT Department
+Common Name (eg, your name or your server&#39;s hostname) [alice]:
+Name [changeme]:alice
+Email Address [info@example.com]:alice@example.com
+
+Please enter the following &#39;extra&#39; attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+Using configuration from /etc/.proxymator-keys/openssl-1.0.0.cnf
+Check that the request matches the signature
+Signature ok
+The Subject&#39;s Distinguished Name is as follows
+countryName           :PRINTABLE:&#39;US&#39;
+stateOrProvinceName   :PRINTABLE:&#39;CA&#39;
+localityName          :PRINTABLE:&#39;SanFrancisco&#39;
+organizationName      :PRINTABLE:&#39;ACME&#39;
+organizationalUnitName:PRINTABLE:&#39;IT Department&#39;
+commonName            :PRINTABLE:&#39;alice&#39;
+name                  :PRINTABLE:&#39;alice&#39;
+emailAddress          :IA5STRING:&#39;alice@example.com&#39;
+Certificate is to be certified until Oct 11 07:02:12 2017 GMT (365 days)
+Sign the certificate? [y/n]:y
+</pre></div>
+
+
+<p>1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated</p>
+<p>Sometimes cilent need <code>p12</code> certificate with private key in it. You can
+get it with the following command:</p>
+<div class="highlight"><pre><span></span>openssl pkcs12 -export -in alice.crt -inkey alice.key -out alice.p12 -CAfile ca.crt -caname ACME
+</pre></div>
+
+
+<p>We would call <code>revoke-full</code> if we decided to restrict Alice access to
+the server. This command will update <code>crl.pem</code> file, containing revoke
+certificates.</p>
+<div class="highlight"><pre><span></span>root@debian:/etc/.proxymator-keys# ./revoke-full unwanted
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
+Revoking Certificate 02.
+Data Base Updated
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
+alice.crt: C = US, ST = CA, L = SanFrancisco, O = ACME, OU = IT Department, CN = alice, name = alice, emailAddress = alice@example.com
+error 23 at 0 depth lookup:certificate revoked
+</pre></div>
+
+
+<p>Note the "error 23" in the last line. It is normal -
+it indicates that a certificate verification of the revoked certificate
+failed.</p>
+<h2>Setting up nginx server</h2>
+<p>Nginx server configuration section:</p>
+<div class="highlight"><pre><span></span><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span> <span class="n">127.0.0.1</span><span class="p">:</span><span class="mi">443</span><span class="p">;</span>
+    <span class="kn">server_name</span> <span class="s">localhost</span><span class="p">;</span>
+
+    <span class="kn">ssl</span> <span class="no">on</span><span class="p">;</span>
+    <span class="kn">ssl_certificate</span> <span class="s">/etc/ssl/nginx/nginx.crt</span><span class="p">;</span>
+    <span class="kn">ssl_certificate_key</span> <span class="s">/etc/ssl/nginx/nginx.key</span><span class="p">;</span>
+    <span class="kn">ssl_client_certificate</span> <span class="s">/etc/ssl/nginx/ca.crt</span><span class="p">;</span>
+    <span class="kn">ssl_crl</span> <span class="s">/etc/ssl/nginx/crl.pem</span><span class="p">;</span>
+    <span class="kn">ssl_verify_client</span> <span class="no">on</span><span class="p">;</span>
+
+    <span class="kn">access_log</span> <span class="s">/var/log/nginx/localhost.ssl_access_log</span> <span class="s">main</span><span class="p">;</span>
+    <span class="kn">error_log</span> <span class="s">/var/log/nginx/localhost.ssl_error_log</span> <span class="s">info</span><span class="p">;</span>
+
+    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+        <span class="kn">root</span> <span class="s">/var/www/localhost/htdocs</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<h2>Client examples</h2>
+<h3>Browser</h3>
+<p>Alice need to import ca.crt in the Certificate Authorities section and
+allow it to identify cites. In Personal section she need to import her
+<code>p12</code> certificate.</p>
+<h3>Curl</h3>
+<p>We need to add private key into Alice's certificate. We can just
+concatenate it:</p>
+<div class="highlight"><pre><span></span>cp alice.crt alice.pem
+cat alice.key &gt;&gt; alice.pem
+curl --cacert ca.crt -E hoxnox.pem https://example.com
+</pre></div>
+
+
+<h3>Python</h3>
+<p>It's very easy with help of <a href="http://docs.python-requests.org">Requests library</a>.</p>
+<div class="highlight"><pre><span></span><span class="n">rs</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://example.com&#39;</span><span class="p">,</span> <span class="n">verify</span><span class="o">=</span><span class="s1">&#39;/path/to/ca.crt&#39;</span><span class="p">,</span> <span class="n">cert</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;/path/to/alice.crt&#39;</span><span class="p">,</span> <span class="s1">&#39;/path/to/alice.key&#39;</span><span class="p">)</span>
+</pre></div>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="hypercomments_widget"></div>
+        <script type="text/javascript">
+        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        (function() {
+        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
+        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        })();
+        </script>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+                  <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+                  </ul>
+                </li>
+
+
+
+                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group list-inline tagcloud" id="tags">
+                    </ul>
+                </li>    
+
+
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2016 Merder hoxnox Kim <hoxnox@gmail.com>
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://blog.hoxnox.com/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://blog.hoxnox.com/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29479486-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+</body>
+</html>

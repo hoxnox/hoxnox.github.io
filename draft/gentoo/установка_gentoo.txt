@@ -1,0 +1,33 @@
+1. Монтируем gentoo раздел
+2. Качаем stage3 и portage архивы (список зеркал: http://www.gentoo.org/main/en/mirrors.xml)
+3. Распаковываем в gentoo
+ tar xvjpf stage3-*.tar.bz2
+ tar xvjf /mnt/gentoo/portage-latest.tar.bz2 -C /mnt/gentoo/usr
+4. Настройка etc/make.conf
+5. Копируем fstab, правим, как минимум в части корневого раздела
+6. Монтируем дуруво процессов и устройств:
+ mount -t proc none /mnt/gentoo/proc
+ mount --rbind /dev /mnt/gentoo/dev
+7. Обновляем grub, чтобы он мог найти нашу gentoo
+ubdate-grub
+
+---- с этого момента можно грузится в gentoo 
+* проблема с консолью?
+
+8. Переключаемся в дерево gentoo
+ chroot /mnt/gentoo /bin/bash
+ env-update
+>> Regenerating /etc/ld.so.cache...
+ source /etc/profile
+ export PS1="(chroot) $PS1"
+9. Добавляем локалиации о вкусу
+ nano -w /etc/locale.gen
+ locale-gen
+10. Выставляем timezone (кому какая нужна из /usr/share/zoneinfo)
+ cp /usr/share/zoneinfo/Europe/Moscow /etc/localtime
+11. Имя хоста
+ nano -w /etc/conf.d/hostname
+12. Домен
+ nano -w /etc/conf.d/net
+13. passwd
+14. nano -w etc/resolv.conf

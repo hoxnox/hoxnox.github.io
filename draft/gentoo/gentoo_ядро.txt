@@ -1,0 +1,13 @@
+Ядро
+1. emerge gentoo-sources
+cd /usr/src/linux
+make menuconfig
+ Processor type and features  --->
+     [*] Symmetric multi-processing support
+         Processor family (Core 2/newer Xeon)  --->
+     (2) Maximum number of CPUs (2-512)
+     [ ] SMT (Hyperthreading) scheduler support
+     [*] Multi-core scheduler support
+   <*> The Extended 4 (ext4) filesystem
+     [*]   Use ext4 for ext2/ext3 file systems (NEW)
+     [*]   Ext4 extended attributes (NEW)

@@ -1,0 +1,42 @@
+
+	echo 'dev-lang/php apache2 gd postgres xmlwriter bcmath ctype xmlreader sysvipc session sockets'
+	echo 'app-admin/eselect-php apache2'
+	echo 'net-analyzer/zabbix agent server ssh frontend'
+	echo 'APACHE2_MODULES="authz_host dir mime cgi cgid fcgi"' | sudo tee -a /etc/portage/make.conf
+	sudo emerge -av --quiet apache:2
+	sudo emerge -av --quiet sqlite
+	sudo emerge -av --quiet php
+	sudo emerge -av --quiet zabbix
+	sudo webapp-config -I -h localhost -d /zabbix zabbix `ls /usr/share/webapps/zabbix`
+	mkdir /var/www/localhost/htdocs/zabbix/database
+	cat /usr/share/zabbix/database/schema.sql | sudo sqlite3 /var/www/localhost/htdocs/zabbix/database/zabbix.db
+	cat /usr/share/zabbix/database/data.sql | sudo sqlite3 /var/www/localhost/htdocs/zabbix/database/zabbix.db
+	cat /usr/share/zabbix/database/images.sql | sudo sqlite3 /var/www/localhost/htdocs/zabbix/database/zabbix.db
+	sudo chown -R apache:apache /var/www/localhost/htdocs/zabbix/database
+	===
+	gvim /var/www/localhost/htdocs/zabbix/conf/zabbix.conf.php
+	---
+	<?php
+	// Zabbix GUI configuration file
+	global $DB;
+	
+	$DB['TYPE']     = 'SQLITE3';
+	$DB['SERVER']   = 'localhost';
+	$DB['PORT']     = '0';
+	$DB['DATABASE'] = '/var/www/localhost/htdocs/zabbix/database/zabbix';
+	$DB['USER']     = 'root';
+	$DB['PASSWORD'] = '';
+	
+	// SCHEMA is relevant only for IBM_DB2 database
+	$DB['SCHEMA'] = '';
+	
+	$ZBX_SERVER      = 'localhost';
+	$ZBX_SERVER_PORT = '10051';
+	$ZBX_SERVER_NAME = '';
+	
+	$IMAGE_FORMAT_DEFAULT = IMAGE_FORMAT_PNG;
+	?>
+
+
+
+Admin/zabbix

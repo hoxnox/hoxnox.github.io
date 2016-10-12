@@ -1,0 +1,23 @@
+Переносим grub на другой раздел
+1. Выделяем раздел, форматируем.
+2. Монтируем раздел куда-нибудь
+	sudo mount /dev/sda1 /media
+3. Ставим grub в новый раздел, переписываем MBR (опасно!!!)
+	sudo grub-install --boot-directory=/media /dev/sda
+4. Убираем существующий boot
+	sudo mv /boot /tmp
+5. Создаем точку монтирования
+	sudo mkdir /boot
+6. Получаем uuid нового раздела.
+	ls -l /dev/disk/by-uuid | grep /dev/sda1
+7. Добавляем строку в /etc/fstab
+	UUID=#UUID#	/boot	ext4	rw	0	0
+	где #UUID# идентификатор, полученный в п.6
+8. Монтируем новый /boot
+	sudo mount /boot
+9. Проверяем, чтобы в /boot была папка grub, а в ней нужные модули
+10. Копируем образы linux, которые хотим грузить из /tmp/boot в /boot
+11. Генерируем grub.cfg
+	sudo update-grub
+
+Перенос шифрованного home следует производить с помощью /usr/bin/ecryptfs-migrate-home -u USER

@@ -1,0 +1,63 @@
+Device Drivers -->
+  [*] Network device support -->
+    [*] Wireless LAN
+      <M> Intel Wireless WiFi Next Gen AGN  - Wireless-N/Advanced-N/Ultimate-N (iwlagn)
+
+Добавляем в firmware (см. firmware)
+	<file src="/etc/portage/savedconfig/sys-kernel/linux-firmware-20120502">
+	iwlwifi-5000-1.ucode
+	</file>
+	и пересобираем sys-kernel/linux-firmware
+
+Ставим wpa_supplicant
+	<code>sudo emerge -av wpa_supplicant</code>
+Конфигурируем на точку. В моём случае - простейший WPA со статическим паролем.
+	<file name="/etc/wpa_supplicant/wpa_supplicant.conf">
+	# следующую строку нельзя изменять, иначе программа не сможет работать
+	ctrl_interface=/var/run/wpa_supplicant
+	# ограничим доступ к настройкам WPA только для root
+	ctrl_interface_group=0
+	# пусть wpa_supplicant заботится о сканировании и выборе точки доступа
+	ap_scan=1
+	# подключение с общим ключом WEP (не WPA, не IEEE #802.1X)
+	network={
+	  ssid="JASSY-NET"
+	  key_mgmt=NONE
+	  wep_key0=c18818dcf0
+	  wep_tx_keyidx=0
+	  priority=5
+	}
+	</file>
+Правим /etc/conf.d/net
+	<file name="/etc/conf.d/net">
+	#Wireless
+	module="wpa_supplicant"
+	config_wlan0="dhcp"
+	dhcp_wlan0="nodns"
+	</file>
+Создаем init скрипт:
+	<code>
+	cd /etc/init.d
+	cp net.lo net.wlan0
+	</code>
+Запускаем
+	<code>sudo /etc/init.d/net.wlan0 start</code>
+Добавляем в автозапуск:
+	<code>sudo rc-update add net.wlan0 default</code>
+Существует небольшая проблема. Скрипт rc запускает интерфейс wlan0, но не дожидается, пока он будет
+инициализирован, а продолжает цепочку загрузки. Таким образом, wlan0 уже поднят, но ему не назначен адрес и проч., то есть
+интернета нет, а службы зависящие от сети пытаются загрузится. Никакие параметры типа
+sleep_associate, wait_associate почему-то не помогают, поэтому все службы, которые должны грузится
+после сети удаляем из rc и прописываем в postup(). Следует учесть, что postup должет отрабатывать
+только для wlan0:
+	<file name="/etc/conf.d/net">
+	#Wireless
+	module="wpa_supplicant"
+	config_wlan0="dhcp"
+	dhcp_wlan0="nodns"
+	postup() {
+		if [ ${IFVAR} != "lo" ]; then # prevent lo long wail
+			/etc/init.d/ntp-client start
+		fi
+	}
+	<file>

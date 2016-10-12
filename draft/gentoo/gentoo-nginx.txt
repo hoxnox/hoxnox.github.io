@@ -1,0 +1,10 @@
+Описываем модули, которые nginx будет использовать:
+	<file name="/etc/portage/env/nginx.conf">
+	NGINX_MODULES_HTTP="limit_req limit_zone upstream_ip_hash"
+	</file>
+	<file name="/etc/portage/package.env">
+	www-servers/nginx nginx.conf
+	</file>
+	Правим конфигурацию для начальной страницы:
+	<file name="/etc/nginx/sites/index.conf">
+	</file>

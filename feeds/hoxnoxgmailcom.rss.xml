@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/feeds/hoxnoxgmailcom.rss.xml" rel="self"></atom:link><lastBuildDate>Thu, 16 Aug 2012 00:00:00 +0400</lastBuildDate><item><title>TLS - практика</title><link>http://blog.hoxnox.com/sec/ssl_practice.html</link><description>&lt;div class="section" id="id1"&gt;
+<rss version="2.0"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><lastBuildDate>Thu, 16 Aug 2012 00:00:00 +0400</lastBuildDate><item><title>TLS - практика</title><link>http://blog.hoxnox.com/sec/ssl_practice.html</link><description>&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Установление соединения&lt;/h2&gt;
 &lt;p&gt;Первое, что мы сделаем - пошлём простейший пакет, содержащий ClinetHello.&lt;/p&gt;
 &lt;p&gt;Итак, структура простейшего ClientHello&lt;/p&gt;
@@ -31,7 +31,7 @@ CipherSuite = { 0x00, 0x00, 0x00, 0x0D, 0x00, 0x10, 0x00, 0x13, 0x00, 0x16, 0x00
 CompressionMethod = 0x0
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Thu, 16 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-16:sec/ssl_practice.html</guid><category>tls</category><category>ssl</category><category>security</category><category>cryptography</category><category>protocol</category><category>c++</category></item><item><title>Что такое SSL?</title><link>http://blog.hoxnox.com/sec/tls.html</link><description>&lt;p&gt;SSL - это протокол, позволяющий устанавливать защищенные соединения. На основе SSL 3.0 был
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Thu, 16 Aug 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-08-16:sec/ssl_practice.html</guid><category>tls</category><category>ssl</category><category>security</category><category>cryptography</category><category>protocol</category><category>c++</category></item><item><title>Что такое SSL?</title><link>http://blog.hoxnox.com/sec/tls.html</link><description>&lt;p&gt;SSL - это протокол, позволяющий устанавливать защищенные соединения. На основе SSL 3.0 был
 разработан TLS. Сейчас, когда говорят об SSL имеют ввиду TLS. TLS - основа безопасности в Интернете.&lt;/p&gt;
 &lt;p&gt;Как только клиент и сервер решили общаться по протоколу SSL, первое что они делают - процедура
 установления соединения (рукопожатие - handshake).&lt;/p&gt;
@@ -925,4 +925,4 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
 &lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Tue, 14 Aug 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-08-14:sec/tls.html</guid><category>ssl</category><category>tls</category><category>security</category><category>cryptography</category></item></channel></rss>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">hoxnox@gmail.com</dc:creator><pubDate>Tue, 14 Aug 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-08-14:sec/tls.html</guid><category>ssl</category><category>tls</category><category>security</category><category>cryptography</category></item></channel></rss>

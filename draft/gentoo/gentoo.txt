@@ -1,0 +1,189 @@
+Русификация (см. http://www.gentoo.org/doc/ru/guide-localization.xml, http://ru.gentoo-wiki.com/wiki/HOWTO_ru_RU.utf8_Gentoo_way)
+	Ставим свободные шрифты из проекта GNOME и Terminus
+		<code>
+		sudo emerge -av media-fonts/dejavu
+		sudo emerge -av media-fonts/terminus-font
+		</code>
+	Указываем настройки консоли:
+		Шрифт
+			<file name="/etc/conf.d/consolefont">
+			# выбираем из /usr/share/consolefonts
+			CONSOLEFONT="ter-k14f"
+			</file>
+		Метод переключения
+			<file name="/etc/conf.d/keymap">
+			# выбираем из /usr/share/keymaps/i386/qwerty
+			KEYMAP="ruwin_ct_sh-UTF-8.map.gz"
+			</file>
+	Выставляем LANG в профиле (можно в ~/.bash_login):
+		<file name="/etc/env.d/02locale">
+		LC_ALL=""
+		LANG="ru_RU.UTF-8"
+		LC_NUMERIC="C"
+		</file>
+	Выставляем LINUAS в /etc/make.conf
+		<file name="/etc/make.conf">
+		LINGUAS="ru:en"
+		</file>
+	Генерируем новый профиль:
+		<code>
+		sudo env-update
+		source /etc/profile
+		</code>
+	Пере запускаем службы
+		<code>
+		sudo /etc/init.d/consolefont restart
+		sudo /etc/init.d/keymap restart
+		</code>
+	Добавляем скрипты загрузки в default runlevel
+		<code>
+		sudo rc-update add consolefont default
+		sudo rc-update add keymaps default
+		<code>
+	Для awesome  можно использовать следующий виджет:
+		<file "~/.config/awesome/rc.lua">
+		-- {{{  Keyboard map indicator and changer
+		    mylswitcher = {}
+		    mylswitcher.layout = {"us", "ru"}
+		    mylswitcher.widget = widget({ type ="textbox", align="right" })
+		    mylswitcher.current = 1
+		    mylswitcher.widget.text = " " .. mylswitcher.layout[mylswitcher.current] .. " "
+		    mylswitcher.switch = function()
+		       mylswitcher.current = mylswitcher.current % #(mylswitcher.layout) + 1
+		       local t = " " .. mylswitcher.layout[mylswitcher.current] .. " "
+		       mylswitcher.widget.text = t
+		       local fh = io.popen("xkb-switch -s " .. mylswitcher.layout[mylswitcher.current])
+		       io.close(fh)
+		    end
+		    -- Mouse bindings
+		    mylswitcher.widget:buttons(awful.util.table.join(
+		        awful.button({ }, 1, function () mylswitcher.switch() end)
+		    ))
+		
+		- }}}
+		</file>
+		К сожалению, простого способа общаться с X-сервером через расширение XTest я не
+		нашёл, поэтому соберём xkb-swicth и положим его на видное место:
+		<code>
+		git clone git://github.com/ierton/xkb-switch.git
+		cd xkb-switch
+		mkdir build && cd build
+		cmake ../
+		make
+		sudo cp xkb-switch /usr/bin
+		</code>
+
+
+Ставим sudo 
+	<code>emerge -av sudo</code>
+	Добавляем группу sudo пользователей
+	groupadd sudo
+	Настраиваем sudo - файл /etc/sudoers в простейшей конфигурации выглядит так:
+	<file name="/etc/sudoers">
+	Defaults env_reset
+	root ALL=(ALL:ALL) ALL
+	#admin group
+	%admin ALL=(ALL) ALL
+	#sudo group
+	%sudo ALL=(ALL:ALL) ALL
+	</file>
+	Добавляем пользователей, которым необходимо предоставить sudo привелегии в группу admin, либо sudo 
+	usermod -a -G sudo user
+Наводим красивости с шрифтами
+	Добавляем USE флаг truetype, пере собираем изменения
+Ставим тему gtk+ и иконки Faenza
+	Качаем понравившуюся gtk-2.0 тему и копируем в /usr/share/themes
+	Ставим набор иконок Faenza:
+	<code>sudo emerge -av x11-themes/faenza-icon-theme</code>
+	Создаем файл ~/.gtkrc.mine
+	<file src="~/.gtkrc.mine">
+	include '/usr/share/themes/Atolm/gtk-2.0/gtkrc'
+	<file>
+	Сообщаем, что будем использовать набор иконок Fenza, создаем файл
+	<file etc="~/.gtkrc-2.0">
+	include '/home/hoxnox/.gtkrc.mine'
+	gtk-icon-theme-name = "Faenza"
+	</file>
+Тема полупрозрачности нормально раскрыта тут: http://awesome.naquadah.org/wiki/Transparency
+Автомонтирование флешек.
+	К черту hal (-hal в /etc/make.conf) и прочую лабуду. Ставим uam и забываем об этой головной боли:
+	<code>sudo emerge -av sys-apps/uam</code>
+
+Синхронизация времени
+	Ставим ntp
+		<code>sudo emerge -av /ntp</code>
+	Выбираем сервер. К примеру europe.pool.ntp.org, корректируем /etc/conf.d/ntp-client
+	<file name="/etc/conf.d/ntp-client">
+	NTPCLIENT_OPTS="-b -u europe.pool.ntp.org"
+	</file>
+	Если нет необходимости каждый раз синхронизировать время (процесс не очень быстрый), то
+	просто используйте следующую команду для синхронизации:
+	<code>sudo /etc/init.d/ntp-client start</code>
+	Если нужны сложности см. http://www.gentoo-wiki.info/HOWTO_NTP#Find_a_Time_Server
+
+Включаем поддержку flash
+	<code>sudo emerge -av adobe-flash</code>
+
+Звук см. http://www.gentoo.org/doc/ru/alsa-guide.xml
+Включаем hibernate-ram на закрытие крышки (можно установить TuxOnIce см. http://ru.gentoo-wiki.com/wiki/TuxOnIce)
+	Ставим скрипты hibernate: 
+	<code>sudo emerge -av hibernate-script</code>
+	Добавляем новое событие в acpi
+	<file name="/etc/acpi/events/lid">
+	event=button[ /]lid
+	action=/usr/sbin/hibernate-ram
+	</file>
+	перезапускаем acpid
+	<code>/etc/init.d/acpid restart</code>
+Bluetooth (см. руководство gentoo), драйвера: HCI USB drver, HCI BCM203x USB driver
+	Все что можно творить с bluetooth описано тут http://wiki.openmoko.org/wiki/Manually_using_Bluetooth
+Scroll на третьей кнопке трэкада
+	Необходимо в один из инициализационных скриптов добавить следующие строки:
+	<file name="/etc/X11/xinit/xinitrc.d/10-xinput">
+	xinput --set-prop --type=int --format=8 "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation" 1
+	xinput --set-prop --type=int --format=8 "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation Button" 2
+	xinput --set-prop --type=int --format=8 "TPPS/2 IBM TrackPoint" "Evdev Wheel Emulation Timeout" 200
+	</file>
+	Лучше всего создать новый инициализационный скрипт в директории /etc/X11/xinit/xinitrc.d
+	Использование .xinitrc в домашней директории не желательно, так как XDM может его и не
+	запускать. не забываем сделать его исполняемым.
+Отключаем touch-pad, оставляя возможность включить его скриптом
+	отключаем:
+	<file name="/etc/X11/xinit/xinitrc.d/10-touch_off">
+	xinput --set-prop --type=int --format=8 "SynPS/2 Synaptics TouchPad" "Synaptics Off" 1
+	</file>
+	скрипт запуска|остановки:
+	<file name=/etc/acpi/touchpad>
+	#!/bin/sh
+	#[ -f /usr/share/acpi-support/state-funcs ] || exit 0 
+	
+	#. /usr/share/acpi-support/power-funcs
+	
+	# if this is the right behavior, then this should be moved out of acpi-support
+	# to hal (or whatever is replacing hal for such events)
+	#getXconsole
+	
+	XINPUTNUM=`xinput list | grep 'SynPS/2 Synaptics TouchPad' | sed -n -e's/.*id=\([0-9]\+\).*/\1/p'`
+	
+	# get the current state of the touchpad
+	TPSTATUS=`xinput list-props $XINPUTNUM | awk '/Synaptics Off/ { print $NF }'`
+	
+	# if getting the status failed, exit
+	test -z $TPSTATUS && exit 1
+	
+	if [ $TPSTATUS = 0 ]; then
+	   xinput set-int-prop $XINPUTNUM "Synaptics Off" 8 1
+	else
+	   xinput set-int-prop $XINPUTNUM "Synaptics Off" 8 0
+	fi
+	</file>
+Кастомизация awesome
+Volume control
+	В качестве виджета в трее ставим volumeicon (для него нужен ~x86 keyword)
+	в конфиге awesome, в таблицу globalkeys добавляем:
+	<file ~/.config/awesome/rc.lua>
+        awful.key({}, "XF86AudioRaiseVolume", function () awful.util.spawn("amixer sset Master 5+") end),
+        awful.key({}, "XF86AudioLowerVolume", function () awful.util.spawn("amixer sset Master 5-") end),
+        awful.key({}, "XF86AudioMute", function () awful.util.spawn("amixer sset Master toggle") end))
+	</file>
+Приложить файл rc.lua

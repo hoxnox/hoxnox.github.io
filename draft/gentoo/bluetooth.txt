@@ -1,0 +1,3 @@
+ http://vitus-wagner.livejournal.com/149602.html?thread=3307106 Вцелом
+ http://www.bluetooth.org/Technical/AssignedNumbers/home.htm UUIDs
+ http://www.avetana-gmbh.de/avetana-gmbh/produkte/doc/javax/bluetooth/UUID.html - некоторые UUID

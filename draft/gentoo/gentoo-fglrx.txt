@@ -1,0 +1,5 @@
+1. When kernel compiling disable DRI (turn into module, or just disable)
+2. Compile frglx module (set USE="fglrx"and compile xorg-server, or emerge
+x11-drivers/ati-drivers manualy)
+3. modprobe fglrx
+

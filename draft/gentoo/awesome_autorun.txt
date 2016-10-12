@@ -1,0 +1,6 @@
+Всё, что запускается в rc.lua, с помощью команд spawn, spawn_with_shell должно контролировать
+количество запускаемых экземпляров, чтобы безопасно пользоваться awesome restart. То есть, вместо 
+awful.util.spawn_with_shell("volumeicon")
+следует использовать
+awful.util.spawn_with_shell("if [[ `ps -A | grep volumeicon | awk '$4 ~ /volumeicon/ {print 1}'` != 1 ]]; then volumeicon &>/dev/null & fi")
+@note При условии использования bash

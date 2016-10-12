@@ -1,0 +1,15 @@
+# CSIO
+
+Some years ago I created [csio library](https://github.com/hoxnox/csio).
+A lot of time passed, a lot of files were compressed with different
+values to `-j` option. Everything was fine, so I released 0.1.0 version.
+
+CSIO brings you effective random access through compressed file. It uses
+gzip extensions to store file map and decompresses only small part of
+file where you want to read. To use this awesome ability you need to
+compress file with dzip utility, which goes with the library.
+
+Suppose you have legacy code, thar works with stdio:
+
+	#include <stdio.h>
+

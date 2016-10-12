@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/gentoo.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2016-03-16T00:00:00+03:00</updated><entry><title>Awesome wm key bindings integration</title><link href="http://blog.hoxnox.com/gentoo/awm-key-integration.html" rel="alternate"></link><updated>2016-03-16T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-16:gentoo/awm-key-integration.html</id><summary type="html">&lt;p&gt;I'm using &lt;a href="http://awesome.naquadah.org/"&gt;awesome window manager&lt;/a&gt; on my
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/gentoo.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2016-03-16T00:00:00+03:00</updated><entry><title>Awesome wm key bindings integration</title><link href="http://blog.hoxnox.com/gentoo/awm-key-integration.html" rel="alternate"></link><published>2016-03-16T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-16:gentoo/awm-key-integration.html</id><summary type="html">&lt;p&gt;I'm using &lt;a href="http://awesome.naquadah.org/"&gt;awesome window manager&lt;/a&gt; on my
 gentoo desktop. My configuration evaluate from time to time, like vim's
 does for example. These instruments highly optimized for my habits, it
 is right in my fingers. In this post I'll show how to extend awesome wm
@@ -9,10 +9,10 @@ of &lt;code&gt;root.fake_input&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Tmux multiplexer has it's own panes and you can switch between them with
 combination of prefix and arrow keys. Almost the same we have in awesome
 wm. The key of head aches is "almost". It's very hard to switch between
-different hot keys. The problem can be solved the problem in awesome
+different hot keys. The problem can be solved in awesome's
 configuration file. All needed is to check client while switching to
 next window. If the client is tmux - don't switch, send "prefix + arrow"
-instead. The solutions is very easy and effective. The code above&lt;/p&gt;
+instead. The solution is very easy and effective. The code is below&lt;/p&gt;
 &lt;p&gt;.tmux.conf&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;set-option -g prefix m-a
 set-option -g repeat-time 0
@@ -24,71 +24,71 @@ bind-key up select-pane -t:.-
 
 
 &lt;p&gt;rc.lua:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
 
-&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="k"&gt;then&lt;/span&gt;
-         &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+function is_tmux(c)
+    if string.find(string.lower(c.name), &amp;quot;tmux&amp;quot;) ~= nil
+    or string.find(string.lower(c.class), &amp;quot;tmux&amp;quot;) ~= nil
+    then
+         return true
+    end
+    return false
+end
 
-&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="n"&gt;waiter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timer&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;up&amp;#39;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;down&amp;#39;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+function send_tmux_command(cmd)
+    keygrabber.stop()
+    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+    root.fake_input(&amp;quot;key_press&amp;quot;, 38)
+    root.fake_input(&amp;quot;key_release&amp;quot;, 38)
+    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    waiter = timer({timeout = 0.01})
+    if cmd == &amp;#39;up&amp;#39; then
+        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
+            waiter:stop()
+            root.fake_input(&amp;quot;key_press&amp;quot;, 116)
+            root.fake_input(&amp;quot;key_release&amp;quot;, 116)
+            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        end)
+    end
+    if cmd == &amp;#39;down&amp;#39; then
+        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
+            waiter:stop()
+            root.fake_input(&amp;quot;key_press&amp;quot;, 111)
+            root.fake_input(&amp;quot;key_release&amp;quot;, 111)
+            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        end)
+    end
+    waiter:start()
+end
 
-&lt;span class="n"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
-    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;j&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-                &lt;span class="n"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;down&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="k"&gt;else&lt;/span&gt;
-                &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-            &lt;span class="k"&gt;end&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
-    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;k&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-        &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-                &lt;span class="n"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;up&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-            &lt;span class="k"&gt;else&lt;/span&gt;
-                &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
-            &lt;span class="k"&gt;end&lt;/span&gt;
-        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+globalkeys = awful.util.table.join(
+    awful.key({ modkey,           }, &amp;quot;j&amp;quot;,
+        function()
+            if is_tmux(client.focus) then
+                send_tmux_command(&amp;#39;down&amp;#39;)
+            else
+                awful.client.focus.byidx(1)
+                if client.focus then client.focus:raise() end
+            end
+        end),
+    awful.key({ modkey,           }, &amp;quot;k&amp;quot;,
+        function()
+            if is_tmux(client.focus) then
+                send_tmux_command(&amp;#39;up&amp;#39;)
+            else
+                awful.client.focus.byidx(-1)
+                if client.focus then client.focus:raise() end
+            end
+        end))
 
-&lt;span class="o"&gt;...&lt;/span&gt;
+...
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;h2&gt;proposal #2&lt;/h2&gt;
 &lt;p&gt;There is common recommendation to use vim's native layout switching
-(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;), when you have more than one keyboard layout to use.
+(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;) when you have more than one keyboard layout to use.
 It solves problems with hot keys in vim. Other applications uses
 system-wide switcher with it's own key bindings. Similar to the proposal #1
 we can tune awesome wm configuration:&lt;/p&gt;
@@ -99,30 +99,30 @@ cnoremap &amp;lt;M-=&amp;gt; &amp;lt;C-^&amp;gt;
 
 
 &lt;p&gt;rc.lua&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
-    &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;function is_vim(c)
+    if string.find(string.lower(c.name), &amp;quot;vim&amp;quot;) ~= nil
+    or string.find(string.lower(c.class), &amp;quot;vim&amp;quot;) ~= nil
+    then
+        return true;
+    end
+    return false
+end
 
-&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
-        &lt;span class="n"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-    &lt;span class="k"&gt;else&lt;/span&gt;
-        &lt;span class="n"&gt;mylswitcher&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;switch&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-    &lt;span class="k"&gt;end&lt;/span&gt;
-&lt;span class="k"&gt;end&lt;/span&gt;
+function switch_key_layout_vimspecial()
+    if is_vim(client.focus) then
+        keygrabber.stop()
+        root.fake_input(&amp;quot;key_press&amp;quot;, 64)
+        root.fake_input(&amp;quot;key_press&amp;quot;, 21)
+        root.fake_input(&amp;quot;key_release&amp;quot;, 21)
+        root.fake_input(&amp;quot;key_release&amp;quot;, 64)
+    else
+        mylswitcher.switch()
+    end
+end
 
-&lt;span class="n"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;globalkeys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
-    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;space&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="n"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="gentoo"></category><category term="vim"></category><category term="tmux"></category><category term="key bindings"></category></entry><entry><title>Linux desktop on high resolution display</title><link href="http://blog.hoxnox.com/gentoo/hires.html" rel="alternate"></link><updated>2016-03-13T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-13:gentoo/hires.html</id><summary type="html">&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
+globalkeys = awful.util.table.join(globalkeys,
+    awful.key({modkey, }, &amp;quot;space&amp;quot;, function () switch_key_layout_vimspecial() end))
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="gentoo"></category><category term="vim"></category><category term="tmux"></category><category term="key bindings"></category></entry><entry><title>Linux desktop on high resolution display</title><link href="http://blog.hoxnox.com/gentoo/hires.html" rel="alternate"></link><published>2016-03-13T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-13:gentoo/hires.html</id><summary type="html">&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
 But when my gentoo booted I was very disappointed - it looked very ugly.
 Some apps looked normal - thunderbird, Telegram, but most was unusable
 like gimp - with tiny icons and broken fonts. It takes some time to tune
@@ -220,7 +220,7 @@ it.&lt;/p&gt;
 
 &lt;p&gt;This module comes in standard gnome theme pack:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;emerge -av --quiet gnome-themes-standard
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="getnoo"></category><category term="high resolution"></category><category term="xorg"></category><category term="gtk"></category></entry><entry><title>WiFi access point with wpa_supplicant</title><link href="http://blog.hoxnox.com/gentoo/wifi-hotspot.html" rel="alternate"></link><updated>2015-05-01T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-05-01:gentoo/wifi-hotspot.html</id><summary type="html">&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="getnoo"></category><category term="high resolution"></category><category term="xorg"></category><category term="gtk"></category></entry><entry><title>WiFi access point with wpa_supplicant</title><link href="http://blog.hoxnox.com/gentoo/wifi-hotspot.html" rel="alternate"></link><published>2015-05-01T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-05-01:gentoo/wifi-hotspot.html</id><summary type="html">&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
 and it has a wifi card which is managed by &lt;code&gt;wpa_supplicant&lt;/code&gt;, you can
 easily setup this computer as WiFi access point. You even don't need
 &lt;a href="http://w1.fi/hostapd"&gt;hostapd&lt;/a&gt; - just &lt;code&gt;wpa_supplicant&lt;/code&gt; and dhcp server
@@ -292,7 +292,7 @@ sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168
 
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;That's all! Now you can connect to your Access Point. All these &lt;/p&gt;</summary><category term="wpa_supplicant"></category><category term="gentoo"></category><category term="wifi hotspot"></category><category term="access point"></category></entry><entry><title>Suspend по таймеру, resume по клавиатуре</title><link href="http://blog.hoxnox.com/gentoo/suspend-resume.html" rel="alternate"></link><updated>2015-03-20T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-20:gentoo/suspend-resume.html</id><summary type="html">&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
+&lt;p&gt;That's all! Now you can connect to your Access Point. All these &lt;/p&gt;</summary><category term="wpa_supplicant"></category><category term="gentoo"></category><category term="wifi hotspot"></category><category term="access point"></category></entry><entry><title>Suspend по таймеру, resume по клавиатуре</title><link href="http://blog.hoxnox.com/gentoo/suspend-resume.html" rel="alternate"></link><published>2015-03-20T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-20:gentoo/suspend-resume.html</id><summary type="html">&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;BIOS машинки в S3 не должен отключать USB&lt;/li&gt;
 &lt;li&gt;Ядро должно быть настроено на работу с ACPI&lt;/li&gt;
@@ -311,7 +311,7 @@ sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168
 &lt;/ul&gt;
 &lt;p&gt;Дополняем .xintrc:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xautolock -time 30 -locker &amp;quot;sudo pm-suspend&amp;quot; -detectsleep &amp;amp;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="gentoo"></category><category term="suspend"></category><category term="acpi"></category><category term="resume"></category></entry><entry><title>G-CPAN</title><link href="http://blog.hoxnox.com/gentoo/g-cpan.html" rel="alternate"></link><updated>2015-02-04T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-04:gentoo/g-cpan.html</id><summary type="html">&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="gentoo"></category><category term="suspend"></category><category term="acpi"></category><category term="resume"></category></entry><entry><title>G-CPAN</title><link href="http://blog.hoxnox.com/gentoo/g-cpan.html" rel="alternate"></link><published>2015-02-04T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-04:gentoo/g-cpan.html</id><summary type="html">&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
 я разбираюсь как свинья в апельсинах, тем не менее я знаю о
 существовании единого репозитория &lt;a href="http://www.cpan.org/"&gt;CPAN&lt;/a&gt;. В то же
 время я понимаю боль управления зависимостями и плюшки, которые нам
@@ -382,7 +382,7 @@ perl-module. В исходнике видна переменная myconf, зн�
 &lt;li&gt;???&lt;/li&gt;
 &lt;li&gt;???&lt;/li&gt;
 &lt;li&gt;PROFIT!!!&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="gentoo"></category><category term="g-cpan"></category><category term="cpan"></category><category term="perl"></category></entry><entry><title>irtoy</title><link href="http://blog.hoxnox.com/gentoo/irtoy.html" rel="alternate"></link><updated>2015-01-18T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-01-18:gentoo/irtoy.html</id><summary type="html">&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
+&lt;/ul&gt;</summary><category term="gentoo"></category><category term="g-cpan"></category><category term="cpan"></category><category term="perl"></category></entry><entry><title>irtoy</title><link href="http://blog.hoxnox.com/gentoo/irtoy.html" rel="alternate"></link><published>2015-01-18T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-01-18:gentoo/irtoy.html</id><summary type="html">&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
 v2&lt;/a&gt;. Целый день убил
 на то, чтобы разобраться как завести эту штуку под LIRC'ом.&lt;/p&gt;
 &lt;p&gt;Чтобы работать с девайсом в ядре должна быть поддержка CONFIG_USB_ACM.&lt;/p&gt;
@@ -470,7 +470,7 @@ ffff001100000000 00 down RemoteXXX.conf
     &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;irCode&lt;/span&gt;
     &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="n"&gt;toy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transmit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;irCode&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="lirc"></category><category term="irtoy"></category><category term="xbmc"></category><category term="bose"></category></entry><entry><title>etoken в корпоративных сетях</title><link href="http://blog.hoxnox.com/gentoo/etoken.html" rel="alternate"></link><updated>2014-09-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-09-01:gentoo/etoken.html</id><summary type="html">&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
+&lt;/pre&gt;&lt;/div&gt;</summary><category term="lirc"></category><category term="irtoy"></category><category term="xbmc"></category><category term="bose"></category></entry><entry><title>etoken в корпоративных сетях</title><link href="http://blog.hoxnox.com/gentoo/etoken.html" rel="alternate"></link><published>2014-09-01T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-09-01:gentoo/etoken.html</id><summary type="html">&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
 (работает через куку по SSL). Для красноглазых имеется openconnect (в
 генте есть в портежах).&lt;/p&gt;
 &lt;p&gt;Наш ключик:
@@ -502,7 +502,7 @@ http://www.it-lines.ru/blogs/linux/nastrojka-etoken-v-gentoo-linux&lt;/p&gt;
 &lt;p&gt;Тут https://www.mayrhofer.eu.org/aladdin-etoken-under-linux товарищ
 рассказывает как можно с помощью opencs
 (https://www.opensc-project.org/opensc/wiki/AladdinEtokenPro#Linux) c
-этим делом общаться.&lt;/p&gt;</summary><category term="getnoo"></category><category term="etoken"></category><category term="enterprise"></category></entry><entry><title>Учим Midnight Commander запоминать последнюю директорию</title><link href="http://blog.hoxnox.com/gentoo/mc_last_dir.html" rel="alternate"></link><updated>2012-08-03T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-08-03:gentoo/mc_last_dir.html</id><summary type="html">&lt;p&gt;Для этих целей существует опция -P, которая сообщает mc записать состояние перед выходом в заданный
+этим делом общаться.&lt;/p&gt;</summary><category term="getnoo"></category><category term="etoken"></category><category term="enterprise"></category></entry><entry><title>Учим Midnight Commander запоминать последнюю директорию</title><link href="http://blog.hoxnox.com/gentoo/mc_last_dir.html" rel="alternate"></link><published>2012-08-03T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-08-03:gentoo/mc_last_dir.html</id><summary type="html">&lt;p&gt;Для этих целей существует опция -P, которая сообщает mc записать состояние перед выходом в заданный
 файл. Кроме того, в состав дистрибутива входит специальный скрипт mc-wrapper.sh, который
 автоматизирует процесс закрывания/открывания mc нужным образом.&lt;/p&gt;
 &lt;p&gt;В gentoo данный скрипт лежит в&lt;/p&gt;
@@ -515,7 +515,7 @@ $ qlist mc | grep mc-wrapper
 &lt;p&gt;..code-block:: none&lt;/p&gt;
 &lt;blockquote&gt;
 alias mc='. /usr/libexec/mc/mc-wrapper.sh'&lt;/blockquote&gt;
-</summary><category term="gentoo"></category><category term="mc"></category></entry><entry><title>Сеть</title><link href="http://blog.hoxnox.com/gentoo/net.html" rel="alternate"></link><updated>2012-02-23T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-23:gentoo/net.html</id><summary type="html">&lt;p&gt;Без сети в Gentoo-desktop катастрофически тяжело. Поэтому еще до того, как я начну настройку и
+</summary><category term="gentoo"></category><category term="mc"></category></entry><entry><title>Сеть</title><link href="http://blog.hoxnox.com/gentoo/net.html" rel="alternate"></link><published>2012-02-23T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-23:gentoo/net.html</id><summary type="html">&lt;p&gt;Без сети в Gentoo-desktop катастрофически тяжело. Поэтому еще до того, как я начну настройку и
 установку программного обеспечения, сразу после получения более-менее работающего &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;собственноручно
 собранного ядра&lt;/a&gt;, настраиваем сеть.&lt;/p&gt;
 &lt;p&gt;Начну с общего. Для начала пропишу адреса &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DNS"&gt;DNS&lt;/a&gt; серверов, которые буду использовать. Для этого имеется
@@ -625,7 +625,7 @@ postup&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
 &lt;p&gt;Настройка bluetooth - тема для &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;отдельного разговора&lt;/a&gt;. Если вкратце, необходимо настроить поддержку
 железа в ядре. Настроить &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/RFCOMM"&gt;rfcomm&lt;/a&gt;, поставить &lt;a class="reference external" href="http://ppp.samba.org/"&gt;pppd&lt;/a&gt;, написать &lt;a class="reference external" href="http://sysoev.ru/pppd/connect.html"&gt;скрипт дозвона&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="gentoo"></category><category term="wifi"></category><category term="bluetooth"></category><category term="ethernet"></category></entry><entry><title>Плавный переход с Ubuntu на Gentoo</title><link href="http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html" rel="alternate"></link><updated>2012-02-22T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-22:gentoo/ubuntu-gentoo.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</summary><category term="gentoo"></category><category term="wifi"></category><category term="bluetooth"></category><category term="ethernet"></category></entry><entry><title>Плавный переход с Ubuntu на Gentoo</title><link href="http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html" rel="alternate"></link><published>2012-02-22T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-22:gentoo/ubuntu-gentoo.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Мотивация&lt;/h2&gt;
 &lt;p&gt;В своё время, когда я начинал свой путь в мир открытого ПО с FreeBSD, мне очень понравилась
 концепция &lt;em&gt;&amp;quot;собери все сам&amp;quot;&lt;/em&gt;, она позволяет вскрыть новые пласты знаний и получить драгоценный опыт.
@@ -929,7 +929,7 @@ menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Перезагружаюсь в Gentoo. Welcome home. Теперь начинается самое интересное ...&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="ubuntu"></category><category term="gentoo"></category><category term="linux"></category></entry><entry><title>Wine</title><link href="http://blog.hoxnox.com/gentoo/games.html" rel="alternate"></link><updated>2012-01-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-01-01:gentoo/games.html</id><summary type="html">&lt;h1&gt;wine&lt;/h1&gt;
+</summary><category term="ubuntu"></category><category term="gentoo"></category><category term="linux"></category></entry><entry><title>Wine</title><link href="http://blog.hoxnox.com/gentoo/games.html" rel="alternate"></link><published>2012-01-01T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-01-01:gentoo/games.html</id><summary type="html">&lt;h1&gt;wine&lt;/h1&gt;
 &lt;p&gt;Wine позволяет играться. Есть замечательный сайт
 [winehq][http://winehq.org], на котором можно найти особенности запуска
 той или иной игрушки под wine'ом. В том числе параметры системного

@@ -1,0 +1,55 @@
+Начало работы с оборудованием cisco
+===================================
+
+Основные команды
+
+	enable - привилегированный режим
+	show running-config - конфигурация
+	do show running-config - конфигурация в режиме conf t
+	configure terminal - конфигуряшки
+
+Интерфейс:
+
+	interface fa0/0
+	no shutdown
+	ip address 192.168.1.1 255.255.255.0
+
+Подинтерфейс (требует инкапсуляции)
+	
+	interface fa0/0.1
+	encapsulation dot1Q <vlan_N>
+	ip address 192.168.100.2 255.255.255.0
+	no shutdown
+
+Создаем виртуальные терминалы и настраиваем доступ:
+	
+	service password-encryption
+	enable secret <passwd>
+	line vty 0 4
+	aaa new-model
+	username <user> secret <password>
+
+ssh
+	
+	hostname <hostname>
+	ip domain-name <domain-name>
+	crypto key generate rsa
+	line vty 0
+	transport input ssh
+
+Поднимаем OSPF
+--------------
+
+	router ospf <process-id>
+	router-id <router-id>
+	network <managed_network> <negative mask> area <area_no>
+	network <routers_network> <negative mask> area <area_no>
+
+Пример настройки loopback интерфейса
+
+
+	interface loo 0
+	ip address 172.16.255.1 255.255.255.255
+
+
+

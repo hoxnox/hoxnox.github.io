@@ -1,0 +1,25 @@
+1. Создаем раздел, где будет жить gentoo (можно воспользоваться gparted).
+2. Выполняем пункты с 5 по 9 (если не шарите в ядре, пропустите его сборку,
+   вместо этого см. п.2*)
+   2*. Создаем папку /mnt/gentoo/boot, копируем в нее ядро
+   (vmlinuz-3.0.0-12-generic) и инициализацию (initrd.img-3.0.0-12-generic).
+3. Редактируем /etc/grub.d/40_custom, добавляем загрузку нашей Gentoo:
+#!/bin/sh
+exec tail -n +3 $0
+# This file provides an easy way to add custom menu entries.  Simply type the
+# menu entries you want to add after this comment.  Be careful not to change
+# the 'exec tail' line above.
+#echo "adding gentoo" >&2
+menuentry 'Gentoo' --class gnu-linux --class gnu --class os {
+	recordfail
+	insmod gzio
+	insmod part_msdos
+	insmod ext2
+	set root='(hd2,msdos4)'
+	search --no-floppy --fs-uuid --set=root dcede584-76be-42dc-a817-ec7d506cf4df
+	linux	/boot/vmlinuz-3.0.0-12-generic root=UUID=dcede584-76be-42dc-a817-ec7d506cf4df ro
+	initrd	/boot/initrd.img-3.0.0-12-generic
+}
+4. Обновляем конфигурацию grub, перезагружаемся.
+  sudo update-grub
+  sudo reboot

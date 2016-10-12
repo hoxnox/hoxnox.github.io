@@ -1,0 +1,17 @@
+Атаки на OSPF
+=============
+
+В докладе [Owning the Routing Table - New OSPF Attacks][KGN2013]
+представлены две новые атаки на OSPF и приведены ссылки на ранее
+опубликованные работы.
+
+Disguised LSA
+-------------
+
+Атака направлена на добавление необходимой злоумышленнику LSA записи
+любому маршрутизатору автономной системы. 
+
+Remote false Adjacency
+----------------------
+
+[KGN2013]: BlackHat conference. "Owning the Routing Table – New OSPF Attacks" by Alex Kirshon, Dima Gonikman, Dr. Gabi Nakibly

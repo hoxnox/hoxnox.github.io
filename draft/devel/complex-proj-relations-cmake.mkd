@@ -1,0 +1,191 @@
+title: Complex projects relations realization with cmake
+date: 2016-09-20
+slug: devel/complex-proj-relations-cmake.mkd
+tags: cmake, git, submodules, subprojects, dependencies
+category: devel
+
+Every complex project uses code from other projects. This principle
+helps to reuse code and simplify maintenance of large products. You
+can link through useful well known libraries or split out common parts in
+subprojects. This approach has a lot of advantages, but it's very hard
+to correctly organize dependency resolving.
+
+Suppose we have large
+project `news_aggregator` which is composition of two projects
+`news_crawler` and `web_interface`. `news_crawler` fills database,
+`web_interface` uses database to show it in HTTP page for users.
+These projects has common part
+`commons` - database access classes (encapsulates database structure) and
+some common utilities (logging, string manipulation routines and
+others).  So we have the following dependency graph:
+
+	digraph my_projects_dependencies
+	{
+		web_interface -> news_aggregator;
+		news_crawler ->  news_aggregator;
+		commons -> web_interface;
+		commons -> news_crawler;
+	}
+
+More over - there are foreign library dependencies: [crow](https://github.com/ipkn/crow),
+[boost](http://boost.org), [sqlite3](https://www.sqlite.org).
+
+	digraph foreign_dependencies
+	{
+		boost -> web_interface;
+		boost -> news_aggregator;
+		boost -> commons;
+		craw -> web_interface;
+		sqlite3 -> commons;
+	}
+
+	digraph all_dependencies
+	{
+		web_interface -> news_aggregator;
+		news_crawler ->  news_aggregator;
+		commons -> web_interface;
+		commons -> news_crawler;
+
+		boost -> craw
+		boost -> web_interface;
+		boost -> news_crawler;
+		boost -> commons;
+		craw -> web_interface;
+		sqlite3 -> commons;
+	}
+
+First developer works on `common` part and `web_interface`, second
+developer works on `news_crawlers`, but uses `common` part. Build server
+uses the whole `news_aggregator` project to build release distributive.
+
+
+	digraph dev1_view
+	{
+		news_crawler [style=dotted];
+		news_aggregator [style=dotted];
+
+		web_interface [color=red];
+		commons [color=red];
+
+		boost [color=red];
+		craw [color=red];
+		sqlite3 [color=red];
+
+		web_interface -> news_aggregator [style=dotted];
+		news_crawler ->  news_aggregator [style=dotted];
+		commons -> web_interface [color=red];
+		commons -> news_crawler [style=dotted];
+
+		boost -> craw [style=dotted];
+		boost -> web_interface [color=red];
+		boost -> news_crawler [style=dotted];
+		boost -> commons [color=red];
+		craw -> web_interface [color=red];
+		sqlite3 -> commons[color=red];
+	}
+
+	digraph dev2_view
+	{
+		news_crawler [color=red];
+		news_aggregator [style=dotted];
+
+		web_interface [style=dotted];
+		commons [color=red];
+
+		boost [color=red];
+		craw [style=dotted];
+		sqlite3 [style=dotted];
+
+		web_interface -> news_aggregator [style=dotted];
+		news_crawler ->  news_aggregator [style=dotted];
+		commons -> web_interface [style=dotted];
+		commons -> news_crawler [color=red];
+
+		boost -> craw [style=dotted];
+		boost -> web_interface [style=dotted];
+		boost -> news_crawler [color=red];
+		boost -> commons [style=dotted];
+		craw -> web_interface [style=dotted];
+		sqlite3 -> commons[style=dotted];
+	}
+
+	digraph build_view
+	{
+		news_crawler [color=red];
+		news_aggregator [color=red];
+
+		web_interface [color=red];
+		commons [style=dotted];
+
+		boost [style=dotted];
+		craw [style=dotted];
+		sqlite3 [style=dotted];
+
+		web_interface -> news_aggregator [color=red];
+		news_crawler ->  news_aggregator [color=red];
+		commons -> web_interface [style=dotted];
+		commons -> news_crawler [style=dotted];
+
+		boost -> craw [style=dotted];
+		boost -> web_interface [style=dotted];
+		boost -> news_crawler [style=dotted];
+		boost -> commons [style=dotted];
+		craw -> web_interface [style=dotted];
+		sqlite3 -> commons[style=dotted];
+	}
+
+First developer works at home and have access to the Internet and to
+local copy of corporate repository. Second developer works in the corporate
+network, has access to corporate repository, has needed dependencies (from his
+view) installed in his operation system and no Internet access. Build
+server has no Internet access and no dependencies installed in the
+operation system.
+
+Every actor in our example must have ability to download needed project
+(from his view perspective) and build it. Build system must reduce
+repeated builds. For example when second developer builds boost after
+commons, build system should reuse already built one.
+
+
+Possible issues:
+
+1. Prevent repeated builds. Let's look at the second developer. He need
+   boost and he will write in his CMakeLists instructions to find it in
+   the system, or build from source. He can't know that `commons` have
+   already done it. We need some external place where we would install
+   all dependencies. We will look into this external place before build.
+
+2. Suppose we decided to create debian package. We should install all
+   existing `dev-*` packages for dependencies and build from scratch
+   only these, for whom there is no such.
+
+3. We can't rely on the repository address to fetch `commons`. First
+   developer work at home with local copy of the corporate repository,
+   so he has different repository address for `commons`.
+
+4. `commons` depends from sqlite, but produces library, that hasn't
+   this dependency built in, so user of `commons` (second developer) have to link with
+   sqlite, but he mustn't do it by hand, because he knows nothing about
+   `commons` dependencies.
+
+5. Resolving uncontrolled dependency definition. In our example crow
+   uses boost, but craw is not our project - we can't control dependency
+   definition in this project.
+
+6. User of the library may want to manually control dependency
+   resolving.
+
+So for every dependency we should know
+1. How to find it in the given place (system or some prepared `staging` environment).
+2. How to obtain sources.
+3. How to build from sources.
+4. How to install in the staging directory so that (1) could find it.
+
+There must be determined algorithm of describing dependency for every
+developer. Build system should take this description, with help of (1)
+try to find dependency in the given place (in the system by default), if
+it wasn't found it must obtain sources with help of (2) (from
+local `vendor` directory or from Internet), build them with help of (3),
+install in the staging with help of (4) and go to step 1 (searching).
+
+

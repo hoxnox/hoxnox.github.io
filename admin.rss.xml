@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><atom:link href="http://blog.hoxnox.com/admin.rss.xml" rel="self"></atom:link><lastBuildDate>Fri, 13 Nov 2015 00:00:00 +0300</lastBuildDate><item><title>Stop using root to launch sniffers</title><link>http://blog.hoxnox.com/admin/capabilities.html</link><description>&lt;p&gt;I developed another sniffer and find myself executing testcase through
+<rss version="2.0"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><lastBuildDate>Sat, 07 May 2016 00:00:00 +0300</lastBuildDate><item><title>Switching server off on power lost.</title><link>http://blog.hoxnox.com/admin/linux-ups-fake-data.html</link><description>&lt;p&gt;electricity when UPS has no data interface.&lt;/p&gt;
+&lt;p&gt;My home server is connected to the UPS, but it is very simple - it
+hasn't data interface. So when the power had switched off my server can't
+figure it out unless UPS's battery is full. I have found a very simple
+solution, which helps safely shutdown my Linux box on power lost. All I
+need - plug the switch near the server directly into power socket. When the power is
+lost, switch turns off, so LAN card in the server, connected to the
+switch will be noticed about carrier lost. Every minute server checks
+link between switch and LAN card. In case it's lost, the server is
+turned down:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;* * * * *  grep -q 0 /sys/class/net/eth0/carrier &amp;amp;&amp;amp; /sbin/shutdown -h now
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;That's all. So simple, but very effective.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 07 May 2016 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2016-05-07:admin/linux-ups-fake-data.html</guid><category>ups</category><category>linux</category><category>link</category></item><item><title>Stop using root to launch sniffers</title><link>http://blog.hoxnox.com/admin/capabilities.html</link><description>&lt;p&gt;I developed another sniffer and find myself executing testcase through
 &lt;code&gt;sudo&lt;/code&gt;. While something bad not happen, I decided to look through
 &lt;code&gt;capabilities functionality&lt;/code&gt; in Linux kernel. Very interesting things
 written in the manual:&lt;/p&gt;
@@ -65,7 +79,7 @@ sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /bin/bash
 
 &lt;p&gt;But, wait... bash, java? Really? It can be even dangerous, than invoking
 &lt;code&gt;sudo&lt;/code&gt;. You will call '&lt;code&gt;sudo&lt;/code&gt;' only once, but capabilities will stay here
-until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 13 Nov 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-11-13:admin/capabilities.html</guid><category>capabilities</category><category>tcpdump</category><category>privileges</category></item><item><title>Ganglia, iostat and gentoo</title><link>http://blog.hoxnox.com/admin/ganglia.html</link><description>&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
+until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 13 Nov 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-11-13:admin/capabilities.html</guid><category>capabilities</category><category>tcpdump</category><category>privileges</category></item><item><title>Ganglia, iostat and gentoo</title><link>http://blog.hoxnox.com/admin/ganglia.html</link><description>&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
 tracking machines (sys-cluster/ganglia) and use web frontend
 (sys-clusted/ganglia-web) to see pretty graphics. After installing
 backend, you must configure /etc/ganglia/gmond.conf&lt;/p&gt;
@@ -106,20 +120,20 @@ trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
 
 
 &lt;p&gt;After starting gmond and gmetad, you can get statistic:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;☯ ~  gstat
-CLUSTER INFORMATION
-       Name: jassy
-      Hosts: 1
-Gexec Hosts: 0
- Dead Hosts: 0
-  Localtime: Thu Oct &lt;span class="m"&gt;22&lt;/span&gt; 22:46:08 2015
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
+&lt;span class="err"&gt;CLUSTER&lt;/span&gt; &lt;span class="err"&gt;INFORMATION&lt;/span&gt;
+       &lt;span class="err"&gt;Name:&lt;/span&gt; &lt;span class="err"&gt;jassy&lt;/span&gt;
+      &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;1&lt;/span&gt;
+&lt;span class="err"&gt;Gexec&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+ &lt;span class="err"&gt;Dead&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
+  &lt;span class="err"&gt;Localtime:&lt;/span&gt; &lt;span class="err"&gt;Thu&lt;/span&gt; &lt;span class="err"&gt;Oct&lt;/span&gt; &lt;span class="err"&gt;22&lt;/span&gt; &lt;span class="err"&gt;22:46:08&lt;/span&gt; &lt;span class="err"&gt;2015&lt;/span&gt;
 
-☭  ~  nc 192.168.30.3 8651
-&amp;lt;?xml &lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;encoding&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;standalone&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;?&amp;gt;
-&amp;lt;!DOCTYPE GANGLIA_XML &lt;span class="o"&gt;[&lt;/span&gt;
-   &amp;lt;!ELEMENT GANGLIA_XML &lt;span class="o"&gt;(&lt;/span&gt;GRID&lt;span class="p"&gt;|&lt;/span&gt;CLUSTER&lt;span class="p"&gt;|&lt;/span&gt;HOST&lt;span class="o"&gt;)&lt;/span&gt;*&amp;gt;
+&lt;span class="err"&gt;☭&lt;/span&gt;  &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;nc&lt;/span&gt; &lt;span class="err"&gt;192.168.30.3&lt;/span&gt; &lt;span class="err"&gt;8651&lt;/span&gt;
+&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="err"&gt;xml&lt;/span&gt; &lt;span class="err"&gt;version=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;encoding=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;standalone=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+&lt;span class="k"&gt;&amp;lt;!DOCTYPE&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="k"&gt;[&lt;/span&gt;
+   &lt;span class="k"&gt;&amp;lt;!ELEMENT&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;GRID&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;CLUSTER&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;HOST&lt;/span&gt;&lt;span class="o"&gt;)*&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
 
-    ...
+    &lt;span class="err"&gt;...&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -179,7 +193,7 @@ src_install()
 &lt;p&gt;There is one problem - ganglia-modules-linux provides better multicpu
 module. So I had to add
 &lt;code&gt;COLLISION_IGNORE="/usr/lib/ganglia/modmulticpu.so"&lt;/code&gt; into my portage
-configuration.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-22:admin/ganglia.html</guid><category>gentoo</category><category>ebuild</category><category>ganglia</category><category>iostat</category></item><item><title>SSH forwarding example</title><link>http://blog.hoxnox.com/admin/ssh-passthrough.html</link><description>&lt;p&gt;Suppose we have the following network topology: server with two
+configuration.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 22 Oct 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-10-22:admin/ganglia.html</guid><category>gentoo</category><category>ebuild</category><category>ganglia</category><category>iostat</category></item><item><title>SSH forwarding example</title><link>http://blog.hoxnox.com/admin/ssh-passthrough.html</link><description>&lt;p&gt;Suppose we have the following network topology: server with two
 interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two
 interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface
 128.4.1.1. Server acts as a gateway into 192.168.3.0/24 for passthrough-pc
@@ -195,7 +209,7 @@ passthrough-pc:&lt;/p&gt;
 &lt;p&gt;That's all. We done:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ssh -p 54321 -i &amp;lt;key&amp;gt; 128.4.1.82
 sshfs -p54321 -o IdentityDile=&amp;lt;key&amp;gt; 128.4.1.82:/path /mountpoint
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 16 Oct 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</guid><category>ssh</category><category>forwarding</category></item><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Fri, 16 Oct 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</guid><category>ssh</category><category>forwarding</category></item><item><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link>http://blog.hoxnox.com/admin/kycera-cups.html</link><description>&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
 in that case my wife's employer would agree to offset the costs. The
 second challenge - it must be integrated into home network. Every home
@@ -272,7 +286,7 @@ In the printer adding dialog use the following path:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 28 Mar 2015 00:00:00 +0300</pubDate><guid>tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</guid><category>cups</category><category>gentoo</category><category>printserver</category><category>kyocera</category><category>ppd</category></item><item><title>QEMU</title><link>http://blog.hoxnox.com/virtual/qemu.html</link><description>&lt;p&gt;Создать диск: &lt;/p&gt;
+&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 28 Mar 2015 00:00:00 +0300</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</guid><category>cups</category><category>gentoo</category><category>printserver</category><category>kyocera</category><category>ppd</category></item><item><title>QEMU</title><link>http://blog.hoxnox.com/virtual/qemu.html</link><description>&lt;p&gt;Создать диск: &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -319,7 +333,7 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
 драйверами, простой сетью (без низкоуровневых вещей типа icmp) и без
 графики (управление по ssh).&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-system-i386 -enable-kvm -cpu host -drive file=/media/data/vbox/Debian7.i386.virtio.survey.qcow2,index=0,media=disk,if=virtio -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::28955-:22 -nographic
-&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 04 Jan 2014 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2014-01-04:virtual/qemu.html</guid><category>qemu</category></item><item><title>Samba и домен</title><link>http://blog.hoxnox.com/internet/samba_domen.html</link><description>&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Sat, 04 Jan 2014 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2014-01-04:virtual/qemu.html</guid><category>qemu</category></item><item><title>Samba и домен</title><link>http://blog.hoxnox.com/internet/samba_domen.html</link><description>&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
 пользователя на контроллер домена. Для этого необходимо собрать её с ключём ads. Затем настроить
 керберос (/etc/krb5.conf)&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[libdefaults]
@@ -337,4 +351,4 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
 realm = example.com
 password server = server.example.com
 &lt;/pre&gt;&lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 19 Apr 2012 00:00:00 +0400</pubDate><guid>tag:blog.hoxnox.com,2012-04-19:internet/samba_domen.html</guid><category>samba</category><category>ads</category><category>DC</category></item></channel></rss>
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Thu, 19 Apr 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-04-19:internet/samba_domen.html</guid><category>samba</category><category>ads</category><category>DC</category></item></channel></rss>
