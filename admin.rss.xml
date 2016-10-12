@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><lastBuildDate>Sat, 07 May 2016 00:00:00 +0300</lastBuildDate><item><title>Switching server off on power lost.</title><link>http://blog.hoxnox.com/admin/linux-ups-fake-data.html</link><description>&lt;p&gt;electricity when UPS has no data interface.&lt;/p&gt;
-&lt;p&gt;My home server is connected to the UPS, but it is very simple - it
+<rss version="2.0"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><lastBuildDate>Sat, 07 May 2016 00:00:00 +0300</lastBuildDate><item><title>Switching server off on power lost.</title><link>http://blog.hoxnox.com/admin/linux-ups-fake-data.html</link><description>&lt;p&gt;My home server is connected to the UPS, but it is very simple - it
 hasn't data interface. So when the power had switched off my server can't
 figure it out unless UPS's battery is full. I have found a very simple
 solution, which helps safely shutdown my Linux box on power lost. All I
