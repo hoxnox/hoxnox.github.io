@@ -393,12 +393,13 @@ name                  :PRINTABLE:&#39;alice&#39;
 emailAddress          :IA5STRING:&#39;alice@example.com&#39;
 Certificate is to be certified until Oct 11 07:02:12 2017 GMT (365 days)
 Sign the certificate? [y/n]:y
+
+1 out of 1 certificate requests certified, commit? [y/n]y
+Write out database with 1 new entries
+Data Base Updated
 </pre></div>
 
 
-<p>1 out of 1 certificate requests certified, commit? [y/n]y
-Write out database with 1 new entries
-Data Base Updated</p>
 <p>Sometimes cilent need <code>p12</code> certificate with private key in it. You can
 get it with the following command:</p>
 <div class="highlight"><pre><span></span>openssl pkcs12 -export -in alice.crt -inkey alice.key -out alice.p12 -CAfile ca.crt -caname ACME
