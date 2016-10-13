@@ -246,7 +246,7 @@ Please enter the following &amp;#39;extra&amp;#39; attributes
 to be sent with your certificate request
 A challenge password []:
 An optional company name []:
-Using configuration from /etc/.proxymator-keys/openssl-1.0.0.cnf
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
 Check that the request matches the signature
 Signature ok
 The Subject&amp;#39;s Distinguished Name is as follows
@@ -276,7 +276,7 @@ get it with the following command:&lt;/p&gt;
 &lt;p&gt;We would call &lt;code&gt;revoke-full&lt;/code&gt; if we decided to restrict Alice access to
 the server. This command will update &lt;code&gt;crl.pem&lt;/code&gt; file, containing revoke
 certificates.&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@debian:/etc/.proxymator-keys# ./revoke-full unwanted
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;root@debian:/etc/.keys-infrastructure# ./revoke-full unwanted
 Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
 Revoking Certificate 02.
 Data Base Updated
@@ -322,7 +322,7 @@ allow it to identify cites. In Personal section she need to import her
 concatenate it:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;cp alice.crt alice.pem
 cat alice.key &amp;gt;&amp;gt; alice.pem
-curl --cacert ca.crt -E hoxnox.pem https://example.com
+curl --cacert ca.crt -E alice.pem https://example.com
 &lt;/pre&gt;&lt;/div&gt;
 
 

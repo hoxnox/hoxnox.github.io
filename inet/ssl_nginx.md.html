@@ -379,7 +379,7 @@ Please enter the following &#39;extra&#39; attributes
 to be sent with your certificate request
 A challenge password []:
 An optional company name []:
-Using configuration from /etc/.proxymator-keys/openssl-1.0.0.cnf
+Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
 Check that the request matches the signature
 Signature ok
 The Subject&#39;s Distinguished Name is as follows
@@ -409,7 +409,7 @@ get it with the following command:</p>
 <p>We would call <code>revoke-full</code> if we decided to restrict Alice access to
 the server. This command will update <code>crl.pem</code> file, containing revoke
 certificates.</p>
-<div class="highlight"><pre><span></span>root@debian:/etc/.proxymator-keys# ./revoke-full unwanted
+<div class="highlight"><pre><span></span>root@debian:/etc/.keys-infrastructure# ./revoke-full unwanted
 Using configuration from /etc/.keys-infrastructure/openssl-1.0.0.cnf
 Revoking Certificate 02.
 Data Base Updated
@@ -455,7 +455,7 @@ allow it to identify cites. In Personal section she need to import her
 concatenate it:</p>
 <div class="highlight"><pre><span></span>cp alice.crt alice.pem
 cat alice.key &gt;&gt; alice.pem
-curl --cacert ca.crt -E hoxnox.pem https://example.com
+curl --cacert ca.crt -E alice.pem https://example.com
 </pre></div>
 
 
