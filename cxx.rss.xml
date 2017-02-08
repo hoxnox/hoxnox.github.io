@@ -1,30 +1,3 @@
 <?xml version="1.0" encoding="utf-8"?>
-<rss version="2.0"><channel><title>NX</title><link>http://blog.hoxnox.com/</link><description></description><lastBuildDate>Mon, 04 Jun 2012 00:00:00 +0400</lastBuildDate><item><title>boost chrono</title><link>http://blog.hoxnox.com/cxx/boost.chrono.html</link><description>&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#include &amp;lt;boost/chrono.hpp&amp;gt;
-#include &amp;lt;cmath&amp;gt;
-
-int main()
-{
-        boost::chrono::system_clock::time_point start = boost::chrono::system_clock::now();
-
-        for ( long i = 0; i &amp;lt; 10000000; ++i )
-        std::sqrt( 123.456L ); // burn some time
-
-        boost::chrono::duration&amp;lt;double&amp;gt; sec = boost::chrono::system_clock::now() - start;
-        std::cout &amp;lt;&amp;lt; &amp;quot;took &amp;quot; &amp;lt;&amp;lt; sec.count() &amp;lt;&amp;lt; &amp;quot; seconds\n&amp;quot;;
-        return 0;
-}
-&lt;/pre&gt;&lt;/div&gt;
-&lt;div class="section" id="duration"&gt;
-&lt;h2&gt;Duration&lt;/h2&gt;
-&lt;p&gt;Класс duration в chrono представляет собой интервал времени. Параметризуя его получаем классы&lt;/p&gt;
-&lt;ul class="simple"&gt;
-&lt;li&gt;hours,&lt;/li&gt;
-&lt;li&gt;minutes&lt;/li&gt;
-&lt;li&gt;seconds&lt;/li&gt;
-&lt;li&gt;milliseconds&lt;/li&gt;
-&lt;li&gt;microseconds&lt;/li&gt;
-&lt;li&gt;nanoseconds&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/div&gt;
-</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 04 Jun 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-06-04:cxx/boost.chrono.html</guid><category>cxx</category><category>boost</category><category>chrono</category><category>time</category></item></channel></rss>
+<rss version="2.0"><channel><title>NX - cxx</title><link>http://blog.hoxnox.com/</link><description></description><lastBuildDate>Mon, 04 Jun 2012 00:00:00 +0400</lastBuildDate><item><title>boost chrono</title><link>http://blog.hoxnox.com/cxx/boost.chrono.html</link><description>&lt;p class="first last"&gt;Заметки по официальной документации &lt;a class="reference external" href="http://www.boost.org/doc/libs/1_49_0/doc/html/chrono/users_guide.html"&gt;boost.chrono&lt;/a&gt; от Vicente J. Botet Escriba.&lt;/p&gt;
+</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</dc:creator><pubDate>Mon, 04 Jun 2012 00:00:00 +0400</pubDate><guid isPermaLink="false">tag:blog.hoxnox.com,2012-06-04:/cxx/boost.chrono.html</guid><category>cxx</category><category>boost</category><category>chrono</category><category>time</category></item></channel></rss>

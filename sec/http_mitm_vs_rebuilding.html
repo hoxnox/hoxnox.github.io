@@ -14,7 +14,7 @@
 
         <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
         <meta name="keywords" content="http,xplico,mitm" />
-        <meta name="description" content="Считаем, что задача выделения основного пользовательского запроса, решена. Более подробно об этой задаче можно прочитать в первой статье на тему визуализации HTTP трафика. Как уже было упомянуто существует два подхода к разрешению &#34;второстепенных&#34; запросов. Первый - запустить в браузере &#34;основную&#34; страницу и, перехватывать все запросы в Интернет, отвечая на них данными ..." />
+        <meta name="description" content="Считаем, что задача выделения основного пользовательского запроса, решена. Более подробно об этой задаче можно прочитать в первой статье на тему визуализации HTTP трафика. Как уже было упомянуто существует два подхода к разрешению &#34;второстепенных&#34; запросов. Первый - запустить в браузере &#34;основную&#34; страницу и, перехватывать все запросы в Интернет, отвечая на них данными …" />
 
     <!-- Enable latex plugin -->
 
@@ -201,11 +201,16 @@ MITM же напротив реализуется необходимо тесн�
 
         <div id="hypercomments_widget"></div>
         <script type="text/javascript">
-        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        _hcwp = window._hcwp || [];
+        _hcwp.push({widget:"Stream", widget_id: 27931});
         (function() {
+        if("HC_LOAD_INIT" in window)return;
+        HC_LOAD_INIT = true;
+        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
         var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
-        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hcc, s.nextSibling);
         })();
         </script>
 
@@ -247,7 +252,7 @@ MITM же напротив реализуется необходимо тесн�
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2016 Merder hoxnox Kim <hoxnox@gmail.com>
+         <div class="col-xs-10">&copy; 2017 Merder hoxnox Kim <hoxnox@gmail.com>
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>

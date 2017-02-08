@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru"
+>
+<head>
+    <title>Fancy Linux terminal - NX</title>
+    <!-- Using the latest rendering mode for IE -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+
+
+<link rel="canonical" href="http://blog.hoxnox.com/gentoo/fancy_terminal.md.html">
+
+        <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
+        <meta name="keywords" content="fontconfig,ligatures,terminal,linux,fonts,look'n'feel" />
+        <meta name="description" content="I&#39;ve decided to revise my every day terminal life. There are not many things that can be changed, only fonts and colors. Nevertheless their importance is tremendous." />
+
+    <!-- Enable latex plugin -->
+
+
+
+
+    <!-- Bootstrap -->
+        <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/bootstrap.min.css" type="text/css"/>
+    <link href="http://blog.hoxnox.com/theme/css/font-awesome.min.css" rel="stylesheet">
+
+    <link href="http://blog.hoxnox.com/theme/css/pygments/native.css" rel="stylesheet">
+    <link rel="stylesheet" href="http://blog.hoxnox.com/theme/css/style.css" type="text/css"/>
+
+        <link href="http://blog.hoxnox.com/feeds/all.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX ATOM Feed"/>
+        <link href="http://blog.hoxnox.com/rss.xml" type="application/rss+xml" rel="alternate"
+              title="NX RSS Feed"/>
+
+
+        <link href="http://blog.hoxnox.com/feeds/gentoo.atom.xml" type="application/atom+xml" rel="alternate"
+              title="NX gentoo ATOM Feed"/>
+
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a href="http://blog.hoxnox.com/" class="navbar-brand">
+NX            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav">
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/admin.html">Admin</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/blog.html">Blog</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/chsheets.html">Chsheets</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/cxx.html">Cxx</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/devel.html">Devel</a>
+                        </li>
+                        <li class="active">
+                            <a href="http://blog.hoxnox.com/category/gentoo.html">Gentoo</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/inet.html">Inet</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/other.html">Other</a>
+                        </li>
+                        <li >
+                            <a href="http://blog.hoxnox.com/category/sec.html">Sec</a>
+                        </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="http://blog.hoxnox.com/archives.html"><i class="fa fa-th-list"></i><span class="icon-label">Archives</span></a></li>
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+</div> <!-- /.navbar -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-9">
+
+    <section id="content">
+        <article>
+            <header class="page-header">
+                <h1>
+                    <a href="http://blog.hoxnox.com/gentoo/fancy_terminal.md.html"
+                       rel="bookmark"
+                       title="Permalink to Fancy Linux terminal">
+                        Fancy Linux terminal
+                    </a>
+                </h1>
+            </header>
+            <div class="entry-content">
+                <div class="panel">
+                    <div class="panel-body">
+<footer class="post-info">
+    <span class="label label-default">Date</span>
+    <span class="published">
+        <i class="fa fa-calendar"></i><time datetime="2017-01-08T00:00:00+03:00"> Вс 08 Январь 2017</time>
+    </span>
+
+
+
+
+
+
+<span class="label label-default">Tags</span>
+	<a href="http://blog.hoxnox.com/tag/fontconfig.html">fontconfig</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/ligatures.html">ligatures</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/terminal.html">terminal</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/linux.html">linux</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/fonts.html">fonts</a>
+        /
+	<a href="http://blog.hoxnox.com/tag/looknfeel.html">look'n'feel</a>
+    
+</footer><!-- /.post-info -->                    </div>
+                </div>
+                <h2>Fonts</h2>
+<p>I've planned to give a chance to fonts with
+<a href="https://en.wikipedia.org/wiki/Typographic_ligature">ligatures</a> long
+time ago. I looked at <a href="https://github.com/tonsky/FiraCode">Fira Code</a>
+and <a href="http://www.fsd.it/shop/fonts/pragmatapro/">Pragmata Pro</a>. I
+downloaded <code>ttf</code> file and put it into <code>~/.fonts</code> directory. Now
+<code>fontconfig</code> see it:</p>
+<div class="highlight"><pre><span></span>   pblog <span class="o">[</span>master<span class="o">]</span> ⚡ fc-list <span class="p">|</span> grep FiraCode
+/home/hoxnox/.fonts/FiraCode-Regular.ttf: Fira Code:style<span class="o">=</span>Regular
+/home/hoxnox/.fonts/FiraCode-Retina.ttf: Fira Code,Fira Code Retina:style<span class="o">=</span>Retina,Regular
+/home/hoxnox/.fonts/FiraCode-Medium.ttf: Fira Code,Fira Code Medium:style<span class="o">=</span>Medium,Regular
+/home/hoxnox/.fonts/FiraCode-Light.ttf: Fira Code,Fira Code Light:style<span class="o">=</span>Light,Regular
+/home/hoxnox/.fonts/FiraCode-Bold.ttf: Fira Code:style<span class="o">=</span>Bold
+</pre></div>
+
+
+<p>It's essential to have the bold version of the font with the regular one.
+Terminal uses both of them. It will look ugly if the bold version is
+missing.</p>
+<p>The font name can be used in terminal settings.
+It can be found after colon in <code>fc-list</code> output.</p>
+<p>Unfortunately at that point I didn't see any ligatures. That's because
+<a href="https://github.com/tonsky/FiraCode#terminal-support">not many terminals actually support it</a>. I had to
+switch to <code>qterminal</code>. But it didn't help either! 
+<a href="https://github.com/fabrizioschiavi/pragmatapro/issues/9#issuecomment-119930951">fabrizioschiavi decided to delete ligatures from "Mono" version of the font.</a>
+By the coincidence <a href="https://github.com/lxde/qterminal/issues/49">qterminal doesn't allow to choose not monospace fonts</a>.
+It wouldn't not be a problem if the parameter in the configuration file was human
+readable. It's not:</p>
+<div class="highlight"><pre><span></span><span class="na">font</span><span class="o">=</span><span class="s">@Variant(\0\0\0@\0\0\0\x18\0P\0r\0\x61\0g\0m\0\x61\0t\0\x61\0 \0P\0r\0o@$\0\0\0\0\0\0\xff\xff\xff\xff\x2\x1\0\x32\x10)</span>
+</pre></div>
+
+
+<p>I had to path the sources (see below), choose the appropriate font in
+the patched version and use the font line from the configuration file (see
+above).</p>
+<div class="highlight"><pre><span></span><span class="gh">diff --git a/src/fontdialog.cpp b/src/fontdialog.cpp</span>
+<span class="gh">index 30fc914..f6c3e5a 100644</span>
+<span class="gd">--- a/src/fontdialog.cpp</span>
+<span class="gi">+++ b/src/fontdialog.cpp</span>
+<span class="gu">@@ -23,8 +23,7 @@ FontDialog::FontDialog(const QFont &amp;f)</span>
+ {
+     setupUi(this);
+
+<span class="gd">-    fontComboBox-&gt;setFontFilters(QFontComboBox::MonospacedFonts</span>
+<span class="gd">-                                 | QFontComboBox::NonScalableFonts</span>
+<span class="gi">+    fontComboBox-&gt;setFontFilters(QFontComboBox::NonScalableFonts</span>
+                                  | QFontComboBox::ScalableFonts);
+
+     fontComboBox-&gt;setCurrentFont(f);
+<span class="gh">diff --git a/src/propertiesdialog.cpp b/src/propertiesdialog.cpp</span>
+<span class="gh">index 82ad5b1..655bf86 100644</span>
+<span class="gd">--- a/src/propertiesdialog.cpp</span>
+<span class="gi">+++ b/src/propertiesdialog.cpp</span>
+<span class="gu">@@ -219,8 +219,7 @@ void PropertiesDialog::changeFontButton_clicked()</span>
+     if (!dia.exec())
+         return;
+     QFont f = dia.getFont();
+<span class="gd">-    if (QFontInfo(f).fixedPitch())</span>
+<span class="gd">-        setFontSample(f);</span>
+<span class="gi">+    setFontSample(f);</span>
+ }
+
+ void PropertiesDialog::chooseBackgroundImageButton_clicked()
+</pre></div>
+
+
+<h2>Colors</h2>
+<p>After all the font was set, ligatures worked, but the colors were ugly.
+I've found good <a href="https://terminal.sexy">online visual redactor</a>. It
+helped to create a very nice color scheme. Good start point was theme
+from <a href="https://github.com/lysyi3m/osx-terminal-themes">lusy3m's themes repository</a>. You can
+import it into the redactor as <code>Terminal.app</code>.
+After all you must export file in <code>konsole</code> format and save into
+<code>~/.config/qterminal.org/color-schemes</code> with <code>.colorsheme</code> extension.</p>
+<p>Now I'm satisfied for some time. =)</p>
+<p><img alt="fancy linux screenshot" src="http://hsto.org/files/bd3/ffd/2ae/bd3ffd2aed4a40ac8d9c71e14b50e905.png"/></p>
+<p>PS: The article about tuning FontConfig can be found at <a href="https://wiki.gentoo.org/wiki/Fontconfig">gentoo wiki</a>.</p>
+            </div>
+            <!-- /.entry-content -->
+    <hr/>
+    <section class="comments" id="comments">
+        <h2>Comments</h2>
+
+        <div id="hypercomments_widget"></div>
+        <script type="text/javascript">
+        _hcwp = window._hcwp || [];
+        _hcwp.push({widget:"Stream", widget_id: 27931});
+        (function() {
+        if("HC_LOAD_INIT" in window)return;
+        HC_LOAD_INIT = true;
+        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
+        var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hcc, s.nextSibling);
+        })();
+        </script>
+
+    </section>
+        </article>
+    </section>
+
+        </div>
+        <div class="col-sm-3 well well-sm" id="sidebar">
+
+<aside>
+    <section>
+        <ul class="list-group list-group-flush">
+                <li class="list-group-item"><h4><i class="fa fa-home fa-lg"></i><span class="icon-label">Social</span></h4>
+                  <ul class="list-group" id="social">
+                    <li class="list-group-item"><a href="http://www.facebook.com/hoxnox"><i class="fa fa-facebook-square fa-lg"></i> facebook</a></li>
+                    <li class="list-group-item"><a href="http://twitter.com/hoxnox"><i class="fa fa-twitter-square fa-lg"></i> twitter</a></li>
+                    <li class="list-group-item"><a href="http://github.com/hoxnox"><i class="fa fa-github-square fa-lg"></i> github</a></li>
+                    <li class="list-group-item"><a href="http://habrahabr.ru/users/hoxnox/"><i class="fa fa-habrahabr-square fa-lg"></i> habrahabr</a></li>
+                  </ul>
+                </li>
+
+
+
+                <li class="list-group-item"><a href="http://blog.hoxnox.com/"><h4><i class="fa fa-tags fa-lg"></i><span class="icon-label">Tags</span></h4></a>
+                    <ul class="list-group list-inline tagcloud" id="tags">
+                    </ul>
+                </li>    
+
+
+
+        </ul>
+    </section>
+
+</aside>        </div>
+    </div>
+</div>
+<footer>
+   <div class="container">
+      <hr>
+      <div class="row">
+         <div class="col-xs-10">&copy; 2017 Merder hoxnox Kim <hoxnox@gmail.com>
+            &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
+            <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
+            <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>
+         <div class="col-xs-2"><p class="pull-right"><i class="fa fa-arrow-up"></i> <a href="#">Back to top</a></p></div>
+      </div>
+   </div>
+</footer>
+<script src="http://blog.hoxnox.com/theme/js/jquery.min.js"></script>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="http://blog.hoxnox.com/theme/js/bootstrap.min.js"></script>
+
+<!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) -->
+<script src="http://blog.hoxnox.com/theme/js/respond.min.js"></script>
+
+    <!-- Google Analytics -->
+    <script type="text/javascript">
+
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-29479486-1']);
+        _gaq.push(['_trackPageview']);
+
+        (function () {
+            var ga = document.createElement('script');
+            ga.type = 'text/javascript';
+            ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ga, s);
+        })();
+    </script>
+    <!-- End Google Analytics Code -->
+</body>
+</html>

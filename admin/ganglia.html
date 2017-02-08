@@ -14,7 +14,7 @@
 
         <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
         <meta name="keywords" content="gentoo,ebuild,ganglia,iostat" />
-        <meta name="description" content="Ganglia is a very good monitoring tool. You can install backand to tracking machines (sys-cluster/ganglia) and use web frontend (sys-clusted/ganglia-web) to see pretty graphics. After installing backend, you must configure /etc/ganglia/gmond.conf ... cluster { name = &#34;jassy&#34; owner = &#34;hoxnox&#34; latlong = &#34;unspecified&#34; url = &#34;unspecified&#34; } ... host { location = &#34;jassy&#34; } ... udp_send_channel { host ..." />
+        <meta name="description" content="Ganglia is a very good monitoring tool. You can install backand to tracking machines (sys-cluster/ganglia) and use web frontend (sys-clusted/ganglia-web) to see pretty graphics. After installing backend, you must configure /etc/ganglia/gmond.conf ... cluster { name = &#34;jassy&#34; owner = &#34;hoxnox&#34; latlong = &#34;unspecified&#34; url = &#34;unspecified&#34; } ... host { location = &#34;jassy&#34; } ... udp_send_channel { host …" />
 
     <!-- Enable latex plugin -->
 
@@ -171,20 +171,20 @@ trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
 
 
 <p>After starting gmond and gmetad, you can get statistic:</p>
-<div class="highlight"><pre><span></span><span class="err">☯</span> <span class="err">~</span>  <span class="err">gstat</span>
-<span class="err">CLUSTER</span> <span class="err">INFORMATION</span>
-       <span class="err">Name:</span> <span class="err">jassy</span>
-      <span class="err">Hosts:</span> <span class="err">1</span>
-<span class="err">Gexec</span> <span class="err">Hosts:</span> <span class="err">0</span>
- <span class="err">Dead</span> <span class="err">Hosts:</span> <span class="err">0</span>
-  <span class="err">Localtime:</span> <span class="err">Thu</span> <span class="err">Oct</span> <span class="err">22</span> <span class="err">22:46:08</span> <span class="err">2015</span>
+<div class="highlight"><pre><span></span>☯ ~  gstat
+CLUSTER INFORMATION
+       Name: jassy
+      Hosts: 1
+Gexec Hosts: 0
+ Dead Hosts: 0
+  Localtime: Thu Oct <span class="m">22</span> 22:46:08 2015
 
-<span class="err">☭</span>  <span class="err">~</span>  <span class="err">nc</span> <span class="err">192.168.30.3</span> <span class="err">8651</span>
-<span class="err">&lt;</span><span class="o">?</span><span class="err">xml</span> <span class="err">version=</span><span class="s2">&quot;1.0&quot;</span> <span class="err">encoding=</span><span class="s2">&quot;ISO-8859-1&quot;</span> <span class="err">standalone=</span><span class="s2">&quot;yes&quot;</span><span class="o">?</span><span class="k">&gt;</span>
-<span class="k">&lt;!DOCTYPE</span> <span class="nt">GANGLIA_XML</span> <span class="k">[</span>
-   <span class="k">&lt;!ELEMENT</span> <span class="nt">GANGLIA_XML</span> <span class="o">(</span><span class="nt">GRID</span><span class="o">|</span><span class="nt">CLUSTER</span><span class="o">|</span><span class="nt">HOST</span><span class="o">)*</span><span class="k">&gt;</span>
+☭  ~  nc 192.168.30.3 8651
+&lt;?xml <span class="nv">version</span><span class="o">=</span><span class="s2">&quot;1.0&quot;</span> <span class="nv">encoding</span><span class="o">=</span><span class="s2">&quot;ISO-8859-1&quot;</span> <span class="nv">standalone</span><span class="o">=</span><span class="s2">&quot;yes&quot;</span>?&gt;
+&lt;!DOCTYPE GANGLIA_XML <span class="o">[</span>
+   &lt;!ELEMENT GANGLIA_XML <span class="o">(</span>GRID<span class="p">|</span>CLUSTER<span class="p">|</span>HOST<span class="o">)</span>*&gt;
 
-    <span class="err">...</span>
+    ...
 </pre></div>
 
 
@@ -253,11 +253,16 @@ configuration.</p>
 
         <div id="hypercomments_widget"></div>
         <script type="text/javascript">
-        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        _hcwp = window._hcwp || [];
+        _hcwp.push({widget:"Stream", widget_id: 27931});
         (function() {
+        if("HC_LOAD_INIT" in window)return;
+        HC_LOAD_INIT = true;
+        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
         var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
-        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hcc, s.nextSibling);
         })();
         </script>
 
@@ -299,7 +304,7 @@ configuration.</p>
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2016 Merder hoxnox Kim <hoxnox@gmail.com>
+         <div class="col-xs-10">&copy; 2017 Merder hoxnox Kim <hoxnox@gmail.com>
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>

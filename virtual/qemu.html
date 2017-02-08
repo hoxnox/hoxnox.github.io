@@ -14,7 +14,7 @@
 
         <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
         <meta name="keywords" content="qemu" />
-        <meta name="description" content="Создать диск: qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G Для KVM эмуляции надо собирать ядро и qemu с поддержкой KVM. ⚒ ~ cat /etc/portage/env/qemu.conf QEMU_SOFTMMU_TARGETS=&#34;i386 x86_64&#34; QEMU_USER_TARGETS=&#34;i386 x86_64&#34; ⚒ ~ grep &#39;KVM&#39; /usr/src/linux/.config CONFIG_HAVE_KVM=y CONFIG_HAVE_KVM_IRQCHIP=y CONFIG_HAVE_KVM_IRQ_ROUTING=y CONFIG_HAVE_KVM_EVENTFD=y ..." />
+        <meta name="description" content="Создать диск: qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G Для KVM эмуляции надо собирать ядро и qemu с поддержкой KVM. ⚒ ~ cat /etc/portage/env/qemu.conf QEMU_SOFTMMU_TARGETS=&#34;i386 x86_64&#34; QEMU_USER_TARGETS=&#34;i386 x86_64&#34; ⚒ ~ grep &#39;KVM&#39; /usr/src/linux/.config CONFIG_HAVE_KVM=y CONFIG_HAVE_KVM_IRQCHIP=y CONFIG_HAVE_KVM_IRQ_ROUTING=y CONFIG_HAVE_KVM_EVENTFD=y …" />
 
     <!-- Enable latex plugin -->
 
@@ -180,11 +180,16 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
 
         <div id="hypercomments_widget"></div>
         <script type="text/javascript">
-        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        _hcwp = window._hcwp || [];
+        _hcwp.push({widget:"Stream", widget_id: 27931});
         (function() {
+        if("HC_LOAD_INIT" in window)return;
+        HC_LOAD_INIT = true;
+        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
         var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
-        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hcc, s.nextSibling);
         })();
         </script>
 
@@ -226,7 +231,7 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2016 Merder hoxnox Kim <hoxnox@gmail.com>
+         <div class="col-xs-10">&copy; 2017 Merder hoxnox Kim <hoxnox@gmail.com>
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>

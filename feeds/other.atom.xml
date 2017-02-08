@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/other.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2016-04-10T00:00:00+03:00</updated><entry><title>Using gnu make to parallel jobs</title><link href="http://blog.hoxnox.com/other/make-parallel.html" rel="alternate"></link><published>2016-04-10T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-04-10:other/make-parallel.html</id><summary type="html">&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX - other</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/other.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2016-04-10T00:00:00+03:00</updated><entry><title>Using gnu make to parallel jobs</title><link href="http://blog.hoxnox.com/other/make-parallel.html" rel="alternate"></link><published>2016-04-10T00:00:00+03:00</published><updated>2016-04-10T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-04-10:/other/make-parallel.html</id><summary type="html">&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
+in source building. I'll show you interesting example. Suppose we have 5
+servers: A, B, C, D, and E. There are some &lt;code&gt;*.tar.gz&lt;/code&gt; files in the home
+directory on each server. Every file has the …&lt;/p&gt;</summary><content type="html">&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
 in source building. I'll show you interesting example. Suppose we have 5
 servers: A, B, C, D, and E. There are some &lt;code&gt;*.tar.gz&lt;/code&gt; files in the home
 directory on each server. Every file has the following name syntax
@@ -40,7 +43,15 @@ will skip all fully downloaded files and start with these, not present
 at local machine, including &lt;code&gt;.partial&lt;/code&gt; (rsync smart enough to continue
 with them).&lt;/p&gt;
 &lt;p&gt;Instruction in the third line tells &lt;code&gt;make&lt;/code&gt; not to delete intermediate
-results.&lt;/p&gt;</summary><category term="make"></category><category term="rsync"></category><category term="parallel download"></category></entry><entry><title>YaC 2014</title><link href="http://blog.hoxnox.com/devel/YaC.html" rel="alternate"></link><published>2014-10-31T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-31:devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
+results.&lt;/p&gt;</content><category term="make"></category><category term="rsync"></category><category term="parallel download"></category></entry><entry><title>YaC 2014</title><link href="http://blog.hoxnox.com/devel/YaC.html" rel="alternate"></link><published>2014-10-31T00:00:00+03:00</published><updated>2014-10-31T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-31:/devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
+компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
+Security". Прослушал следующие доклады:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Презентация технологии распознавания речи от компании Яндекс. На
+   докладе представлен SpeechKit - публичный программный интерфейс
+   распознавания речи и сервис Cloud. Технология позволяет с 95%
+   точностью распознавать русскую речь для географических …&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
 компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
 Security". Прослушал следующие доклады:&lt;/p&gt;
 &lt;ol&gt;
@@ -100,7 +111,8 @@ Security". Прослушал следующие доклады:&lt;/p&gt;
    filesystem, shared IPC, host networking, share device nodes),
    обнаружение служб (srvice discovery).&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;</summary><category term="YaC"></category></entry><entry><title>К-свёртка</title><link href="http://blog.hoxnox.com/other/kconvol.html" rel="alternate"></link><published>2012-06-07T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-07:other/kconvol.html</id><summary type="html">&lt;div class="section" id="id2"&gt;
+&lt;/ol&gt;</content><category term="YaC"></category></entry><entry><title>К-свёртка</title><link href="http://blog.hoxnox.com/other/kconvol.html" rel="alternate"></link><published>2012-06-07T00:00:00+04:00</published><updated>2012-06-07T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-07:/other/kconvol.html</id><summary type="html">&lt;p class="first last"&gt;Описание контейнера к-свёртки&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Понятие к-свёртки&lt;/h2&gt;
 &lt;p&gt;Рассмотрим множества не повторяющихся
 натуральных чисел. Причем чаще всего
@@ -296,7 +308,8 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 соответствующим блоком типа A даст ответ принадлежит ли данный системный номер свёртке.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="algorithm"></category><category term="container"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://blog.hoxnox.com/other/parallel_notes.html" rel="alternate"></link><published>2012-03-28T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-28:other/parallel_notes.html</id><summary type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
+</content><category term="algorithm"></category><category term="container"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://blog.hoxnox.com/other/parallel_notes.html" rel="alternate"></link><published>2012-03-28T00:00:00+04:00</published><updated>2012-03-28T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-28:/other/parallel_notes.html</id><summary type="html">&lt;p class="first last"&gt;Записки по параллельному программированию.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
 &lt;table border="1" class="docutils"&gt;
 &lt;colgroup&gt;
 &lt;col width="36%" /&gt;
@@ -622,4 +635,4 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry></feed>
+</content><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry></feed>

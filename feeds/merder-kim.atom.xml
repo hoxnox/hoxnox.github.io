@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/merder-kim.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2012-09-20T00:00:00+04:00</updated><entry><title>Об организации проектов C++</title><link href="http://blog.hoxnox.com/devel/repo_org.html" rel="alternate"></link><published>2012-09-20T00:00:00+04:00</published><author><name>Merder Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-09-20:devel/repo_org.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX - Merder Kim</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/merder-kim.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2012-09-20T00:00:00+04:00</updated><entry><title>Об организации проектов C++</title><link href="http://blog.hoxnox.com/devel/repo_org.html" rel="alternate"></link><published>2012-09-20T00:00:00+04:00</published><updated>2012-09-20T00:00:00+04:00</updated><author><name>Merder Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-09-20:/devel/repo_org.html</id><summary type="html">&lt;p class="first last"&gt;Организация git-репозиотрия. Именование и расположение директорий, работа с подпроектами.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Структура репоризитория и проекта&lt;/h2&gt;
 &lt;p&gt;Все C/C++ проекты храняться в едином репозитории, работа которого опирается на систему контроля
 версий git. Каждый проект представляет собой git-репозиторий (как правило bare).&lt;/p&gt;
@@ -176,4 +177,4 @@ git read-tree --prefix= -u string@rmt
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="git"></category><category term="management"></category></entry></feed>
+</content><category term="git"></category><category term="management"></category></entry></feed>

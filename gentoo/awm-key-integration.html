@@ -14,7 +14,7 @@
 
         <meta name="author" content="Merder hoxnox Kim <hoxnox@gmail.com>" />
         <meta name="keywords" content="gentoo,vim,tmux,key bindings" />
-        <meta name="description" content="I&#39;m using awesome window manager on my gentoo desktop. My configuration evaluate from time to time, like vim&#39;s does for example. These instruments highly optimized for my habits, it is right in my fingers. In this post I&#39;ll show how to extend awesome wm key bindings behind ..." />
+        <meta name="description" content="I&#39;m using awesome window manager on my gentoo desktop. My configuration evaluate from time to time, like vim&#39;s does for example. These instruments highly optimized for my habits, it is right in my fingers. In this post I&#39;ll show how to extend awesome wm key bindings behind it boundaries to …" />
 
     <!-- Enable latex plugin -->
 
@@ -140,10 +140,10 @@ of <code>root.fake_input</code>.</p>
 <p>Tmux multiplexer has it's own panes and you can switch between them with
 combination of prefix and arrow keys. Almost the same we have in awesome
 wm. The key of head aches is "almost". It's very hard to switch between
-different hot keys. The problem can be solved in awesome's
+different hot keys. The problem can be solved the problem in awesome
 configuration file. All needed is to check client while switching to
 next window. If the client is tmux - don't switch, send "prefix + arrow"
-instead. The solution is very easy and effective. The code is below</p>
+instead. The solutions is very easy and effective. The code above</p>
 <p>.tmux.conf</p>
 <div class="highlight"><pre><span></span>set-option -g prefix m-a
 set-option -g repeat-time 0
@@ -155,71 +155,71 @@ bind-key up select-pane -t:.-
 
 
 <p>rc.lua:</p>
-<div class="highlight"><pre><span></span>...
+<div class="highlight"><pre><span></span><span class="o">...</span>
 
-function is_tmux(c)
-    if string.find(string.lower(c.name), &quot;tmux&quot;) ~= nil
-    or string.find(string.lower(c.class), &quot;tmux&quot;) ~= nil
-    then
-         return true
-    end
-    return false
-end
+<span class="k">function</span> <span class="nf">is_tmux</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">string.find</span><span class="p">(</span><span class="nb">string.lower</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;</span><span class="s">tmux&quot;</span><span class="p">)</span> <span class="o">~=</span> <span class="kc">nil</span>
+    <span class="ow">or</span> <span class="nb">string.find</span><span class="p">(</span><span class="nb">string.lower</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">class</span><span class="p">),</span> <span class="s2">&quot;</span><span class="s">tmux&quot;</span><span class="p">)</span> <span class="o">~=</span> <span class="kc">nil</span>
+    <span class="k">then</span>
+         <span class="k">return</span> <span class="kc">true</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="kc">false</span>
+<span class="k">end</span>
 
-function send_tmux_command(cmd)
-    keygrabber.stop()
-    root.fake_input(&quot;key_release&quot;, 64)
-    root.fake_input(&quot;key_press&quot;, 64)
-    root.fake_input(&quot;key_press&quot;, 38)
-    root.fake_input(&quot;key_release&quot;, 38)
-    root.fake_input(&quot;key_release&quot;, 64)
-    waiter = timer({timeout = 0.01})
-    if cmd == &#39;up&#39; then
-        waiter:connect_signal(&#39;timeout&#39;, function()
-            waiter:stop()
-            root.fake_input(&quot;key_press&quot;, 116)
-            root.fake_input(&quot;key_release&quot;, 116)
-            root.fake_input(&quot;key_press&quot;, 64)
-        end)
-    end
-    if cmd == &#39;down&#39; then
-        waiter:connect_signal(&#39;timeout&#39;, function()
-            waiter:stop()
-            root.fake_input(&quot;key_press&quot;, 111)
-            root.fake_input(&quot;key_release&quot;, 111)
-            root.fake_input(&quot;key_press&quot;, 64)
-        end)
-    end
-    waiter:start()
-end
+<span class="k">function</span> <span class="nf">send_tmux_command</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="n">keygrabber</span><span class="p">.</span><span class="n">stop</span><span class="p">()</span>
+    <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_release&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_release&quot;</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_release&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="n">waiter</span> <span class="o">=</span> <span class="n">timer</span><span class="p">({</span><span class="n">timeout</span> <span class="o">=</span> <span class="mf">0.01</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="s">up&#39;</span> <span class="k">then</span>
+        <span class="n">waiter</span><span class="p">:</span><span class="n">connect_signal</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">timeout&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
+            <span class="n">waiter</span><span class="p">:</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">116</span><span class="p">)</span>
+            <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_release&quot;</span><span class="p">,</span> <span class="mi">116</span><span class="p">)</span>
+            <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="k">end</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="k">if</span> <span class="n">cmd</span> <span class="o">==</span> <span class="s1">&#39;</span><span class="s">down&#39;</span> <span class="k">then</span>
+        <span class="n">waiter</span><span class="p">:</span><span class="n">connect_signal</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">timeout&#39;</span><span class="p">,</span> <span class="k">function</span><span class="p">()</span>
+            <span class="n">waiter</span><span class="p">:</span><span class="n">stop</span><span class="p">()</span>
+            <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">111</span><span class="p">)</span>
+            <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_release&quot;</span><span class="p">,</span> <span class="mi">111</span><span class="p">)</span>
+            <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="k">end</span><span class="p">)</span>
+    <span class="k">end</span>
+    <span class="n">waiter</span><span class="p">:</span><span class="n">start</span><span class="p">()</span>
+<span class="k">end</span>
 
-globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, &quot;j&quot;,
-        function()
-            if is_tmux(client.focus) then
-                send_tmux_command(&#39;down&#39;)
-            else
-                awful.client.focus.byidx(1)
-                if client.focus then client.focus:raise() end
-            end
-        end),
-    awful.key({ modkey,           }, &quot;k&quot;,
-        function()
-            if is_tmux(client.focus) then
-                send_tmux_command(&#39;up&#39;)
-            else
-                awful.client.focus.byidx(-1)
-                if client.focus then client.focus:raise() end
-            end
-        end))
+<span class="n">globalkeys</span> <span class="o">=</span> <span class="n">awful</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">join</span><span class="p">(</span>
+    <span class="n">awful</span><span class="p">.</span><span class="n">key</span><span class="p">({</span> <span class="n">modkey</span><span class="p">,</span>           <span class="p">},</span> <span class="s2">&quot;</span><span class="s">j&quot;</span><span class="p">,</span>
+        <span class="k">function</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">is_tmux</span><span class="p">(</span><span class="n">client</span><span class="p">.</span><span class="n">focus</span><span class="p">)</span> <span class="k">then</span>
+                <span class="n">send_tmux_command</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">down&#39;</span><span class="p">)</span>
+            <span class="k">else</span>
+                <span class="n">awful</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">focus</span><span class="p">.</span><span class="n">byidx</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">client</span><span class="p">.</span><span class="n">focus</span> <span class="k">then</span> <span class="n">client</span><span class="p">.</span><span class="n">focus</span><span class="p">:</span><span class="n">raise</span><span class="p">()</span> <span class="k">end</span>
+            <span class="k">end</span>
+        <span class="k">end</span><span class="p">),</span>
+    <span class="n">awful</span><span class="p">.</span><span class="n">key</span><span class="p">({</span> <span class="n">modkey</span><span class="p">,</span>           <span class="p">},</span> <span class="s2">&quot;</span><span class="s">k&quot;</span><span class="p">,</span>
+        <span class="k">function</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">is_tmux</span><span class="p">(</span><span class="n">client</span><span class="p">.</span><span class="n">focus</span><span class="p">)</span> <span class="k">then</span>
+                <span class="n">send_tmux_command</span><span class="p">(</span><span class="s1">&#39;</span><span class="s">up&#39;</span><span class="p">)</span>
+            <span class="k">else</span>
+                <span class="n">awful</span><span class="p">.</span><span class="n">client</span><span class="p">.</span><span class="n">focus</span><span class="p">.</span><span class="n">byidx</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">client</span><span class="p">.</span><span class="n">focus</span> <span class="k">then</span> <span class="n">client</span><span class="p">.</span><span class="n">focus</span><span class="p">:</span><span class="n">raise</span><span class="p">()</span> <span class="k">end</span>
+            <span class="k">end</span>
+        <span class="k">end</span><span class="p">))</span>
 
-...
+<span class="o">...</span>
 </pre></div>
 
 
 <h2>proposal #2</h2>
 <p>There is common recommendation to use vim's native layout switching
-(default to <code>&lt;C+^&gt;</code>) when you have more than one keyboard layout to use.
+(default to <code>&lt;C+^&gt;</code>), when you have more than one keyboard layout to use.
 It solves problems with hot keys in vim. Other applications uses
 system-wide switcher with it's own key bindings. Similar to the proposal #1
 we can tune awesome wm configuration:</p>
@@ -230,29 +230,29 @@ cnoremap &lt;M-=&gt; &lt;C-^&gt;
 
 
 <p>rc.lua</p>
-<div class="highlight"><pre><span></span>function is_vim(c)
-    if string.find(string.lower(c.name), &quot;vim&quot;) ~= nil
-    or string.find(string.lower(c.class), &quot;vim&quot;) ~= nil
-    then
-        return true;
-    end
-    return false
-end
+<div class="highlight"><pre><span></span><span class="k">function</span> <span class="nf">is_vim</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">string.find</span><span class="p">(</span><span class="nb">string.lower</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">name</span><span class="p">),</span> <span class="s2">&quot;</span><span class="s">vim&quot;</span><span class="p">)</span> <span class="o">~=</span> <span class="kc">nil</span>
+    <span class="ow">or</span> <span class="nb">string.find</span><span class="p">(</span><span class="nb">string.lower</span><span class="p">(</span><span class="n">c</span><span class="p">.</span><span class="n">class</span><span class="p">),</span> <span class="s2">&quot;</span><span class="s">vim&quot;</span><span class="p">)</span> <span class="o">~=</span> <span class="kc">nil</span>
+    <span class="k">then</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="k">end</span>
+    <span class="k">return</span> <span class="kc">false</span>
+<span class="k">end</span>
 
-function switch_key_layout_vimspecial()
-    if is_vim(client.focus) then
-        keygrabber.stop()
-        root.fake_input(&quot;key_press&quot;, 64)
-        root.fake_input(&quot;key_press&quot;, 21)
-        root.fake_input(&quot;key_release&quot;, 21)
-        root.fake_input(&quot;key_release&quot;, 64)
-    else
-        mylswitcher.switch()
-    end
-end
+<span class="k">function</span> <span class="nf">switch_key_layout_vimspecial</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">is_vim</span><span class="p">(</span><span class="n">client</span><span class="p">.</span><span class="n">focus</span><span class="p">)</span> <span class="k">then</span>
+        <span class="n">keygrabber</span><span class="p">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+        <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_press&quot;</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+        <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_release&quot;</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+        <span class="n">root</span><span class="p">.</span><span class="n">fake_input</span><span class="p">(</span><span class="s2">&quot;</span><span class="s">key_release&quot;</span><span class="p">,</span> <span class="mi">64</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="n">mylswitcher</span><span class="p">.</span><span class="n">switch</span><span class="p">()</span>
+    <span class="k">end</span>
+<span class="k">end</span>
 
-globalkeys = awful.util.table.join(globalkeys,
-    awful.key({modkey, }, &quot;space&quot;, function () switch_key_layout_vimspecial() end))
+<span class="n">globalkeys</span> <span class="o">=</span> <span class="n">awful</span><span class="p">.</span><span class="n">util</span><span class="p">.</span><span class="n">table</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">globalkeys</span><span class="p">,</span>
+    <span class="n">awful</span><span class="p">.</span><span class="n">key</span><span class="p">({</span><span class="n">modkey</span><span class="p">,</span> <span class="p">},</span> <span class="s2">&quot;</span><span class="s">space&quot;</span><span class="p">,</span> <span class="k">function</span> <span class="p">()</span> <span class="n">switch_key_layout_vimspecial</span><span class="p">()</span> <span class="k">end</span><span class="p">))</span>
 </pre></div>
             </div>
             <!-- /.entry-content -->
@@ -262,11 +262,16 @@ globalkeys = awful.util.table.join(globalkeys,
 
         <div id="hypercomments_widget"></div>
         <script type="text/javascript">
-        var _hcp = _hcp || {};_hcp.widget_id = 2153;_hcp.widget = "Stream";
+        _hcwp = window._hcwp || [];
+        _hcwp.push({widget:"Stream", widget_id: 27931});
         (function() {
+        if("HC_LOAD_INIT" in window)return;
+        HC_LOAD_INIT = true;
+        var lang = (navigator.language || navigator.systemLanguage || navigator.userLanguage || "en").substr(0, 2).toLowerCase();
         var hcc = document.createElement("script"); hcc.type = "text/javascript"; hcc.async = true;
-        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://widget.hypercomments.com/apps/js/hc.js";
-        var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hcc, s.nextSibling);
+        hcc.src = ("https:" == document.location.protocol ? "https" : "http")+"://w.hypercomments.com/widget/hc/27931/"+lang+"/widget.js";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hcc, s.nextSibling);
         })();
         </script>
 
@@ -308,7 +313,7 @@ globalkeys = awful.util.table.join(globalkeys,
    <div class="container">
       <hr>
       <div class="row">
-         <div class="col-xs-10">&copy; 2016 Merder hoxnox Kim <hoxnox@gmail.com>
+         <div class="col-xs-10">&copy; 2017 Merder hoxnox Kim <hoxnox@gmail.com>
             &middot; Powered by <a href="https://github.com/DandyDev/pelican-bootstrap3" target="_blank">pelican-bootstrap3</a>,
             <a href="http://docs.getpelican.com/" target="_blank">Pelican</a>,
             <a href="http://getbootstrap.com" target="_blank">Bootstrap</a>         </div>

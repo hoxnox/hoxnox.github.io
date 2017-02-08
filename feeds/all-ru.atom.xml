@@ -1,5 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/all-ru.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2016-10-11T00:00:00+03:00</updated><entry><title>TLS authenticated web application with nginx and easy-rsa-2.0</title><link href="http://blog.hoxnox.com/inet/ssl_nginx.md.html" rel="alternate"></link><published>2016-10-11T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-10-11:inet/ssl_nginx.md.html</id><summary type="html">&lt;p&gt;This cheat sheet helps to set up web server with TLS authentication.
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/all-ru.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2017-01-08T00:00:00+03:00</updated><entry><title>Fancy Linux terminal</title><link href="http://blog.hoxnox.com/gentoo/fancy_terminal.md.html" rel="alternate"></link><published>2017-01-08T00:00:00+03:00</published><updated>2017-01-08T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2017-01-08:/gentoo/fancy_terminal.md.html</id><summary type="html">&lt;p&gt;I've decided to revise my every day terminal life. There are not many things that can be changed, only fonts and colors. Nevertheless their importance is tremendous.&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Fonts&lt;/h2&gt;
+&lt;p&gt;I've planned to give a chance to fonts with
+&lt;a href="https://en.wikipedia.org/wiki/Typographic_ligature"&gt;ligatures&lt;/a&gt; long
+time ago. I looked at &lt;a href="https://github.com/tonsky/FiraCode"&gt;Fira Code&lt;/a&gt;
+and &lt;a href="http://www.fsd.it/shop/fonts/pragmatapro/"&gt;Pragmata Pro&lt;/a&gt;. I
+downloaded &lt;code&gt;ttf&lt;/code&gt; file and put it into &lt;code&gt;~/.fonts&lt;/code&gt; directory. Now
+&lt;code&gt;fontconfig&lt;/code&gt; see it:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;   pblog &lt;span class="o"&gt;[&lt;/span&gt;master&lt;span class="o"&gt;]&lt;/span&gt; ⚡ fc-list &lt;span class="p"&gt;|&lt;/span&gt; grep FiraCode
+/home/hoxnox/.fonts/FiraCode-Regular.ttf: Fira Code:style&lt;span class="o"&gt;=&lt;/span&gt;Regular
+/home/hoxnox/.fonts/FiraCode-Retina.ttf: Fira Code,Fira Code Retina:style&lt;span class="o"&gt;=&lt;/span&gt;Retina,Regular
+/home/hoxnox/.fonts/FiraCode-Medium.ttf: Fira Code,Fira Code Medium:style&lt;span class="o"&gt;=&lt;/span&gt;Medium,Regular
+/home/hoxnox/.fonts/FiraCode-Light.ttf: Fira Code,Fira Code Light:style&lt;span class="o"&gt;=&lt;/span&gt;Light,Regular
+/home/hoxnox/.fonts/FiraCode-Bold.ttf: Fira Code:style&lt;span class="o"&gt;=&lt;/span&gt;Bold
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;It's essential to have the bold version of the font with the regular one.
+Terminal uses both of them. It will look ugly if the bold version is
+missing.&lt;/p&gt;
+&lt;p&gt;The font name can be used in terminal settings.
+It can be found after colon in &lt;code&gt;fc-list&lt;/code&gt; output.&lt;/p&gt;
+&lt;p&gt;Unfortunately at that point I didn't see any ligatures. That's because
+&lt;a href="https://github.com/tonsky/FiraCode#terminal-support"&gt;not many terminals actually support it&lt;/a&gt;. I had to
+switch to &lt;code&gt;qterminal&lt;/code&gt;. But it didn't help either! 
+&lt;a href="https://github.com/fabrizioschiavi/pragmatapro/issues/9#issuecomment-119930951"&gt;fabrizioschiavi decided to delete ligatures from "Mono" version of the font.&lt;/a&gt;
+By the coincidence &lt;a href="https://github.com/lxde/qterminal/issues/49"&gt;qterminal doesn't allow to choose not monospace fonts&lt;/a&gt;.
+It wouldn't not be a problem if the parameter in the configuration file was human
+readable. It's not:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="na"&gt;font&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;@Variant(\0\0\0@\0\0\0\x18\0P\0r\0\x61\0g\0m\0\x61\0t\0\x61\0 \0P\0r\0o@$\0\0\0\0\0\0\xff\xff\xff\xff\x2\x1\0\x32\x10)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I had to path the sources (see below), choose the appropriate font in
+the patched version and use the font line from the configuration file (see
+above).&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gh"&gt;diff --git a/src/fontdialog.cpp b/src/fontdialog.cpp&lt;/span&gt;
+&lt;span class="gh"&gt;index 30fc914..f6c3e5a 100644&lt;/span&gt;
+&lt;span class="gd"&gt;--- a/src/fontdialog.cpp&lt;/span&gt;
+&lt;span class="gi"&gt;+++ b/src/fontdialog.cpp&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -23,8 +23,7 @@ FontDialog::FontDialog(const QFont &amp;amp;f)&lt;/span&gt;
+ {
+     setupUi(this);
+
+&lt;span class="gd"&gt;-    fontComboBox-&amp;gt;setFontFilters(QFontComboBox::MonospacedFonts&lt;/span&gt;
+&lt;span class="gd"&gt;-                                 | QFontComboBox::NonScalableFonts&lt;/span&gt;
+&lt;span class="gi"&gt;+    fontComboBox-&amp;gt;setFontFilters(QFontComboBox::NonScalableFonts&lt;/span&gt;
+                                  | QFontComboBox::ScalableFonts);
+
+     fontComboBox-&amp;gt;setCurrentFont(f);
+&lt;span class="gh"&gt;diff --git a/src/propertiesdialog.cpp b/src/propertiesdialog.cpp&lt;/span&gt;
+&lt;span class="gh"&gt;index 82ad5b1..655bf86 100644&lt;/span&gt;
+&lt;span class="gd"&gt;--- a/src/propertiesdialog.cpp&lt;/span&gt;
+&lt;span class="gi"&gt;+++ b/src/propertiesdialog.cpp&lt;/span&gt;
+&lt;span class="gu"&gt;@@ -219,8 +219,7 @@ void PropertiesDialog::changeFontButton_clicked()&lt;/span&gt;
+     if (!dia.exec())
+         return;
+     QFont f = dia.getFont();
+&lt;span class="gd"&gt;-    if (QFontInfo(f).fixedPitch())&lt;/span&gt;
+&lt;span class="gd"&gt;-        setFontSample(f);&lt;/span&gt;
+&lt;span class="gi"&gt;+    setFontSample(f);&lt;/span&gt;
+ }
+
+ void PropertiesDialog::chooseBackgroundImageButton_clicked()
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;Colors&lt;/h2&gt;
+&lt;p&gt;After all the font was set, ligatures worked, but the colors were ugly.
+I've found good &lt;a href="https://terminal.sexy"&gt;online visual redactor&lt;/a&gt;. It
+helped to create a very nice color scheme. Good start point was theme
+from &lt;a href="https://github.com/lysyi3m/osx-terminal-themes"&gt;lusy3m's themes repository&lt;/a&gt;. You can
+import it into the redactor as &lt;code&gt;Terminal.app&lt;/code&gt;.
+After all you must export file in &lt;code&gt;konsole&lt;/code&gt; format and save into
+&lt;code&gt;~/.config/qterminal.org/color-schemes&lt;/code&gt; with &lt;code&gt;.colorsheme&lt;/code&gt; extension.&lt;/p&gt;
+&lt;p&gt;Now I'm satisfied for some time. =)&lt;/p&gt;
+&lt;p&gt;&lt;img alt="fancy linux screenshot" src="http://hsto.org/files/bd3/ffd/2ae/bd3ffd2aed4a40ac8d9c71e14b50e905.png"/&gt;&lt;/p&gt;
+&lt;p&gt;PS: The article about tuning FontConfig can be found at &lt;a href="https://wiki.gentoo.org/wiki/Fontconfig"&gt;gentoo wiki&lt;/a&gt;.&lt;/p&gt;</content><category term="fontconfig"></category><category term="ligatures"></category><category term="terminal"></category><category term="linux"></category><category term="fonts"></category><category term="look'n'feel"></category></entry><entry><title>TLS authenticated web application with nginx and easy-rsa-2.0</title><link href="http://blog.hoxnox.com/inet/ssl_nginx.md.html" rel="alternate"></link><published>2016-10-11T00:00:00+03:00</published><updated>2016-10-11T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-10-11:/inet/ssl_nginx.md.html</id><summary type="html">&lt;p&gt;Cheat sheet helps to set up web server with TLS authentication.&lt;/p&gt;</summary><content type="html">&lt;p&gt;This cheat sheet helps to set up web server with TLS authentication.
 We'll use our own certificate authority.&lt;/p&gt;
 &lt;p&gt;As a prerequisite You have to own the server and the domain, pointed to this server.&lt;/p&gt;
 &lt;h2&gt;Prepare easy-rsa&lt;/h2&gt;
@@ -329,7 +405,10 @@ curl --cacert ca.crt -E alice.pem https://example.com
 &lt;h3&gt;Python&lt;/h3&gt;
 &lt;p&gt;It's very easy with help of &lt;a href="http://docs.python-requests.org"&gt;Requests library&lt;/a&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="n"&gt;rs&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;requests&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;get&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;https://example.com&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;verify&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/path/to/ca.crt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;cert&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;/path/to/alice.crt&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;/path/to/alice.key&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="tls"></category><category term="ssl"></category><category term="https"></category><category term="nginx"></category><category term="easy-rsa"></category></entry><entry><title>Switching server off on power lost.</title><link href="http://blog.hoxnox.com/admin/linux-ups-fake-data.html" rel="alternate"></link><published>2016-05-07T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-05-07:admin/linux-ups-fake-data.html</id><summary type="html">&lt;p&gt;My home server is connected to the UPS, but it is very simple - it
+&lt;/pre&gt;&lt;/div&gt;</content><category term="tls"></category><category term="ssl"></category><category term="https"></category><category term="nginx"></category><category term="easy-rsa"></category></entry><entry><title>Switching server off on power lost.</title><link href="http://blog.hoxnox.com/admin/linux-ups-fake-data.html" rel="alternate"></link><published>2016-05-07T00:00:00+03:00</published><updated>2016-05-07T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-05-07:/admin/linux-ups-fake-data.html</id><summary type="html">&lt;p&gt;My home server is connected to the UPS, but it is very simple - it
+hasn't data interface. So when the power had switched off my server can't
+figure it out unless UPS's battery is full. I have found a very simple
+solution, which helps safely shutdown my Linux box on …&lt;/p&gt;</summary><content type="html">&lt;p&gt;My home server is connected to the UPS, but it is very simple - it
 hasn't data interface. So when the power had switched off my server can't
 figure it out unless UPS's battery is full. I have found a very simple
 solution, which helps safely shutdown my Linux box on power lost. All I
@@ -342,7 +421,10 @@ turned down:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;That's all. So simple, but very effective.&lt;/p&gt;</summary><category term="ups"></category><category term="linux"></category><category term="link"></category></entry><entry><title>Using gnu make to parallel jobs</title><link href="http://blog.hoxnox.com/other/make-parallel.html" rel="alternate"></link><published>2016-04-10T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-04-10:other/make-parallel.html</id><summary type="html">&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
+&lt;p&gt;That's all. So simple, but very effective.&lt;/p&gt;</content><category term="ups"></category><category term="linux"></category><category term="link"></category></entry><entry><title>Using gnu make to parallel jobs</title><link href="http://blog.hoxnox.com/other/make-parallel.html" rel="alternate"></link><published>2016-04-10T00:00:00+03:00</published><updated>2016-04-10T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-04-10:/other/make-parallel.html</id><summary type="html">&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
+in source building. I'll show you interesting example. Suppose we have 5
+servers: A, B, C, D, and E. There are some &lt;code&gt;*.tar.gz&lt;/code&gt; files in the home
+directory on each server. Every file has the …&lt;/p&gt;</summary><content type="html">&lt;p&gt;GNU make utility is great. It can be used in different tasks - not only
 in source building. I'll show you interesting example. Suppose we have 5
 servers: A, B, C, D, and E. There are some &lt;code&gt;*.tar.gz&lt;/code&gt; files in the home
 directory on each server. Every file has the following name syntax
@@ -383,7 +465,11 @@ will skip all fully downloaded files and start with these, not present
 at local machine, including &lt;code&gt;.partial&lt;/code&gt; (rsync smart enough to continue
 with them).&lt;/p&gt;
 &lt;p&gt;Instruction in the third line tells &lt;code&gt;make&lt;/code&gt; not to delete intermediate
-results.&lt;/p&gt;</summary><category term="make"></category><category term="rsync"></category><category term="parallel download"></category></entry><entry><title>Awesome wm key bindings integration</title><link href="http://blog.hoxnox.com/gentoo/awm-key-integration.html" rel="alternate"></link><published>2016-03-16T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-16:gentoo/awm-key-integration.html</id><summary type="html">&lt;p&gt;I'm using &lt;a href="http://awesome.naquadah.org/"&gt;awesome window manager&lt;/a&gt; on my
+results.&lt;/p&gt;</content><category term="make"></category><category term="rsync"></category><category term="parallel download"></category></entry><entry><title>Awesome wm key bindings integration</title><link href="http://blog.hoxnox.com/gentoo/awm-key-integration.html" rel="alternate"></link><published>2016-03-16T00:00:00+03:00</published><updated>2016-03-16T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-16:/gentoo/awm-key-integration.html</id><summary type="html">&lt;p&gt;I'm using &lt;a href="http://awesome.naquadah.org/"&gt;awesome window manager&lt;/a&gt; on my
+gentoo desktop. My configuration evaluate from time to time, like vim's
+does for example. These instruments highly optimized for my habits, it
+is right in my fingers. In this post I'll show how to extend awesome wm
+key bindings behind it boundaries to …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I'm using &lt;a href="http://awesome.naquadah.org/"&gt;awesome window manager&lt;/a&gt; on my
 gentoo desktop. My configuration evaluate from time to time, like vim's
 does for example. These instruments highly optimized for my habits, it
 is right in my fingers. In this post I'll show how to extend awesome wm
@@ -393,10 +479,10 @@ of &lt;code&gt;root.fake_input&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;Tmux multiplexer has it's own panes and you can switch between them with
 combination of prefix and arrow keys. Almost the same we have in awesome
 wm. The key of head aches is "almost". It's very hard to switch between
-different hot keys. The problem can be solved in awesome's
+different hot keys. The problem can be solved the problem in awesome
 configuration file. All needed is to check client while switching to
 next window. If the client is tmux - don't switch, send "prefix + arrow"
-instead. The solution is very easy and effective. The code is below&lt;/p&gt;
+instead. The solutions is very easy and effective. The code above&lt;/p&gt;
 &lt;p&gt;.tmux.conf&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;set-option -g prefix m-a
 set-option -g repeat-time 0
@@ -408,71 +494,71 @@ bind-key up select-pane -t:.-
 
 
 &lt;p&gt;rc.lua:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="o"&gt;...&lt;/span&gt;
 
-function is_tmux(c)
-    if string.find(string.lower(c.name), &amp;quot;tmux&amp;quot;) ~= nil
-    or string.find(string.lower(c.class), &amp;quot;tmux&amp;quot;) ~= nil
-    then
-         return true
-    end
-    return false
-end
+&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
+    &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;tmux&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
+    &lt;span class="k"&gt;then&lt;/span&gt;
+         &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-function send_tmux_command(cmd)
-    keygrabber.stop()
-    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
-    root.fake_input(&amp;quot;key_press&amp;quot;, 64)
-    root.fake_input(&amp;quot;key_press&amp;quot;, 38)
-    root.fake_input(&amp;quot;key_release&amp;quot;, 38)
-    root.fake_input(&amp;quot;key_release&amp;quot;, 64)
-    waiter = timer({timeout = 0.01})
-    if cmd == &amp;#39;up&amp;#39; then
-        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
-            waiter:stop()
-            root.fake_input(&amp;quot;key_press&amp;quot;, 116)
-            root.fake_input(&amp;quot;key_release&amp;quot;, 116)
-            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
-        end)
-    end
-    if cmd == &amp;#39;down&amp;#39; then
-        waiter:connect_signal(&amp;#39;timeout&amp;#39;, function()
-            waiter:stop()
-            root.fake_input(&amp;quot;key_press&amp;quot;, 111)
-            root.fake_input(&amp;quot;key_release&amp;quot;, 111)
-            root.fake_input(&amp;quot;key_press&amp;quot;, 64)
-        end)
-    end
-    waiter:start()
-end
+&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;38&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="n"&gt;waiter&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;timer&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="n"&gt;timeout&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.01&lt;/span&gt;&lt;span class="p"&gt;})&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;up&amp;#39;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+        &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;116&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;cmd&lt;/span&gt; &lt;span class="o"&gt;==&lt;/span&gt; &lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;down&amp;#39;&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+        &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;connect_signal&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;timeout&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;111&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+    &lt;span class="n"&gt;waiter&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;start&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-globalkeys = awful.util.table.join(
-    awful.key({ modkey,           }, &amp;quot;j&amp;quot;,
-        function()
-            if is_tmux(client.focus) then
-                send_tmux_command(&amp;#39;down&amp;#39;)
-            else
-                awful.client.focus.byidx(1)
-                if client.focus then client.focus:raise() end
-            end
-        end),
-    awful.key({ modkey,           }, &amp;quot;k&amp;quot;,
-        function()
-            if is_tmux(client.focus) then
-                send_tmux_command(&amp;#39;up&amp;#39;)
-            else
-                awful.client.focus.byidx(-1)
-                if client.focus then client.focus:raise() end
-            end
-        end))
+&lt;span class="n"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;j&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+                &lt;span class="n"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;down&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;else&lt;/span&gt;
+                &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+            &lt;span class="k"&gt;end&lt;/span&gt;
+        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt;
+    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt; &lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;           &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;k&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="k"&gt;function&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+            &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_tmux&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+                &lt;span class="n"&gt;send_tmux_command&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;&lt;/span&gt;&lt;span class="s"&gt;up&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+            &lt;span class="k"&gt;else&lt;/span&gt;
+                &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;byidx&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+                &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="n"&gt;raise&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;
+            &lt;span class="k"&gt;end&lt;/span&gt;
+        &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
 
-...
+&lt;span class="o"&gt;...&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
 &lt;h2&gt;proposal #2&lt;/h2&gt;
 &lt;p&gt;There is common recommendation to use vim's native layout switching
-(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;) when you have more than one keyboard layout to use.
+(default to &lt;code&gt;&amp;lt;C+^&amp;gt;&lt;/code&gt;), when you have more than one keyboard layout to use.
 It solves problems with hot keys in vim. Other applications uses
 system-wide switcher with it's own key bindings. Similar to the proposal #1
 we can tune awesome wm configuration:&lt;/p&gt;
@@ -483,30 +569,34 @@ cnoremap &amp;lt;M-=&amp;gt; &amp;lt;C-^&amp;gt;
 
 
 &lt;p&gt;rc.lua&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;function is_vim(c)
-    if string.find(string.lower(c.name), &amp;quot;vim&amp;quot;) ~= nil
-    or string.find(string.lower(c.class), &amp;quot;vim&amp;quot;) ~= nil
-    then
-        return true;
-    end
-    return false
-end
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;name&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
+    &lt;span class="ow"&gt;or&lt;/span&gt; &lt;span class="nb"&gt;string.find&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="nb"&gt;string.lower&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;c&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;class&lt;/span&gt;&lt;span class="p"&gt;),&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;vim&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="o"&gt;~=&lt;/span&gt; &lt;span class="kc"&gt;nil&lt;/span&gt;
+    &lt;span class="k"&gt;then&lt;/span&gt;
+        &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;true&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="kc"&gt;false&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-function switch_key_layout_vimspecial()
-    if is_vim(client.focus) then
-        keygrabber.stop()
-        root.fake_input(&amp;quot;key_press&amp;quot;, 64)
-        root.fake_input(&amp;quot;key_press&amp;quot;, 21)
-        root.fake_input(&amp;quot;key_release&amp;quot;, 21)
-        root.fake_input(&amp;quot;key_release&amp;quot;, 64)
-    else
-        mylswitcher.switch()
-    end
-end
+&lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="nf"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="n"&gt;is_vim&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;client&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;focus&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="k"&gt;then&lt;/span&gt;
+        &lt;span class="n"&gt;keygrabber&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;stop&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_press&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;21&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+        &lt;span class="n"&gt;root&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fake_input&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;key_release&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="mi"&gt;64&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="k"&gt;else&lt;/span&gt;
+        &lt;span class="n"&gt;mylswitcher&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;switch&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
+    &lt;span class="k"&gt;end&lt;/span&gt;
+&lt;span class="k"&gt;end&lt;/span&gt;
 
-globalkeys = awful.util.table.join(globalkeys,
-    awful.key({modkey, }, &amp;quot;space&amp;quot;, function () switch_key_layout_vimspecial() end))
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="gentoo"></category><category term="vim"></category><category term="tmux"></category><category term="key bindings"></category></entry><entry><title>Linux desktop on high resolution display</title><link href="http://blog.hoxnox.com/gentoo/hires.html" rel="alternate"></link><published>2016-03-13T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-13:gentoo/hires.html</id><summary type="html">&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
+&lt;span class="n"&gt;globalkeys&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;util&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;table&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;join&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;globalkeys&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+    &lt;span class="n"&gt;awful&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="p"&gt;({&lt;/span&gt;&lt;span class="n"&gt;modkey&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="p"&gt;},&lt;/span&gt; &lt;span class="s2"&gt;&amp;quot;&lt;/span&gt;&lt;span class="s"&gt;space&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="k"&gt;function&lt;/span&gt; &lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="n"&gt;switch_key_layout_vimspecial&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="k"&gt;end&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</content><category term="gentoo"></category><category term="vim"></category><category term="tmux"></category><category term="key bindings"></category></entry><entry><title>Linux desktop on high resolution display</title><link href="http://blog.hoxnox.com/gentoo/hires.html" rel="alternate"></link><published>2016-03-13T00:00:00+03:00</published><updated>2016-03-13T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2016-03-13:/gentoo/hires.html</id><summary type="html">&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
+But when my gentoo booted I was very disappointed - it looked very ugly.
+Some apps looked normal - thunderbird, Telegram, but most was unusable
+like gimp - with tiny icons and broken fonts. It takes some time to tune
+everything back …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Recently I've bought Dell XPS-15 9550 with great 4k display (3840x2160).
 But when my gentoo booted I was very disappointed - it looked very ugly.
 Some apps looked normal - thunderbird, Telegram, but most was unusable
 like gimp - with tiny icons and broken fonts. It takes some time to tune
@@ -604,7 +694,16 @@ it.&lt;/p&gt;
 
 &lt;p&gt;This module comes in standard gnome theme pack:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;emerge -av --quiet gnome-themes-standard
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="getnoo"></category><category term="high resolution"></category><category term="xorg"></category><category term="gtk"></category></entry><entry><title>Stop using root to launch sniffers</title><link href="http://blog.hoxnox.com/admin/capabilities.html" rel="alternate"></link><published>2015-11-13T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-11-13:admin/capabilities.html</id><summary type="html">&lt;p&gt;I developed another sniffer and find myself executing testcase through
+&lt;/pre&gt;&lt;/div&gt;</content><category term="getnoo"></category><category term="high resolution"></category><category term="xorg"></category><category term="gtk"></category></entry><entry><title>Stop using root to launch sniffers</title><link href="http://blog.hoxnox.com/admin/capabilities.html" rel="alternate"></link><published>2015-11-13T00:00:00+03:00</published><updated>2015-11-13T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-11-13:/admin/capabilities.html</id><summary type="html">&lt;p&gt;I developed another sniffer and find myself executing testcase through
+&lt;code&gt;sudo&lt;/code&gt;. While something bad not happen, I decided to look through
+&lt;code&gt;capabilities functionality&lt;/code&gt; in Linux kernel. Very interesting things
+written in the manual:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;man capabilities
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;My testcase started service in privileged port range and listened on
+loopback interface. In the …&lt;/p&gt;</summary><content type="html">&lt;p&gt;I developed another sniffer and find myself executing testcase through
 &lt;code&gt;sudo&lt;/code&gt;. While something bad not happen, I decided to look through
 &lt;code&gt;capabilities functionality&lt;/code&gt; in Linux kernel. Very interesting things
 written in the manual:&lt;/p&gt;
@@ -670,7 +769,24 @@ sudo setcap &amp;#39;CAP_NET_RAW+eip CAP_NET_BIND_SERVICE+eip&amp;#39; /bin/bash
 
 &lt;p&gt;But, wait... bash, java? Really? It can be even dangerous, than invoking
 &lt;code&gt;sudo&lt;/code&gt;. You will call '&lt;code&gt;sudo&lt;/code&gt;' only once, but capabilities will stay here
-until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</summary><category term="capabilities"></category><category term="tcpdump"></category><category term="privileges"></category></entry><entry><title>Ganglia, iostat and gentoo</title><link href="http://blog.hoxnox.com/admin/ganglia.html" rel="alternate"></link><published>2015-10-22T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-10-22:admin/ganglia.html</id><summary type="html">&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
+until you call '&lt;code&gt;setcap -r&lt;/code&gt;'. You choose...&lt;/p&gt;</content><category term="capabilities"></category><category term="tcpdump"></category><category term="privileges"></category></entry><entry><title>Ganglia, iostat and gentoo</title><link href="http://blog.hoxnox.com/admin/ganglia.html" rel="alternate"></link><published>2015-10-22T00:00:00+03:00</published><updated>2015-10-22T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-10-22:/admin/ganglia.html</id><summary type="html">&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
+tracking machines (sys-cluster/ganglia) and use web frontend
+(sys-clusted/ganglia-web) to see pretty graphics. After installing
+backend, you must configure /etc/ganglia/gmond.conf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;...
+cluster {
+  name = &amp;quot;jassy&amp;quot;
+  owner = &amp;quot;hoxnox&amp;quot;
+  latlong = &amp;quot;unspecified&amp;quot;
+  url = &amp;quot;unspecified&amp;quot;
+}
+...
+host {
+  location = &amp;quot;jassy&amp;quot;
+}
+...
+udp_send_channel {
+  host …&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;Ganglia is a very good monitoring tool. You can install backand to
 tracking machines (sys-cluster/ganglia) and use web frontend
 (sys-clusted/ganglia-web) to see pretty graphics. After installing
 backend, you must configure /etc/ganglia/gmond.conf&lt;/p&gt;
@@ -711,20 +827,20 @@ trusted_hosts 127.0.0.1 192.168.30.20 192.168.4.2
 
 
 &lt;p&gt;After starting gmond and gmetad, you can get statistic:&lt;/p&gt;
-&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="err"&gt;☯&lt;/span&gt; &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;gstat&lt;/span&gt;
-&lt;span class="err"&gt;CLUSTER&lt;/span&gt; &lt;span class="err"&gt;INFORMATION&lt;/span&gt;
-       &lt;span class="err"&gt;Name:&lt;/span&gt; &lt;span class="err"&gt;jassy&lt;/span&gt;
-      &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;1&lt;/span&gt;
-&lt;span class="err"&gt;Gexec&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
- &lt;span class="err"&gt;Dead&lt;/span&gt; &lt;span class="err"&gt;Hosts:&lt;/span&gt; &lt;span class="err"&gt;0&lt;/span&gt;
-  &lt;span class="err"&gt;Localtime:&lt;/span&gt; &lt;span class="err"&gt;Thu&lt;/span&gt; &lt;span class="err"&gt;Oct&lt;/span&gt; &lt;span class="err"&gt;22&lt;/span&gt; &lt;span class="err"&gt;22:46:08&lt;/span&gt; &lt;span class="err"&gt;2015&lt;/span&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;☯ ~  gstat
+CLUSTER INFORMATION
+       Name: jassy
+      Hosts: 1
+Gexec Hosts: 0
+ Dead Hosts: 0
+  Localtime: Thu Oct &lt;span class="m"&gt;22&lt;/span&gt; 22:46:08 2015
 
-&lt;span class="err"&gt;☭&lt;/span&gt;  &lt;span class="err"&gt;~&lt;/span&gt;  &lt;span class="err"&gt;nc&lt;/span&gt; &lt;span class="err"&gt;192.168.30.3&lt;/span&gt; &lt;span class="err"&gt;8651&lt;/span&gt;
-&lt;span class="err"&gt;&amp;lt;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="err"&gt;xml&lt;/span&gt; &lt;span class="err"&gt;version=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;encoding=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="err"&gt;standalone=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;&lt;span class="o"&gt;?&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
-&lt;span class="k"&gt;&amp;lt;!DOCTYPE&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="k"&gt;[&lt;/span&gt;
-   &lt;span class="k"&gt;&amp;lt;!ELEMENT&lt;/span&gt; &lt;span class="nt"&gt;GANGLIA_XML&lt;/span&gt; &lt;span class="o"&gt;(&lt;/span&gt;&lt;span class="nt"&gt;GRID&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;CLUSTER&lt;/span&gt;&lt;span class="o"&gt;|&lt;/span&gt;&lt;span class="nt"&gt;HOST&lt;/span&gt;&lt;span class="o"&gt;)*&lt;/span&gt;&lt;span class="k"&gt;&amp;gt;&lt;/span&gt;
+☭  ~  nc 192.168.30.3 8651
+&amp;lt;?xml &lt;span class="nv"&gt;version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;1.0&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;encoding&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;ISO-8859-1&amp;quot;&lt;/span&gt; &lt;span class="nv"&gt;standalone&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s2"&gt;&amp;quot;yes&amp;quot;&lt;/span&gt;?&amp;gt;
+&amp;lt;!DOCTYPE GANGLIA_XML &lt;span class="o"&gt;[&lt;/span&gt;
+   &amp;lt;!ELEMENT GANGLIA_XML &lt;span class="o"&gt;(&lt;/span&gt;GRID&lt;span class="p"&gt;|&lt;/span&gt;CLUSTER&lt;span class="p"&gt;|&lt;/span&gt;HOST&lt;span class="o"&gt;)&lt;/span&gt;*&amp;gt;
 
-    &lt;span class="err"&gt;...&lt;/span&gt;
+    ...
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -784,13 +900,16 @@ src_install()
 &lt;p&gt;There is one problem - ganglia-modules-linux provides better multicpu
 module. So I had to add
 &lt;code&gt;COLLISION_IGNORE="/usr/lib/ganglia/modmulticpu.so"&lt;/code&gt; into my portage
-configuration.&lt;/p&gt;</summary><category term="gentoo"></category><category term="ebuild"></category><category term="ganglia"></category><category term="iostat"></category></entry><entry><title>SSH forwarding example</title><link href="http://blog.hoxnox.com/admin/ssh-passthrough.html" rel="alternate"></link><published>2015-10-16T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-10-16:admin/ssh-passthrough.html</id><summary type="html">&lt;p&gt;Suppose we have the following network topology: server with two
+configuration.&lt;/p&gt;</content><category term="gentoo"></category><category term="ebuild"></category><category term="ganglia"></category><category term="iostat"></category></entry><entry><title>SSH forwarding example</title><link href="http://blog.hoxnox.com/admin/ssh-passthrough.html" rel="alternate"></link><published>2015-10-16T00:00:00+03:00</published><updated>2015-10-16T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-10-16:/admin/ssh-passthrough.html</id><summary type="html">&lt;p&gt;Suppose we have the following network topology: server with two
+interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two
+interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface
+128.4.1.1. Server acts as a gateway into 192.168.3 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Suppose we have the following network topology: server with two
 interfaces 192.168.3.3 and 192.168.4.1, passthrough-pc with two
 interfaces: 192.168.4.2 and 128.4.1.82 and client-pc with interface
 128.4.1.1. Server acts as a gateway into 192.168.3.0/24 for passthrough-pc
 and provides ssh at 192.168.3.3:22. We want to access that ssh
 from client-pc. Passthrough-pc provides ssh to client.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="Topology schema" src="http://blog.hoxnox.com/admin/ssh-passthrough_pic1.dia.svg" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Topology schema" src="http://blog.hoxnox.com/admin/ssh-passthrough_pic1.dia.svg"&gt;&lt;/p&gt;
 &lt;p&gt;It's quite simple. We just need ssh port forwarding feature. Do on
 passthrough-pc:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ssh -4 128.4.1.82:54321:192.168.3.3:22 192.168.3.3
@@ -800,7 +919,15 @@ passthrough-pc:&lt;/p&gt;
 &lt;p&gt;That's all. We done:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ssh -p 54321 -i &amp;lt;key&amp;gt; 128.4.1.82
 sshfs -p54321 -o IdentityDile=&amp;lt;key&amp;gt; 128.4.1.82:/path /mountpoint
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="ssh"></category><category term="forwarding"></category></entry><entry><title>WiFi access point with wpa_supplicant</title><link href="http://blog.hoxnox.com/gentoo/wifi-hotspot.html" rel="alternate"></link><published>2015-05-01T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-05-01:gentoo/wifi-hotspot.html</id><summary type="html">&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
+&lt;/pre&gt;&lt;/div&gt;</content><category term="ssh"></category><category term="forwarding"></category></entry><entry><title>WiFi access point with wpa_supplicant</title><link href="http://blog.hoxnox.com/gentoo/wifi-hotspot.html" rel="alternate"></link><published>2015-05-01T00:00:00+03:00</published><updated>2015-05-01T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-05-01:/gentoo/wifi-hotspot.html</id><summary type="html">&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
+and it has a wifi card which is managed by &lt;code&gt;wpa_supplicant&lt;/code&gt;, you can
+easily setup this computer as WiFi access point. You even don't need
+&lt;a href="http://w1.fi/hostapd"&gt;hostapd&lt;/a&gt; - just &lt;code&gt;wpa_supplicant&lt;/code&gt; and dhcp server
+software.&lt;/p&gt;
+&lt;p&gt;Follow these steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;wpa_supplicant&lt;/code&gt; should be …&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;If you have Linux desktop connected to the Internet (wire, LTE modem)
 and it has a wifi card which is managed by &lt;code&gt;wpa_supplicant&lt;/code&gt;, you can
 easily setup this computer as WiFi access point. You even don't need
 &lt;a href="http://w1.fi/hostapd"&gt;hostapd&lt;/a&gt; - just &lt;code&gt;wpa_supplicant&lt;/code&gt; and dhcp server
@@ -872,7 +999,10 @@ sudo iptables -t nat -A POSTROUTING --source 192.168.6.0/24 -j SNAT --to 192.168
 
 &lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;That's all! Now you can connect to your Access Point. All these &lt;/p&gt;</summary><category term="wpa_supplicant"></category><category term="gentoo"></category><category term="wifi hotspot"></category><category term="access point"></category></entry><entry><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link href="http://blog.hoxnox.com/admin/kycera-cups.html" rel="alternate"></link><published>2015-03-28T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-28:admin/kycera-cups.html</id><summary type="html">&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+&lt;p&gt;That's all! Now you can connect to your Access Point. All these &lt;/p&gt;</content><category term="wpa_supplicant"></category><category term="gentoo"></category><category term="wifi hotspot"></category><category term="access point"></category></entry><entry><title>Kyocera p2135d and gentoo as a CUPS printserver.</title><link href="http://blog.hoxnox.com/admin/kycera-cups.html" rel="alternate"></link><published>2015-03-28T00:00:00+03:00</published><updated>2015-03-28T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-28:/admin/kycera-cups.html</id><summary type="html">&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
+price --- less then 5000 rubles (about 85$). It was principally because
+in that case my wife's employer would agree to offset the costs. The
+second challenge - it must be integrated into home network. Every …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Yesterday I finally had to buy a home laser printer. I was hardly bounded by the
 price --- less then 5000 rubles (about 85$). It was principally because
 in that case my wife's employer would agree to offset the costs. The
 second challenge - it must be integrated into home network. Every home
@@ -949,7 +1079,12 @@ In the printer adding dialog use the following path:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</summary><category term="cups"></category><category term="gentoo"></category><category term="printserver"></category><category term="kyocera"></category><category term="ppd"></category></entry><entry><title>Анализ CFLOW трафика</title><link href="http://blog.hoxnox.com/devel/cflow-analysis.html" rel="alternate"></link><published>2015-03-26T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-26:devel/cflow-analysis.html</id><summary type="html">&lt;p&gt;Допустим имеется pcap файл, содержащий CFLOW трафик. Нам необходимо
+&lt;p&gt;set correct printer name and provide correct driver.&lt;/p&gt;</content><category term="cups"></category><category term="gentoo"></category><category term="printserver"></category><category term="kyocera"></category><category term="ppd"></category></entry><entry><title>Анализ CFLOW трафика</title><link href="http://blog.hoxnox.com/devel/cflow-analysis.html" rel="alternate"></link><published>2015-03-26T00:00:00+03:00</published><updated>2015-03-26T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-26:/devel/cflow-analysis.html</id><summary type="html">&lt;p&gt;Допустим имеется pcap файл, содержащий CFLOW трафик. Нам необходимо
+получить информацию об анонсируемых шаблонах (какие, в каком фрейме) и о
+данных (сколько DataSet'ов, сколько Flow).&lt;/p&gt;
+&lt;p&gt;Для этих целей реализован постдиссектор (см. в конце).&lt;/p&gt;
+&lt;p&gt;Пример запуска:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;tshark -q -d&amp;quot;udp.port==8819,cflow&amp;quot; -X lua_script:./misc/cflow.analyze.lua -r build …&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;Допустим имеется pcap файл, содержащий CFLOW трафик. Нам необходимо
 получить информацию об анонсируемых шаблонах (какие, в каком фрейме) и о
 данных (сколько DataSet'ов, сколько Flow).&lt;/p&gt;
 &lt;p&gt;Для этих целей реализован постдиссектор (см. в конце).&lt;/p&gt;
@@ -1106,7 +1241,16 @@ tshark начинает понимать как правильно разбир�
     end
     init_listener()
 end
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="cflow"></category><category term="devel"></category><category term="lua"></category><category term="tshark"></category><category term="pcap"></category></entry><entry><title>Suspend по таймеру, resume по клавиатуре</title><link href="http://blog.hoxnox.com/gentoo/suspend-resume.html" rel="alternate"></link><published>2015-03-20T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-20:gentoo/suspend-resume.html</id><summary type="html">&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
+&lt;/pre&gt;&lt;/div&gt;</content><category term="cflow"></category><category term="devel"></category><category term="lua"></category><category term="tshark"></category><category term="pcap"></category></entry><entry><title>Suspend по таймеру, resume по клавиатуре</title><link href="http://blog.hoxnox.com/gentoo/suspend-resume.html" rel="alternate"></link><published>2015-03-20T00:00:00+03:00</published><updated>2015-03-20T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-20:/gentoo/suspend-resume.html</id><summary type="html">&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;BIOS машинки в S3 не должен отключать USB&lt;/li&gt;
+&lt;li&gt;Ядро должно быть настроено на работу с ACPI&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;В параметрах запуска grub должна быть правильно указана resume партиция:&lt;/p&gt;
+&lt;p&gt;linux /gentoo-3.18.3 root=/dev/sda5 resume=swap:/dev/sda1&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;USB не должен уходить …&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;Для того, чтобы правильно проснуться по клавиатуре нам надо:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;BIOS машинки в S3 не должен отключать USB&lt;/li&gt;
 &lt;li&gt;Ядро должно быть настроено на работу с ACPI&lt;/li&gt;
@@ -1125,14 +1269,26 @@ end
 &lt;/ul&gt;
 &lt;p&gt;Дополняем .xintrc:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;xautolock -time 30 -locker &amp;quot;sudo pm-suspend&amp;quot; -detectsleep &amp;amp;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="gentoo"></category><category term="suspend"></category><category term="acpi"></category><category term="resume"></category></entry><entry><title>Концепция Web User Interface</title><link href="http://blog.hoxnox.com/devel/webui-concept.html" rel="alternate"></link><published>2015-03-05T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-05:devel/webui-concept.html</id><summary type="html">&lt;p&gt;Самым простым интерфейсом взаимодействия пользователя с приложением
+&lt;/pre&gt;&lt;/div&gt;</content><category term="gentoo"></category><category term="suspend"></category><category term="acpi"></category><category term="resume"></category></entry><entry><title>Концепция Web User Interface</title><link href="http://blog.hoxnox.com/devel/webui-concept.html" rel="alternate"></link><published>2015-03-05T00:00:00+03:00</published><updated>2015-03-05T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-05:/devel/webui-concept.html</id><summary type="html">&lt;p&gt;Самым простым интерфейсом взаимодействия пользователя с приложением
+является командная строка. Приложение принимает на вход определённые
+параметры, приложение возвращает результат в стандартный вывод. Если
+пользователь впервые сталкивается с приложением, он должен будет изучить
+все возможные варианты&lt;/p&gt;
+&lt;p&gt;Пользователь вводит URL приложения, ему отвечает nginx. В ответе есть
+поле для ввода данных. По …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Самым простым интерфейсом взаимодействия пользователя с приложением
 является командная строка. Приложение принимает на вход определённые
 параметры, приложение возвращает результат в стандартный вывод. Если
 пользователь впервые сталкивается с приложением, он должен будет изучить
 все возможные варианты&lt;/p&gt;
 &lt;p&gt;Пользователь вводит URL приложения, ему отвечает nginx. В ответе есть
 поле для ввода данных. По нажатию на "submit" сервер должен запустить
-приложение. Это можно сделать с помощью cgi, fcgi или же в&lt;/p&gt;</summary><category term="web"></category><category term="microservices"></category><category term="http"></category></entry><entry><title>Анализ протоколов</title><link href="http://blog.hoxnox.com/sec/proto-analisys.html" rel="alternate"></link><published>2015-03-03T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-03:sec/proto-analisys.html</id><summary type="html">&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
+приложение. Это можно сделать с помощью cgi, fcgi или же в&lt;/p&gt;</content><category term="web"></category><category term="microservices"></category><category term="http"></category></entry><entry><title>Анализ протоколов</title><link href="http://blog.hoxnox.com/sec/proto-analisys.html" rel="alternate"></link><published>2015-03-03T00:00:00+03:00</published><updated>2015-03-03T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-03-03:/sec/proto-analisys.html</id><summary type="html">&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
+разобраться в том, какой инструментарий может нам в этом помочь.
+Рассмотрим простую задачу - есть pcap файл с HTTP страфиком (см.
+&lt;a href="https://www.ietf.org/rfc/rfc2616.txt"&gt;RFC2616&lt;/a&gt;). Мы хотим получить все
+пары (запрос, ответ) - startstring, заголовки и тела (заниматься
+разбором этих частей не будем) и использовать полученные
+данные …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Анализ протоколов - первое с чем сталкивается исследователь. Попробуем
 разобраться в том, какой инструментарий может нам в этом помочь.
 Рассмотрим простую задачу - есть pcap файл с HTTP страфиком (см.
 &lt;a href="https://www.ietf.org/rfc/rfc2616.txt"&gt;RFC2616&lt;/a&gt;). Мы хотим получить все
@@ -1217,7 +1373,12 @@ gentoo не так-то просто сделать. НО Робин Сомме�
 часть. Наиболее перспективными кажутся идеи, положенные в основу binpac. Но к
 сожалению по нему не так много информации. Создаётся ощущение, что идеи
 развиваются в рамках проекта Hilti, но последний слишком сырой.
-Диссекторы Xplico перестают существовать как open-source проект.&lt;/p&gt;</summary><category term="bro"></category><category term="hilti"></category><category term="binpac"></category><category term="binpac++"></category><category term="binpacpp"></category><category term="xplico"></category><category term="wireshark"></category><category term="snort"></category></entry><entry><title>Сравнение двух подходов к визуализации записанного HTTP трафика - MITM и Реконструкция.</title><link href="http://blog.hoxnox.com/sec/http_mitm_vs_rebuilding.html" rel="alternate"></link><published>2015-02-18T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-18:sec/http_mitm_vs_rebuilding.html</id><summary type="html">&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
+Диссекторы Xplico перестают существовать как open-source проект.&lt;/p&gt;</content><category term="bro"></category><category term="hilti"></category><category term="binpac"></category><category term="binpac++"></category><category term="binpacpp"></category><category term="xplico"></category><category term="wireshark"></category><category term="snort"></category></entry><entry><title>Сравнение двух подходов к визуализации записанного HTTP трафика - MITM и Реконструкция.</title><link href="http://blog.hoxnox.com/sec/http_mitm_vs_rebuilding.html" rel="alternate"></link><published>2015-02-18T00:00:00+03:00</published><updated>2015-02-18T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-18:/sec/http_mitm_vs_rebuilding.html</id><summary type="html">&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
+решена. Более подробно об этой задаче можно прочитать
+&lt;a href="http://blog.hoxnox.com/sec/http_restoring.html"&gt;в первой статье на тему визуализации HTTP трафика&lt;/a&gt;.
+Как уже было упомянуто существует два подхода к разрешению
+"второстепенных" запросов. Первый - запустить в браузере "основную"
+страницу и, перехватывать все запросы в Интернет, отвечая на них данными …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Считаем, что задача выделения &lt;em&gt;основного пользовательского запроса&lt;/em&gt;,
 решена. Более подробно об этой задаче можно прочитать
 &lt;a href="http://blog.hoxnox.com/sec/http_restoring.html"&gt;в первой статье на тему визуализации HTTP трафика&lt;/a&gt;.
 Как уже было упомянуто существует два подхода к разрешению
@@ -1281,7 +1442,17 @@ MITM же напротив реализуется необходимо тесн�
 менее сложность
 реализации и зависимость качества представления от неё перевешивают чашу
 весов в сторону MITM, не смотря на неочевидность формы полученного
-результата.&lt;/p&gt;</summary><category term="http"></category><category term="xplico"></category><category term="mitm"></category></entry><entry><title>Визуализация записанного ранее HTTP трафика</title><link href="http://blog.hoxnox.com/sec/http_restoring.html" rel="alternate"></link><published>2015-02-18T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-18:sec/http_restoring.html</id><summary type="html">&lt;p&gt;В проблеме "визуализации" собранного трафика необходимо решить две
+результата.&lt;/p&gt;</content><category term="http"></category><category term="xplico"></category><category term="mitm"></category></entry><entry><title>Визуализация записанного ранее HTTP трафика</title><link href="http://blog.hoxnox.com/sec/http_restoring.html" rel="alternate"></link><published>2015-02-18T00:00:00+03:00</published><updated>2015-02-18T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-18:/sec/http_restoring.html</id><summary type="html">&lt;p&gt;В проблеме "визуализации" собранного трафика необходимо решить две
+задачи:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Классификация трафика&lt;/li&gt;
+&lt;li&gt;"проигрывание" трафика заданного типа в соответствующем приложении&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Анализ публикаций в Интернете&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;wireshark + ncat http://aerokid240.blogspot.ru/2009/12/replaying-captured-web-traffic-using.html&lt;/li&gt;
+&lt;li&gt;Fiddler AutoResponder (http://114r16.blogspot.ru/2012/08/replaying-session-with-fiddler.html)&lt;/li&gt;
+&lt;li&gt;perl утилита http://patrick.net/sprocket/rwt.html …&lt;/li&gt;&lt;/ul&gt;</summary><content type="html">&lt;p&gt;В проблеме "визуализации" собранного трафика необходимо решить две
 задачи:&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Классификация трафика&lt;/li&gt;
@@ -1469,8 +1640,8 @@ pcap трафиком.&lt;/p&gt;
    В результате чего страница у оператора отрендерится неверно. Для
    того, чтобы получить орининал можно заменить 7.css на его полную
    версию - not-so-default-pack.css.&lt;/p&gt;
-&lt;p&gt;&lt;img alt="broken css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDADUlKC8oITUvKy88OTU/UIVXUElJUKN1e2GFwarLyL6qurfV8P//1eL/5re6////////////zv//////////////2wBDATk8PFBGUJ1XV53/3Lrc////////////////////////////////////////////////////////////////////wgARCADZAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAfSQoAAAAAAAAAAAAAAAAAAAAIQApQQoAAAAAAAAAAAAAAAAAAAABDJSlBlIAAAAAAAAAAAAAAAAAAAAAAQ2tBwZwkQVYlXQBAAAUgAIUFBCFKQoMlAKQQpEqgEPS3QckygpEs1utqAAAAAAAAAAAAAAAAAAAIUGADYAABCSW0RIbUAAAAAAAAAAAAAACFBkyU0UAhQQQokIbUAAAAAAAAAAAAAACFBgApoAgBDiU0UqbUAAAAAAAAAAAAAACFBkgNFBk5QBioWMErqekAAAAAAAAAAAAAAAhQYIDoAYPPHMpqrHMhK1HvoAAAAAAAAAAAAAACFBghSmgQ4xwKZKDINHuoAAAAAAAAAAAAAACFBghSmgYPJGq2AACnoAAAAAAAAAAAAAAAIUEBClBk5gAAApohQaBQAAAAAAAAAAACFBkAhopDIAAKQAAFIU0CFAIUAAAhSFBCgAhQZAKUEMRQQoAABKohQAhSFBCgEKQAFAAKClBghoGgQwUhSFMmgQoBAAUEABSAAAoIACkKbIUGSkBoAyCkAAAAKQpAUhSFIClAAAAABAAUGSApoAyCFBQAAAAAAAAAAAAAAACFBQZABSkIAAAAAAAUoAAAAAAAAAAAIUGCFKaBkyAUgAAKUAA0AAAAAAAAAAACFBkAoKQyUoAAAAKAAAAAAAAAAAAACFBAUAEMgoIAAACgAA0AAAAAAAAAACFBgFKUAhQAAAAAAAAAAAAAAAAAACFBghSlKAAAAAAAAAAAAAAAAAAAACFBkApQAAAAAAAAAAAAAAAAAAAACFBkAgNgAAAAAAAAAAAAAAAAAAAAhQZAANAAAAAAAAAAAAAAAAAAAAAhQQoAAAAAAAAAAAAAAAAAAAAAAIU//E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" title="Рендер со сломанным css" /&gt;
-   &lt;img alt="normal_css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCADpAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAepQAAAAAAAAAAAAAAAAAAAAAQgKUhQAAAAAAAAAAAAAAAAAAAAADIKUgQAAAAAAAAAAAAAAAAAAAAACEKaWHFmkBSAoAICkBSApAUAEBQACApCkBYlAUENHVqEABSRqgAAAAABCA0AAAQgKUAAhIApDVCFIACghQADMltAhogAAAAAABQAAAAAACFICA0ACFABACGjBQAAAAAACgFAAAAAAICApQCAgORQUpsAAAAAAAhoAAAAAAAAgMg0UEOUCmaEgZrR2KQoAABCgEKQoBQAAAAACAAApDlHOhREISqekAAFBCkKAQpCgFAAAAAAICApQQ5RiqQRSEB6KAAAAAAAAoKAAAAAACAyDRQQ4A0AAAdSAAAAAAAA0AAAAAAACAgNAAwAAAAbMgpCgEKAAAQ0AAAAAAACAyUFKDIIUoAKCAAAAhQQoABQAAAAAACAgBoAgIUAhoAgAAAAAABQAAAAAQAFIACGgAAAAAAAAAAAAAAAAAAAACFIQAAoIACgAAAAAAAAAAAAAAAAAFICApQCAhQAQFBAUENAAAAAAAAAAAAhSAhQUAgAIUAhQACApQAAAAAAAAAAACAyAaKDJQAAAAUAAAAAAAAAAAAAAAgAAKDIKACFAIUFAAAAAAAAAAAAAAIAACggAAAAIUhQAAUAAAAAAAAAAAgMgpSkIUAhQUAAAAAAAAAAAAAAhAUFIAQpQAAAAAAAAAAAAAAAAAAAACFIQAApQAAAAAAAAAAAAAAAAAAAACAhoAAAAAAAAAAAAAAAAAAAAAAAgABQAAAAAAAAAAAAAAAAAAAAACAyUFKAAAAAAAAAAAAAAAAAAAAACAgBSgAAAAAAAAAAAAAAAAAAAAAhQAAAAAAAAAAAAAAAA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" title="Нормальный рендер" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="broken css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDADUlKC8oITUvKy88OTU/UIVXUElJUKN1e2GFwarLyL6qurfV8P//1eL/5re6////////////zv//////////////2wBDATk8PFBGUJ1XV53/3Lrc////////////////////////////////////////////////////////////////////wgARCADZAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAfSQoAAAAAAAAAAAAAAAAAAAAIQApQQoAAAAAAAAAAAAAAAAAAAABDJSlBlIAAAAAAAAAAAAAAAAAAAAAAQ2tBwZwkQVYlXQBAAAUgAIUFBCFKQoMlAKQQpEqgEPS3QckygpEs1utqAAAAAAAAAAAAAAAAAAAIUGADYAABCSW0RIbUAAAAAAAAAAAAAACFBkyU0UAhQQQokIbUAAAAAAAAAAAAAACFBgApoAgBDiU0UqbUAAAAAAAAAAAAAACFBkgNFBk5QBioWMErqekAAAAAAAAAAAAAAAhQYIDoAYPPHMpqrHMhK1HvoAAAAAAAAAAAAAACFBghSmgQ4xwKZKDINHuoAAAAAAAAAAAAAACFBghSmgYPJGq2AACnoAAAAAAAAAAAAAAAIUEBClBk5gAAApohQaBQAAAAAAAAAAACFBkAhopDIAAKQAAFIU0CFAIUAAAhSFBCgAhQZAKUEMRQQoAABKohQAhSFBCgEKQAFAAKClBghoGgQwUhSFMmgQoBAAUEABSAAAoIACkKbIUGSkBoAyCkAAAAKQpAUhSFIClAAAAABAAUGSApoAyCFBQAAAAAAAAAAAAAAACFBQZABSkIAAAAAAAUoAAAAAAAAAAAIUGCFKaBkyAUgAAKUAA0AAAAAAAAAAACFBkAoKQyUoAAAAKAAAAAAAAAAAAACFBAUAEMgoIAAACgAA0AAAAAAAAAACFBgFKUAhQAAAAAAAAAAAAAAAAAACFBghSlKAAAAAAAAAAAAAAAAAAAACFBkApQAAAAAAAAAAAAAAAAAAAACFBkAgNgAAAAAAAAAAAAAAAAAAAAhQZAANAAAAAAAAAAAAAAAAAAAAAhQQoAAAAAAAAAAAAAAAAAAAAAAIU//E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" title="Рендер со сломанным css"&gt;
+   &lt;img alt="normal_css" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCADpAZADAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAWAQEBAQAAAAAAAAAAAAAAAAAAAQL/2gAMAwEAAhADEAAAAepQAAAAAAAAAAAAAAAAAAAAAQgKUhQAAAAAAAAAAAAAAAAAAAAADIKUgQAAAAAAAAAAAAAAAAAAAAACEKaWHFmkBSAoAICkBSApAUAEBQACApCkBYlAUENHVqEABSRqgAAAAABCA0AAAQgKUAAhIApDVCFIACghQADMltAhogAAAAAABQAAAAAACFICA0ACFABACGjBQAAAAAACgFAAAAAAICApQCAgORQUpsAAAAAAAhoAAAAAAAAgMg0UEOUCmaEgZrR2KQoAABCgEKQoBQAAAAACAAApDlHOhREISqekAAFBCkKAQpCgFAAAAAAICApQQ5RiqQRSEB6KAAAAAAAAoKAAAAAACAyDRQQ4A0AAAdSAAAAAAAA0AAAAAAACAgNAAwAAAAbMgpCgEKAAAQ0AAAAAAACAyUFKDIIUoAKCAAAAhQQoABQAAAAAACAgBoAgIUAhoAgAAAAAABQAAAAAQAFIACGgAAAAAAAAAAAAAAAAAAAACFIQAAoIACgAAAAAAAAAAAAAAAAAFICApQCAhQAQFBAUENAAAAAAAAAAAAhSAhQUAgAIUAhQACApQAAAAAAAAAAACAyAaKDJQAAAAUAAAAAAAAAAAAAAAgAAKDIKACFAIUFAAAAAAAAAAAAAAIAACggAAAAIUhQAAUAAAAAAAAAAAgMgpSkIUAhQUAAAAAAAAAAAAAAhAUFIAQpQAAAAAAAAAAAAAAAAAAAACFIQAApQAAAAAAAAAAAAAAAAAAAACAhoAAAAAAAAAAAAAAAAAAAAAAAgABQAAAAAAAAAAAAAAAAAAAAACAyUFKAAAAAAAAAAAAAAAAAAAAACAgBSgAAAAAAAAAAAAAAAAAAAAAhQAAAAAAAAAAAAAAAAAAAAAAAD/8QAIBAAAgICAwADAQAAAAAAAAAAABEBIRAgMUBQMGBwEv/aAAgBAQABBQL7KxwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwOBwV6cZYxjw+gx/Cx/Axjw/plFb1oxj7LGWOTg/ofhyVrPDHlaxwXiyyyyy82WXi8X1p4Wj1jjpLqzw40WEIRHFFaUUUViiiiiisPoTtPCF8EceHeywhCEIWbxel6Xi8X2qKwx+uhCEIQsLKEL8AYxjGMYx4YxjH4t4vS977tFFek/Xvayyy8WWXi+5RWrGPDH4DHtZf2N+lfpV+Kf/8QAFhEAAwAAAAAAAAAAAAAAAAAAAXCg/9oACAEDAQE/AWMJFv/EABYRAAMAAAAAAAAAAAAAAAAAABGAoP/aAAgBAgEBPwFBjGt//8QAGhABAQEAAwEAAAAAAAAAAAAAMQAQQGCAkP/aAAgBAQAGPwLxcR4JNIw00wjkkRERER1Y+j3/xAAkEAACAQQCAgMBAQEAAAAAAAAAAREQIVFhMYEgcTBBUEDw0f/aAAgBAQABPyF/m3J9F8o+qP8AO6Oj6oyGTYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYbDYTkSvp0Z0dEaOjo6Ojo6Ojog6Ojo6Ojo6Oh+iNHR0dHR0QdHR0dHR0Qzo6Ojo6Ojo6Ojo6IObo/IOXxT4t/ENnpQnPlPgJ8D4o6SiV8y4JRKJRKJRKJRKJRKJJRKJJX8D4ox0X+YuCVglaJROBIlEolYJRKwSsEiVglEogQICc/I+KMZ2dkPPk4Gg3KRMdyeXJAUhcF8F8F8F8F8EvBfBfBfBLwXwXwXwS8EvH8D4o6koTmvIXl5I1fk9y14G4XJLRJehei/mBcv4C9F6Lz8j4ox6JeC+C+BUuYaIaGmiWtkqOvGRsifsj6k7OyNkbI2dkbI2RsjZGzsjZGyNig+X8j4ox+y+TsXutg3ETwyBp0RUkcdSxYtUihbzAlEPlfFHRYkVeQiJF8HBR0dVOqOidUdHVHRNCEQvlfFGPRLweng+CP8AGcP+iP8AGf4mof4nwC56F8E4F8F8F8HoXwXwS8HoXwehfB6C38z4oxlslsln91fBYiVFlcgQJRKE5pDyQy+S5DyXyXyXyQ8l8l8l8l8l8kPJDyQ8/M+KMdHR14Q9F9F9F9F9EMvr4gPYg9iNkUezPYSj5ZJJR9UYy5ch5/KhYIWB8UZeS5cuXoy5cuX/ABfqjGS8EueBT4TeiBAgQIECBAmiBAgQF/Q+KMZHleS+D0L4PQvgvgvg9C+C+C+C+C+C56F8f0PijH4BOv3yRsh5I2QQ8kEEPJDyRsX9r4oySSaJr98EvBLwTol4J0S8EvBOiXgl4J0Tr+x8UZYsWLFq3ouXLly9TpRfwF6Lin7/AJnxRjqWZCo3HgJqT/c3FST6ox1L+EEEEEEfhQPijJckslksli4/KfFGNwQ/OfFGOi5f8x8UY6LEpEr8t8UYzo6OvzHxR/oPin//2gAMAwEAAgADAAAAEJJJJJAAAAAJJJJJJJJJJJJAJBJJJJIABJJJJJJJJJJJJJJJIIBISSSSSSSSSSSSSSSSSSSSSSbbJlstskllstlkklkkksllopMkvJJJPBJAAAABJAAABBIAAJ/3wJJBAIAAPIkJJJJJJJIAAAAAAAJJAAAIABAEJIBIIBJBABJJJJJBIJAAAIIJJAAAAAAAIJJJJJJJBIJAAEnB0BBAAABABBABJJJJJBJBJBMAOtBJJIBBABBABJJJJJBIBABOBM3/AACSAAQQSSCSSSSSQSCQAAQAAACSSSSSSQQCSSSSSQSCQAAAQQSCQQAQAAAQSSSSSSQSCCQACQCQQAQACAQAASSSSSSQSSSAACACCQAAAAQACSSSSSSSSSQCASSSSSSSSSSSSSSSSSSSACSQSCSSASSSSSSSSSSSSSSSSSSSSQAQCAASASAQSSSSSSSSSSSSSASAQACACAACQSSSSSSSSSSSQSCSACAAAAACSSSSSSSSSSSSSQSQAQCQACACASSSSSSSSSSSSSQSAAAQAAAACCAACSSSSSSSSSSQSCQASACCAAAAAAAAAAAAAAASCSQQAAAAAAAAAAAAAAAAAAAAACSQAASSSSSSSSSSSSSSSSSSSSQSSAASSSSSSSSSSSSSSSSSSSSQSQAASSSSSSSSSSSSSSSSSSSSQSCSASSSSSSSSSSSSSSSSSSSSQSCAQSSSSSSSSSSSSSSSSSSSSQSAAASSSSSSSSSSSSSSSSSSSSQT//EAB0RAQEBAAEFAQAAAAAAAAAAABEAAVAQIDBAYKD/2gAIAQMBAT8Q+lcnJycnJycnJycnJycnJycnJycnJycnJycnJycnJycnJycnJycnJycnJycnJycnJ5ocGRER6J3HU8Z+ML//xAAbEQEBAAEFAAAAAAAAAAAAAAARAAEwQFBwoP/aAAgBAgEBPxDr4iM6zwbMzOxVjL41f//EACoQAAMAAAUDAgYDAQAAAAAAAAABESExQVFhEHGRgaEwUNHh8PEgQLHB/9oACAEBAAE/ENHf5Y7MDnCt/L7FBjVnTR3+CzExFfkLVI/3MZ9X3Maqnr00dzjHEOIcQ4hxDiHEOIcQ4hxDiHEOIcQ4hxDiHEOIcQ4hxDiHEOIcQ4hxDiHEOIcQ4hxDiHEOIcQ4hxDiHEOINyydCmpqnTR3I7ix6vA2ubwJNavA9Y/gabebwJNZs/Q0eLwes9fg9U7FbPwJNZt4Jhm8DTbwbwJNZs/Qj0bwNNvBvAk7m8EwzeBK8GXoJrm8E5eBd3g3x+D1jTbzeCtn4EosXeOwlu5OWWx6ycvA0643g4H4Gm0oy9BJ3N4PX4Grky9BJzN4I93gnLwNPd4Emnm8HrGrky9Ctn4Faonl00dxw4SZp0NxNiqP50qKiNy4YFKUgjsM0nuUpSlKUgqZ8x2EFKUpSjgXA7NDsO0zZCdRTM6aO42lmNWb9hMcTx6xbI0/g8iCy6syDkOQ5MjkOQwLTkOQ5BMyZG5yHIRLoNGoo1h8fM6aO5kUVKxU/g0+CzIOIcMCfhFjwfkRbT2MWRd4bKQ6/QJ+nsT+w/Mji9jHn+B7euxdWexBxdBMaWOJe1Gpv8TM6aO5lQrs8iTuKvimJ3dW4qVSlQhK8iWm6bhQa3RLQQKaXArNKz3Y1aMUtRlF5sBMG9ItbCxuOyKF/cUExrIWfqGysbuicbn7irSqj+PmdNHcZJYq+pWeT8/cVbHVz9xLRdXjuByiwiEzehiiwb1GulCyMbzGFo0mb3Haj0E4pkTg05w2NURcmvJNyHj08/Ym5HoJqaJGa/PQahRoS3L89CY616OCStu+5NyJuWZKzUMqypNyJeE8k3ISxW8PiZnTR3GaWCn4GX9g3X1DN5qdEgeqEjfqQrWggTxVFbjD3L6+DIZwsJWe1JfYNGxQhLIEk3mGk8cBC+8weqkGb3qQczYxOjJ2kVmLwFm3inULmLDpdH8TM6aO5lWTHyTZHYKbuJdWTG8kh/qDTBbXEt4vHYYWCEy0L29xs9Pcrb3OD3FaQ84PU098WY3u/UmVp4blW4+5j19z/nclcmAno+422L25GrdvkziTYL/TEuIPFj/rGmeKtwFDq0GqV5nJ8XM6aO4ySVVxE4uvcSvHK8mW79Vqt0cjHNTfwYmv0E01hj7FX6ijf0FX6Cj+0qn0FUv+RI/tKv0Kon/kq/Uq/Qwv0kbvAmm5g9DgXg4F4+LmdNHcuLkfi/Zdj89f4JWUuBzDsHcujRiDxTJvT8L0Gr/oSN4wu4kkosj1+w3WGApZApW9hdYuwXWLh6E3oFncUL+4saipgj+NmdNHcmKtrHQz5xc2ZMBM4JS89Iq5QSmK5jSjeiErbVtorunicvscgnK3Alr7CMnT2ByERpvBsTFj0ECBO4YJa2EJYMBGRaZv8ISh2ugcRkfGZnTR3MiwuJRfyivRPHV2YZmJiEsFEXcScaJ3DsE8QlhjOsXNkbsSJSsiSsi5sjdkW0NXm2ZrQ71Ge1jR5tiROoM1rE3Dff4rRNJ6kRO5idk/YbTtdNHcRtYEvMahx+4q/KTSeaTOB4OB4MGDpo7j0lgZcczI8Ox2/wCGXkVmKK0E9aRk0LsLOSorjV8kebpo7jNLBU5p2DsMzVS5w/g1TJkS9LEMToYh3ukmDXHLzmNE9H2ZjRdQ4mNVf7GZ00dzKjuWe4mks8irdfwbVoqtClQs7i7A3pFKzuLsCc44u5SpUrO4ePBP2G8UQt7L/YzOmjuTFV7lbNPz9ys8nlv9y7H5+4h1LTq0nUdi9G8nIK3FTNnMLwxyG0icw0MwNmwbbhGlG7/dzOmjuQieTtZAkbc06NVRjUzHyc05omuZITtaLmbM5oytk8GZhZzml7i7K7/3Mzpo7jWZk3e5Kz9ybvcSrBq9+rVYNQm5E3oy6EnNUWHFolvFQWLFqErNE3CbkLLYTcjuR3IanCCVYtQ70ZmD0/rZnTR3HUVXuN08G/X7iaZJ+fuJOiT3zOL36YCiV75USNelGituArmeJFSx3GiueAqyKUpSlKUpSlKUpSlKUpSlKUpSmCupG68iUVqobrdNHcqYGbNQ5NGdYqa9YnmRsRsRsRsiNiNiLYhCEIQhCEIQhCEIQhCEIQhCEITq0eaEmDpo7jQymG8MrB+GY2TnZmAsO+DMbJpdmM2jeD+VZnTR3MAJjmPy7M6aO5WEcO5Dy4o05c/LMzpo7kxW+hGwrMbtxcFgrqc3yvM6aO5owp39pcMt7fY3w+BJTJePleZ00d/mGZ0//9k=" title="Нормальный рендер"&gt;&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Фреймы.&lt;/li&gt;
 &lt;/ol&gt;
@@ -1498,7 +1669,7 @@ pcap трафиком.&lt;/p&gt;
 достаточно эффективным, но при наличии "тяжелых" объектов браузер может
 некорректно отображать получившуюся страницу. К примеру, chromium на
 некоторых примерах при скроллинге стирает изображения:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="wiping" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCAEPAfQDAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/9oADAMBAAIQAxAAAAHtGagBooJCoAAAAAAAAAUoAAAAAAAAAAAjz1k6Rlc2ZAPXFM0AKUEgSszUCk1ZpAAIUoAAAAAAAAAAAAAAJHCoalyExYUeuAICFBQvOayaTVhJLloumbcgAUSgAAAAAAAAAAAAAWzhVLGVJmhD1RgAhqoQSyb63naAAA5zUN3IAApQAAAAAAAAAACQBCnKuSdJdLELEwnpWAEKZC5m+t52gAAAOU1DdyBSgoAAAAAAAAAABIgBTjZgq6imaSDuoxVAKc5vrcItAAAAczE30uBQUEKCFAKAAAAAAAAABHGspFhqJQ0naUSgBJcr1uZFoAAADBDM30uIUoAAAAIUAAAAAAAFAjjWQQgBU9MsIADnN9LigtAAAAZBzm+twIUEKCFIUEKAAAAAAACFEYrIABkHoiEBAYm+twBaAAAAhDM1q5oAAAAAAAAAKAAAAAI5lXSAAQ0QzQFMzfS4Ei0AAABzKZmtJqwQ0AAAAAAAAAAAAABHFbFq2UCIaBmhTRym+twJFoAAADmUzNaTVkAKAUAAAAAAAAAAACMLkHSxCpENkJQAxN9bgSLQAAAHMpib3cDQBQAAAAAAAAAAAABHFR0sAAS6SGaENEmqmrJFoAAAADlN9bgAAAAAAAAAAAAAAAI4rZdXOqgKYzd2CUALHNvrcSLQAAAAxKXdyAAAAAAAAAAAAAAAEYWA2gEC1KAADDQ0zaAAAAhzm+twAAAAAAAAAAAAAAAJFMggAKClAAAOTemd2CSwi1LZSHLPTrrnQAAAAAAAAAAAAAAASAqFBQAIAAAA5t5gtTVyIsliw63FSAAoICgAAAAAAAAAAAAVCgoAEAAAAcZvdmVkABW0hmXpcAQAoAKAAAAAAAAAAQsQtKhS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" title="Chromium wiping" /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img alt="wiping" src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAAQABAAD/2wBDAFA3PEY8MlBGQUZaVVBfeMiCeG5uePWvuZHI////////////////////////////////////////////////////2wBDAVVaWnhpeOuCguv/////////////////////////////////////////////////////////////////////////wgARCAEPAfQDAREAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAECAwT/xAAXAQEBAQEAAAAAAAAAAAAAAAAAAQID/9oADAMBAAIQAxAAAAHtGagBooJCoAAAAAAAAAUoAAAAAAAAAAAjz1k6Rlc2ZAPXFM0AKUEgSszUCk1ZpAAIUoAAAAAAAAAAAAAAJHCoalyExYUeuAICFBQvOayaTVhJLloumbcgAUSgAAAAAAAAAAAAAWzhVLGVJmhD1RgAhqoQSyb63naAAA5zUN3IAApQAAAAAAAAAACQBCnKuSdJdLELEwnpWAEKZC5m+t52gAAAOU1DdyBSgoAAAAAAAAAABIgBTjZgq6imaSDuoxVAKc5vrcItAAAAczE30uBQUEKCFAKAAAAAAAAABHGspFhqJQ0naUSgBJcr1uZFoAAADBDM30uIUoAAAAIUAAAAAAAFAjjWQQgBU9MsIADnN9LigtAAAAZBzm+twIUEKCFIUEKAAAAAAACFEYrIABkHoiEBAYm+twBaAAAAhDM1q5oAAAAAAAAAKAAAAAI5lXSAAQ0QzQFMzfS4Ei0AAABzKZmtJqwQ0AAAAAAAAAAAAABHFbFq2UCIaBmhTRym+twJFoAAADmUzNaTVkAKAUAAAAAAAAAAACMLkHSxCpENkJQAxN9bgSLQAAAHMpib3cDQBQAAAAAAAAAAAABHFR0sAAS6SGaENEmqmrJFoAAAADlN9bgAAAAAAAAAAAAAAAI4rZdXOqgKYzd2CUALHNvrcSLQAAAAxKXdyAAAAAAAAAAAAAAAEYWA2gEC1KAADDQ0zaAAAAhzm+twAAAAAAAAAAAAAAAJFMggAKClAAAOTemd2CSwi1LZSHLPTrrnQAAAAAAAAAAAAAAASAqFBQAIAAAA5t5gtTVyIsliw63FSAAoICgAAAAAAAAAAAAVCgoAEAAAAcZvdmVkABW0hmXpcAQAoAKAAAAAAAAAAQsQtKhS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" title="Chromium wiping"&gt;&lt;/p&gt;
 &lt;p&gt;Internet Explorer 8, распространяющийся в составе Windows 7 вообще не
 умеет работать по &lt;a href="http://tools.ietf.org/html/rfc2397" title="RFC 2397"&gt;RFC2397&lt;/a&gt;, но уже Internet Explorer 11 справляется.&lt;/p&gt;
 &lt;p&gt;Встроенный документ может в свою очередь может содержать встроенные документы.
@@ -1537,7 +1708,12 @@ B, а B в свою очередь встроен в A, необходимо с�
 
 &lt;p&gt;В котором в свою очередь блок base64 представляет собой image/gif
 изображение:&lt;/p&gt;
-&lt;p&gt;&lt;img alt="bang" src="data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==" title="Bang!" /&gt;&lt;/p&gt;</summary><category term="http"></category><category term="pcap"></category><category term="traffic"></category><category term="xplico"></category><category term="forensic analysis"></category></entry><entry><title>G-CPAN</title><link href="http://blog.hoxnox.com/gentoo/g-cpan.html" rel="alternate"></link><published>2015-02-04T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-04:gentoo/g-cpan.html</id><summary type="html">&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
+&lt;p&gt;&lt;img alt="bang" src="data:image/gif;base64,R0lGODlhMgAeAMZcAAAAAAMDAwUFBQYGBgcHBwgICAoKCgsLCw4ODhAQEBERERISEhMTExUVFRYWFhwcHB4eHh8fHyAgICEhISIiIiQkJCcnJygoKCkpKSoqKiwsLC4uLjExMTIyMj09PUBAQERERExMTFFRUVJSUlNTU1lZWVpaWlxcXF5eXmRkZGVlZWhoaGxsbG1tbXh4eIqKio6OjpCQkJKSkpiYmJmZmaCgoKWlpbKysrOzs729vb6+vsDAwMHBwcLCwsbGxsjIyMzMzM7OztPT09XV1dfX19nZ2eDg4OLi4uTk5OXl5ebm5ufn5+np6evr6+zs7O3t7e7u7u/v7/Dw8PHx8fPz8/T09PX19fb29vf39/n5+fv7+/39/f///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////yH5BAEKAH8ALAAAAAAyAB4AAAf+gFyCg4SFhoeIiYqLjI2Oj5CRkpOUlZaXmJmam5ydnp+gnACjAAUULU+dAIyrglhEKiCqrIVPBoJFJAsIIk2CADYcBA4nToM0EgIVM61czYnNWEUrslwbOldSLCm/GTlUSSYlgjgSO1Q7Ec3PiKSkD0eGUw+/QYNMDIIeOIM3zQi0BGUZEgKFICMjGowK8GsLoVYKogyC0sxCwEFLEgj64AKJFiyt2EGUKIgiJHZK8nE5QEUQj5CFWu0bhIPdomYDQ3DjwgGGFSAYYD4kN6FHlR4T1rEiJYCCCyuCgnQYAEGG0EHNZkRQFmMA1lCLfFwAq+iEECs/Nrwgm6iGBgMOGGA4ZEu3rt27ePOyDQQAOw==" title="Bang!"&gt;&lt;/p&gt;</content><category term="http"></category><category term="pcap"></category><category term="traffic"></category><category term="xplico"></category><category term="forensic analysis"></category></entry><entry><title>G-CPAN</title><link href="http://blog.hoxnox.com/gentoo/g-cpan.html" rel="alternate"></link><published>2015-02-04T00:00:00+03:00</published><updated>2015-02-04T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-02-04:/gentoo/g-cpan.html</id><summary type="html">&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
+я разбираюсь как свинья в апельсинах, тем не менее я знаю о
+существовании единого репозитория &lt;a href="http://www.cpan.org/"&gt;CPAN&lt;/a&gt;. В то же
+время я понимаю боль управления зависимостями и плюшки, которые нам
+приносят системы управления пакетами. В портах gentoo DBD-ODBC не
+оказалось. Гугление …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Понадобилось мне однажды установить perl-модуль &lt;a href="https://metacpan.org/pod/DBD::ODBC#CONFIGURATION-AND-ENVIRONMENT"&gt;DBD::ODBC&lt;/a&gt;. Хотя в перле
 я разбираюсь как свинья в апельсинах, тем не менее я знаю о
 существовании единого репозитория &lt;a href="http://www.cpan.org/"&gt;CPAN&lt;/a&gt;. В то же
 время я понимаю боль управления зависимостями и плюшки, которые нам
@@ -1608,7 +1784,13 @@ perl-module. В исходнике видна переменная myconf, зн�
 &lt;li&gt;???&lt;/li&gt;
 &lt;li&gt;???&lt;/li&gt;
 &lt;li&gt;PROFIT!!!&lt;/li&gt;
-&lt;/ul&gt;</summary><category term="gentoo"></category><category term="g-cpan"></category><category term="cpan"></category><category term="perl"></category></entry><entry><title>irtoy</title><link href="http://blog.hoxnox.com/gentoo/irtoy.html" rel="alternate"></link><published>2015-01-18T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-01-18:gentoo/irtoy.html</id><summary type="html">&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
+&lt;/ul&gt;</content><category term="gentoo"></category><category term="g-cpan"></category><category term="cpan"></category><category term="perl"></category></entry><entry><title>irtoy</title><link href="http://blog.hoxnox.com/gentoo/irtoy.html" rel="alternate"></link><published>2015-01-18T00:00:00+03:00</published><updated>2015-01-18T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2015-01-18:/gentoo/irtoy.html</id><summary type="html">&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
+v2&lt;/a&gt;. Целый день убил
+на то, чтобы разобраться как завести эту штуку под LIRC'ом.&lt;/p&gt;
+&lt;p&gt;Чтобы работать с девайсом в ядре должна быть поддержка CONFIG_USB_ACM.&lt;/p&gt;
+&lt;p&gt;Первое что необходимо сделать - обновить прошивку до свежей версии. Для
+этих целей используется &lt;a href="https://diolan.com/pic-bootloader"&gt;Diolan
+bootloader&lt;/a&gt;. Официальная …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Заказал у товарищей из Dangerous Prototypes девайс &lt;a href="http://dangerousprototypes.com/docs/USB_IR_Toy_v2"&gt;USB IR Toy
 v2&lt;/a&gt;. Целый день убил
 на то, чтобы разобраться как завести эту штуку под LIRC'ом.&lt;/p&gt;
 &lt;p&gt;Чтобы работать с девайсом в ядре должна быть поддержка CONFIG_USB_ACM.&lt;/p&gt;
@@ -1696,7 +1878,15 @@ ffff001100000000 00 down RemoteXXX.conf
     &lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="n"&gt;irCode&lt;/span&gt;
     &lt;span class="n"&gt;time&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sleep&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
     &lt;span class="n"&gt;toy&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;transmit&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;irCode&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="lirc"></category><category term="irtoy"></category><category term="xbmc"></category><category term="bose"></category></entry><entry><title>YaC 2014</title><link href="http://blog.hoxnox.com/devel/YaC.html" rel="alternate"></link><published>2014-10-31T00:00:00+03:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-31:devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
+&lt;/pre&gt;&lt;/div&gt;</content><category term="lirc"></category><category term="irtoy"></category><category term="xbmc"></category><category term="bose"></category></entry><entry><title>YaC 2014</title><link href="http://blog.hoxnox.com/devel/YaC.html" rel="alternate"></link><published>2014-10-31T00:00:00+03:00</published><updated>2014-10-31T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-31:/devel/YaC.html</id><summary type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
+компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
+Security". Прослушал следующие доклады:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Презентация технологии распознавания речи от компании Яндекс. На
+   докладе представлен SpeechKit - публичный программный интерфейс
+   распознавания речи и сервис Cloud. Технология позволяет с 95%
+   точностью распознавать русскую речь для географических …&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;</summary><content type="html">&lt;p&gt;30 октября 2014 года прошла конференция YaC-2014, организованная
 компанией Яндекс. Я присутствовал на секциях "Backend" и "Information
 Security". Прослушал следующие доклады:&lt;/p&gt;
 &lt;ol&gt;
@@ -1756,7 +1946,12 @@ Security". Прослушал следующие доклады:&lt;/p&gt;
    filesystem, shared IPC, host networking, share device nodes),
    обнаружение служб (srvice discovery).&lt;/p&gt;
 &lt;/li&gt;
-&lt;/ol&gt;</summary><category term="YaC"></category></entry><entry><title>Немного подробней об SNMP</title><link href="http://blog.hoxnox.com/devel/snmp-ext.html" rel="alternate"></link><published>2014-10-11T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-11:devel/snmp-ext.html</id><summary type="html">&lt;p&gt;SNMP - простой протокол сетевого управления. Он включает следующие
+&lt;/ol&gt;</content><category term="YaC"></category></entry><entry><title>Немного подробней об SNMP</title><link href="http://blog.hoxnox.com/devel/snmp-ext.html" rel="alternate"></link><published>2014-10-11T00:00:00+04:00</published><updated>2014-10-11T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-11:/devel/snmp-ext.html</id><summary type="html">&lt;p&gt;SNMP - простой протокол сетевого управления. Он включает следующие
+элементы: некоторое количество узлов, способных отвечать на запросы
+(агенты), как минимум один генератор команд (менеджер) и протокол, с
+помощью которого они взаимодействуют. На данный момент актуальна версия
+3, в которую были добавлены алгоритмы аутентификации с целью
+предотвращения модификации данных и подмены отправителя …&lt;/p&gt;</summary><content type="html">&lt;p&gt;SNMP - простой протокол сетевого управления. Он включает следующие
 элементы: некоторое количество узлов, способных отвечать на запросы
 (агенты), как минимум один генератор команд (менеджер) и протокол, с
 помощью которого они взаимодействуют. На данный момент актуальна версия
@@ -1918,7 +2113,12 @@ contextName, contextEngineID, тип и конкретный элемент.&lt;
 ifDescr. Для того, чтобы идентифицировать первый индерфейс на устройстве
 X, необходимо задать snmpEngineID SNMP сущности, которая имеет доступ к
 управляющей информации на устройстве X, название контекста (устройство
-X), тип управляемого объекта (ifDescr) и конкретный элемент (1).&lt;/p&gt;</summary><category term="snmp"></category><category term="pdu"></category><category term="rfc"></category></entry><entry><title>SNMP</title><link href="http://blog.hoxnox.com/devel/snmp.html" rel="alternate"></link><published>2014-10-10T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-10:devel/snmp.html</id><summary type="html">&lt;p&gt;&lt;strong&gt;SNMP&lt;/strong&gt; - протокол, позволяющий по сети управлять различными устройствами и
+X), тип управляемого объекта (ifDescr) и конкретный элемент (1).&lt;/p&gt;</content><category term="snmp"></category><category term="pdu"></category><category term="rfc"></category></entry><entry><title>SNMP</title><link href="http://blog.hoxnox.com/devel/snmp.html" rel="alternate"></link><published>2014-10-10T00:00:00+04:00</published><updated>2014-10-10T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-10-10:/devel/snmp.html</id><summary type="html">&lt;p&gt;&lt;strong&gt;SNMP&lt;/strong&gt; - протокол, позволяющий по сети управлять различными устройствами и
+системами. Кроме того можно получать различные данные, как в режиме
+запрос/ответ, так и в режиме уведомления.&lt;/p&gt;
+&lt;p&gt;Не смотря на свое название &lt;code&gt;SNMP&lt;/code&gt; не так уж прост. Для понимания всех
+тонкостей стандарта, необходимо прочитать множество стандартов и RFC.
+Необходимый минимум можно …&lt;/p&gt;</summary><content type="html">&lt;p&gt;&lt;strong&gt;SNMP&lt;/strong&gt; - протокол, позволяющий по сети управлять различными устройствами и
 системами. Кроме того можно получать различные данные, как в режиме
 запрос/ответ, так и в режиме уведомления.&lt;/p&gt;
 &lt;p&gt;Не смотря на свое название &lt;code&gt;SNMP&lt;/code&gt; не так уж прост. Для понимания всех
@@ -2033,7 +2233,14 @@ ebuild'ы&lt;/a&gt;. Надо бы и
 
 &lt;p&gt;или snmpGet из snmp++:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;snmpGet 127.0.0.1 1.3.6.1.3.100.2.1.0 -v3 -sl2 -snMD5 -authMD5 -uaMD5UserAuthPassword -P4160
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="zabbix"></category><category term="snmp"></category><category term="agent++"></category></entry><entry><title>etoken в корпоративных сетях</title><link href="http://blog.hoxnox.com/gentoo/etoken.html" rel="alternate"></link><published>2014-09-01T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-09-01:gentoo/etoken.html</id><summary type="html">&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
+&lt;/pre&gt;&lt;/div&gt;</content><category term="zabbix"></category><category term="snmp"></category><category term="agent++"></category></entry><entry><title>etoken в корпоративных сетях</title><link href="http://blog.hoxnox.com/gentoo/etoken.html" rel="alternate"></link><published>2014-09-01T00:00:00+04:00</published><updated>2014-09-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-09-01:/gentoo/etoken.html</id><summary type="html">&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
+(работает через куку по SSL). Для красноглазых имеется openconnect (в
+генте есть в портежах).&lt;/p&gt;
+&lt;p&gt;Наш ключик:
+http://www.safenet-inc.com/products/data-protection/two-factor-authentication/etoken-pro/?aldn=true&lt;/p&gt;
+&lt;p&gt;Нам понядобятся драйвера:
+http://www.aladdin-rd.ru/support/downloads/21493/
+http://www.aladdin-rd.ru/support …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Для соединения с корпоративной циской можно использовать AnyConnect клиент
 (работает через куку по SSL). Для красноглазых имеется openconnect (в
 генте есть в портежах).&lt;/p&gt;
 &lt;p&gt;Наш ключик:
@@ -2065,7 +2272,12 @@ http://www.it-lines.ru/blogs/linux/nastrojka-etoken-v-gentoo-linux&lt;/p&gt;
 &lt;p&gt;Тут https://www.mayrhofer.eu.org/aladdin-etoken-under-linux товарищ
 рассказывает как можно с помощью opencs
 (https://www.opensc-project.org/opensc/wiki/AladdinEtokenPro#Linux) c
-этим делом общаться.&lt;/p&gt;</summary><category term="getnoo"></category><category term="etoken"></category><category term="enterprise"></category></entry><entry><title>Динамическая маршрутизация</title><link href="http://blog.hoxnox.com/inet/ospf.html" rel="alternate"></link><published>2014-02-14T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-02-14:inet/ospf.html</id><summary type="html">&lt;p&gt;Существует 2 вида протоколов динамической маршрутизации - EGP и IGP.
+этим делом общаться.&lt;/p&gt;</content><category term="getnoo"></category><category term="etoken"></category><category term="enterprise"></category></entry><entry><title>Динамическая маршрутизация</title><link href="http://blog.hoxnox.com/inet/ospf.html" rel="alternate"></link><published>2014-02-14T00:00:00+04:00</published><updated>2014-02-14T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-02-14:/inet/ospf.html</id><summary type="html">&lt;p&gt;Существует 2 вида протоколов динамической маршрутизации - EGP и IGP.
+Внешний и внутренний соответственно. Внешний только один - BGP.
+Внутренние, в свою очередь, делятся на Distance-Vector (RIP, EIGRP) и Link
+State (OSPF, IS-IS). Если на маршрутизаторе настроено несколько
+протоколов, то в силу вступает Administrative distance (AD). Это число от 0
+до 255 …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Существует 2 вида протоколов динамической маршрутизации - EGP и IGP.
 Внешний и внутренний соответственно. Внешний только один - BGP.
 Внутренние, в свою очередь, делятся на Distance-Vector (RIP, EIGRP) и Link
 State (OSPF, IS-IS). Если на маршрутизаторе настроено несколько
@@ -2172,7 +2384,21 @@ Hello-пакеты, а каждые 30 минут рассылаются LSA —
 &lt;p&gt;loopback&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;interface loo 0
 ip address 172.16.255.1 255.255.255.255
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="ospf"></category><category term="inet"></category><category term="routing"></category></entry><entry><title>QEMU</title><link href="http://blog.hoxnox.com/virtual/qemu.html" rel="alternate"></link><published>2014-01-04T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-01-04:virtual/qemu.html</id><summary type="html">&lt;p&gt;Создать диск: &lt;/p&gt;
+&lt;/pre&gt;&lt;/div&gt;</content><category term="ospf"></category><category term="inet"></category><category term="routing"></category></entry><entry><title>QEMU</title><link href="http://blog.hoxnox.com/virtual/qemu.html" rel="alternate"></link><published>2014-01-04T00:00:00+04:00</published><updated>2014-01-04T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2014-01-04:/virtual/qemu.html</id><summary type="html">&lt;p&gt;Создать диск: &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Для KVM эмуляции надо собирать ядро и qemu с поддержкой KVM.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;⚒ ~  cat /etc/portage/env/qemu.conf 
+QEMU_SOFTMMU_TARGETS=&amp;quot;i386 x86_64&amp;quot;
+QEMU_USER_TARGETS=&amp;quot;i386 x86_64&amp;quot;
+
+⚒ ~  grep &amp;#39;KVM&amp;#39; /usr/src/linux/.config
+CONFIG_HAVE_KVM=y
+CONFIG_HAVE_KVM_IRQCHIP=y
+CONFIG_HAVE_KVM_IRQ_ROUTING=y
+CONFIG_HAVE_KVM_EVENTFD=y …&lt;/pre&gt;&lt;/div&gt;</summary><content type="html">&lt;p&gt;Создать диск: &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-img create -f qcow2 /media/data/vbox/Debian7.i386.qcow2 10G
 &lt;/pre&gt;&lt;/div&gt;
 
@@ -2219,7 +2445,8 @@ CONFIG_VIRTIO_MMIO_CMDLINE_DEVICES=y
 драйверами, простой сетью (без низкоуровневых вещей типа icmp) и без
 графики (управление по ssh).&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;qemu-system-i386 -enable-kvm -cpu host -drive file=/media/data/vbox/Debian7.i386.virtio.survey.qcow2,index=0,media=disk,if=virtio -device virtio-net-pci,netdev=net0 -netdev user,id=net0,hostfwd=tcp::28955-:22 -nographic
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="qemu"></category></entry><entry><title>Использование одного локального адреса для двух различных соединений</title><link href="http://blog.hoxnox.com/inet/tcp_commonlocaladdr.rst.html" rel="alternate"></link><published>2012-10-31T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-10-31:inet/tcp_commonlocaladdr.rst.html</id><summary type="html">&lt;p&gt;Как выяснилось стэк TCP/IP Linux-3.3.8 идентифицирует соединение не только по локальному адресу, но
+&lt;/pre&gt;&lt;/div&gt;</content><category term="qemu"></category></entry><entry><title>Использование одного локального адреса для двух различных соединений</title><link href="http://blog.hoxnox.com/inet/tcp_commonlocaladdr.rst.html" rel="alternate"></link><published>2012-10-31T00:00:00+04:00</published><updated>2012-10-31T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-10-31:/inet/tcp_commonlocaladdr.rst.html</id><summary type="html">&lt;p class="first last"&gt;Использование одного локального адреса для двух различных соединений.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Как выяснилось стэк TCP/IP Linux-3.3.8 идентифицирует соединение не только по локальному адресу, но
 и по удалённому. Следовательно можно использовать несколько сокетов, забинденных на один локальный
 арес, но соединенных с разными удалёнными адресами. Проверим данную гипотезу. Для этого получим 5
 HTML страниц с www.afrinic.net www.lacnic.net www.arin.net www.ripe.net и www.apnic.net по протоколу
@@ -2409,7 +2636,8 @@ int main(int argc, char * argv[])
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-</summary><category term="tcp"></category></entry><entry><title>ODBC</title><link href="http://blog.hoxnox.com/devel/odbc.html" rel="alternate"></link><published>2012-09-28T00:00:00+04:00</published><author><name>Kim Merder &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-09-28:devel/odbc.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="tcp"></category></entry><entry><title>ODBC</title><link href="http://blog.hoxnox.com/devel/odbc.html" rel="alternate"></link><published>2012-09-28T00:00:00+04:00</published><updated>2012-09-28T00:00:00+04:00</updated><author><name>Kim Merder &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-09-28:/devel/odbc.html</id><summary type="html">&lt;p class="first last"&gt;Немного об ODBC  в gentoo на C++&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Введение&lt;/h2&gt;
 &lt;p&gt;Для тех кто не в курсе, ODBC позволяет абстрагироваться от интерфейса конкретной СУБД. Это некоторая
 прослойка, в которой вы можете настроить источник данных, дать ему имя и общаться с ним на уровне
@@ -2505,7 +2733,8 @@ Database=test
 &lt;li&gt;libodbc++ reference : &lt;a class="reference external" href="http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html"&gt;http://libodbcxx.sourceforge.net/libodbc++/progref/namespaceodbc.html&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/div&gt;
-</summary><category term="database"></category><category term="odbc"></category><category term="c++"></category></entry><entry><title>Об организации проектов C++</title><link href="http://blog.hoxnox.com/devel/repo_org.html" rel="alternate"></link><published>2012-09-20T00:00:00+04:00</published><author><name>Merder Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-09-20:devel/repo_org.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="database"></category><category term="odbc"></category><category term="c++"></category></entry><entry><title>Об организации проектов C++</title><link href="http://blog.hoxnox.com/devel/repo_org.html" rel="alternate"></link><published>2012-09-20T00:00:00+04:00</published><updated>2012-09-20T00:00:00+04:00</updated><author><name>Merder Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-09-20:/devel/repo_org.html</id><summary type="html">&lt;p class="first last"&gt;Организация git-репозиотрия. Именование и расположение директорий, работа с подпроектами.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Структура репоризитория и проекта&lt;/h2&gt;
 &lt;p&gt;Все C/C++ проекты храняться в едином репозитории, работа которого опирается на систему контроля
 версий git. Каждый проект представляет собой git-репозиторий (как правило bare).&lt;/p&gt;
@@ -2682,7 +2911,8 @@ git read-tree --prefix= -u string@rmt
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="git"></category><category term="management"></category></entry><entry><title>TLS - практика</title><link href="http://blog.hoxnox.com/sec/ssl_practice.html" rel="alternate"></link><published>2012-08-16T00:00:00+04:00</published><author><name>hoxnox@gmail.com</name></author><id>tag:blog.hoxnox.com,2012-08-16:sec/ssl_practice.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="git"></category><category term="management"></category></entry><entry><title>TLS - практика</title><link href="http://blog.hoxnox.com/sec/ssl_practice.html" rel="alternate"></link><published>2012-08-16T00:00:00+04:00</published><updated>2012-08-16T00:00:00+04:00</updated><author><name>hoxnox@gmail.com</name></author><id>tag:blog.hoxnox.com,2012-08-16:/sec/ssl_practice.html</id><summary type="html">&lt;p class="first last"&gt;Практика работы с SSL.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Установление соединения&lt;/h2&gt;
 &lt;p&gt;Первое, что мы сделаем - пошлём простейший пакет, содержащий ClinetHello.&lt;/p&gt;
 &lt;p&gt;Итак, структура простейшего ClientHello&lt;/p&gt;
@@ -2714,7 +2944,8 @@ CipherSuite = { 0x00, 0x00, 0x00, 0x0D, 0x00, 0x10, 0x00, 0x13, 0x00, 0x16, 0x00
 CompressionMethod = 0x0
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="tls"></category><category term="ssl"></category><category term="security"></category><category term="cryptography"></category><category term="protocol"></category><category term="c++"></category></entry><entry><title>Что такое SSL?</title><link href="http://blog.hoxnox.com/sec/tls.html" rel="alternate"></link><published>2012-08-14T00:00:00+04:00</published><author><name>hoxnox@gmail.com</name></author><id>tag:blog.hoxnox.com,2012-08-14:sec/tls.html</id><summary type="html">&lt;p&gt;SSL - это протокол, позволяющий устанавливать защищенные соединения. На основе SSL 3.0 был
+</content><category term="tls"></category><category term="ssl"></category><category term="security"></category><category term="cryptography"></category><category term="protocol"></category><category term="c++"></category></entry><entry><title>Что такое SSL?</title><link href="http://blog.hoxnox.com/sec/tls.html" rel="alternate"></link><published>2012-08-14T00:00:00+04:00</published><updated>2012-08-14T00:00:00+04:00</updated><author><name>hoxnox@gmail.com</name></author><id>tag:blog.hoxnox.com,2012-08-14:/sec/tls.html</id><summary type="html">&lt;p class="first last"&gt;Описание протокола TLS на основе RFC-5246&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;SSL - это протокол, позволяющий устанавливать защищенные соединения. На основе SSL 3.0 был
 разработан TLS. Сейчас, когда говорят об SSL имеют ввиду TLS. TLS - основа безопасности в Интернете.&lt;/p&gt;
 &lt;p&gt;Как только клиент и сервер решили общаться по протоколу SSL, первое что они делают - процедура
 установления соединения (рукопожатие - handshake).&lt;/p&gt;
@@ -3608,7 +3839,9 @@ CipherSuite  TLS_DH_anon_WITH_AES_256_CBC_SHA256  =  {  0x00, 0x6D  };
 &lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="ssl"></category><category term="tls"></category><category term="security"></category><category term="cryptography"></category></entry><entry><title>Учим Midnight Commander запоминать последнюю директорию</title><link href="http://blog.hoxnox.com/gentoo/mc_last_dir.html" rel="alternate"></link><published>2012-08-03T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-08-03:gentoo/mc_last_dir.html</id><summary type="html">&lt;p&gt;Для этих целей существует опция -P, которая сообщает mc записать состояние перед выходом в заданный
+</content><category term="ssl"></category><category term="tls"></category><category term="security"></category><category term="cryptography"></category></entry><entry><title>Учим Midnight Commander запоминать последнюю директорию</title><link href="http://blog.hoxnox.com/gentoo/mc_last_dir.html" rel="alternate"></link><published>2012-08-03T00:00:00+04:00</published><updated>2012-08-03T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-08-03:/gentoo/mc_last_dir.html</id><summary type="html">&lt;p class="first last"&gt;По-умолчанию mc при запуске открывает в обоих окнах текущую директорию. Можно поменять это
+поведение.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Для этих целей существует опция -P, которая сообщает mc записать состояние перед выходом в заданный
 файл. Кроме того, в состав дистрибутива входит специальный скрипт mc-wrapper.sh, который
 автоматизирует процесс закрывания/открывания mc нужным образом.&lt;/p&gt;
 &lt;p&gt;В gentoo данный скрипт лежит в&lt;/p&gt;
@@ -3621,7 +3854,8 @@ $ qlist mc | grep mc-wrapper
 &lt;p&gt;..code-block:: none&lt;/p&gt;
 &lt;blockquote&gt;
 alias mc='. /usr/libexec/mc/mc-wrapper.sh'&lt;/blockquote&gt;
-</summary><category term="gentoo"></category><category term="mc"></category></entry><entry><title>Прикручиваем hypercomments к pelican'у</title><link href="http://blog.hoxnox.com/blog/hypercomments.html" rel="alternate"></link><published>2012-07-25T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-07-25:blog/hypercomments.html</id><summary type="html">&lt;p&gt;Отличительно особенностью &lt;a class="reference external" href="http://hypercomments.com/"&gt;hypercomments&lt;/a&gt; от других систем комментирования является возможность
+</content><category term="gentoo"></category><category term="mc"></category></entry><entry><title>Прикручиваем hypercomments к pelican'у</title><link href="http://blog.hoxnox.com/blog/hypercomments.html" rel="alternate"></link><published>2012-07-25T00:00:00+04:00</published><updated>2012-07-25T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-07-25:/blog/hypercomments.html</id><summary type="html">&lt;p class="first last"&gt;Прикручиваем правильные комментарии.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Отличительно особенностью &lt;a class="reference external" href="http://hypercomments.com/"&gt;hypercomments&lt;/a&gt; от других систем комментирования является возможность
 выделить кусок текста и прокомментировать его.&lt;/p&gt;
 &lt;p&gt;Ясно, что javascript'овая функция и ключевой div блок, предлагаемые для вставки:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="p"&gt;&amp;lt;&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt; &lt;span class="na"&gt;id&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;hypercomments_widget&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&amp;lt;/&lt;/span&gt;&lt;span class="nt"&gt;div&lt;/span&gt;&lt;span class="p"&gt;&amp;gt;&lt;/span&gt;
@@ -3641,7 +3875,8 @@ alias mc='. /usr/libexec/mc/mc-wrapper.sh'&lt;/blockquote&gt;
 ./pelican-themes/bootstrap/templates/disqus.html
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;В первом заменяем соответствующий блок div, во втором - javascript.&lt;/p&gt;
-</summary><category term="blog"></category><category term="comments"></category><category term="web 2.0"></category></entry><entry><title>К-свёртка</title><link href="http://blog.hoxnox.com/other/kconvol.html" rel="alternate"></link><published>2012-06-07T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-07:other/kconvol.html</id><summary type="html">&lt;div class="section" id="id2"&gt;
+</content><category term="blog"></category><category term="comments"></category><category term="web 2.0"></category></entry><entry><title>К-свёртка</title><link href="http://blog.hoxnox.com/other/kconvol.html" rel="alternate"></link><published>2012-06-07T00:00:00+04:00</published><updated>2012-06-07T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-07:/other/kconvol.html</id><summary type="html">&lt;p class="first last"&gt;Описание контейнера к-свёртки&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Понятие к-свёртки&lt;/h2&gt;
 &lt;p&gt;Рассмотрим множества не повторяющихся
 натуральных чисел. Причем чаще всего
@@ -3837,7 +4072,8 @@ FF FF F7 86   10000110 11110111 11111111 11111111     1
 соответствующим блоком типа A даст ответ принадлежит ли данный системный номер свёртке.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="algorithm"></category><category term="container"></category></entry><entry><title>boost chrono</title><link href="http://blog.hoxnox.com/cxx/boost.chrono.html" rel="alternate"></link><published>2012-06-04T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-04:cxx/boost.chrono.html</id><summary type="html">&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
+</content><category term="algorithm"></category><category term="container"></category></entry><entry><title>boost chrono</title><link href="http://blog.hoxnox.com/cxx/boost.chrono.html" rel="alternate"></link><published>2012-06-04T00:00:00+04:00</published><updated>2012-06-04T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-06-04:/cxx/boost.chrono.html</id><summary type="html">&lt;p class="first last"&gt;Заметки по официальной документации &lt;a class="reference external" href="http://www.boost.org/doc/libs/1_49_0/doc/html/chrono/users_guide.html"&gt;boost.chrono&lt;/a&gt; от Vicente J. Botet Escriba.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Сразу отвечу на вопрос: Как замерить время работы определенной части кода:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;#include &amp;lt;boost/chrono.hpp&amp;gt;
 #include &amp;lt;cmath&amp;gt;
 
@@ -3865,7 +4101,20 @@ int main()
 &lt;li&gt;nanoseconds&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
-</summary><category term="cxx"></category><category term="boost"></category><category term="chrono"></category><category term="time"></category></entry><entry><title>Samba и домен</title><link href="http://blog.hoxnox.com/internet/samba_domen.html" rel="alternate"></link><published>2012-04-19T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-19:internet/samba_domen.html</id><summary type="html">&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
+</content><category term="cxx"></category><category term="boost"></category><category term="chrono"></category><category term="time"></category></entry><entry><title>Samba и домен</title><link href="http://blog.hoxnox.com/internet/samba_domen.html" rel="alternate"></link><published>2012-04-19T00:00:00+04:00</published><updated>2012-04-19T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-19:/internet/samba_domen.html</id><summary type="html">&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
+пользователя на контроллер домена. Для этого необходимо собрать её с ключём ads. Затем настроить
+керберос (/etc/krb5.conf)&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[libdefaults]
+    default_realm = example.com
+
+[realms]
+    EXAMPLE.COM = {
+    kdc = server.example.com
+    }
+[domain_realms]
+    .EXAMPLE.COM = server.example.com
+&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;аутентификация в samba настраивается …&lt;/p&gt;</summary><content type="html">&lt;p&gt;Samba может быть сконфигурирована таким образом, чтобы возложить ответственность по авторизации
 пользователя на контроллер домена. Для этого необходимо собрать её с ключём ads. Затем настроить
 керберос (/etc/krb5.conf)&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;[libdefaults]
@@ -3883,7 +4132,8 @@ int main()
 realm = example.com
 password server = server.example.com
 &lt;/pre&gt;&lt;/div&gt;
-</summary><category term="samba"></category><category term="ads"></category><category term="DC"></category></entry><entry><title>IPv4 адресация в интернете</title><link href="http://blog.hoxnox.com/inet/ipv4.html" rel="alternate"></link><published>2012-04-03T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-03:inet/ipv4.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="samba"></category><category term="ads"></category><category term="DC"></category></entry><entry><title>IPv4 адресация в интернете</title><link href="http://blog.hoxnox.com/inet/ipv4.html" rel="alternate"></link><published>2012-04-03T00:00:00+04:00</published><updated>2012-04-03T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-03:/inet/ipv4.html</id><summary type="html">&lt;p class="first last"&gt;О структуре IPv4 адреса, сетях, подсетях, масках и немного маршрутизации.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Структура IPv4&lt;/h2&gt;
 &lt;p&gt;IPv4 - это 32 разрядное число, записанное для удобства побайтно. Если рассмотреть данное
 число в его двоичном представлении, то 4 самых старших бита (0, 1, 2, 3) классифицируют все адреса
@@ -3950,7 +4200,8 @@ E | 1 | 1 | 1 | 1 | Зарезирвировано (28bit)                      
 &lt;p&gt;Итого, всего адресов хостов в сети Интернет не более 2^7*(2^24-2) + 2^16(2^16-2) + 2^21*(2^8-2) =
 &lt;cite&gt;3 753 869 056&lt;/cite&gt;.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="Internet"></category><category term="IPv4"></category></entry><entry><title>Программирование сетевых приложений (TCP/IP) на C/C++</title><link href="http://blog.hoxnox.com/inet/tcp_programming.html" rel="alternate"></link><published>2012-04-02T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-02:inet/tcp_programming.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="Internet"></category><category term="IPv4"></category></entry><entry><title>Программирование сетевых приложений (TCP/IP) на C/C++</title><link href="http://blog.hoxnox.com/inet/tcp_programming.html" rel="alternate"></link><published>2012-04-02T00:00:00+04:00</published><updated>2012-04-02T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-04-02:/inet/tcp_programming.html</id><summary type="html">&lt;p class="first last"&gt;Записки на тему TCP/IP и его C-шных API.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Простейшие примеры&lt;/h2&gt;
 &lt;div class="section" id="tcp-ip"&gt;
 &lt;h3&gt;TCP/IP&lt;/h3&gt;
@@ -4534,7 +4785,8 @@ sysctl -w net.ipv4.tcp_tw_reuse=0
 &lt;p&gt;Эффективное программирование TCP/IP ( Йон Снейдер )
 &lt;a class="reference external" href="http://ru.fractalizer.ru/frpost_197"&gt;http://ru.fractalizer.ru/frpost_197&lt;/a&gt;/настройка-ядра-linux-для-поддержки-большо/&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://blog.hoxnox.com/other/parallel_notes.html" rel="alternate"></link><published>2012-03-28T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-28:other/parallel_notes.html</id><summary type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
+</content><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Неорганизованные пометки по параллельному программированию.</title><link href="http://blog.hoxnox.com/other/parallel_notes.html" rel="alternate"></link><published>2012-03-28T00:00:00+04:00</published><updated>2012-03-28T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-28:/other/parallel_notes.html</id><summary type="html">&lt;p class="first last"&gt;Записки по параллельному программированию.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;UML диаграммы, используемые при описании параллельных задач:&lt;/p&gt;
 &lt;table border="1" class="docutils"&gt;
 &lt;colgroup&gt;
 &lt;col width="36%" /&gt;
@@ -4860,7 +5112,8 @@ sysctl -w net.ipv4.tcp_tw_reuse=0
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</summary><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Маршрутизация</title><link href="http://blog.hoxnox.com/inet/route.html" rel="alternate"></link><published>2012-03-26T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-26:inet/route.html</id><summary type="html">&lt;div class="section" id="id2"&gt;
+</content><category term="UML"></category><category term="fork"></category><category term="exec"></category><category term="system"></category><category term="posix_spawn"></category><category term="C"></category></entry><entry><title>Маршрутизация</title><link href="http://blog.hoxnox.com/inet/route.html" rel="alternate"></link><published>2012-03-26T00:00:00+04:00</published><updated>2012-03-26T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-26:/inet/route.html</id><summary type="html">&lt;p class="first last"&gt;О системе маршрутизации.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id2"&gt;
 &lt;h2&gt;Основные понятия&lt;/h2&gt;
 &lt;p&gt;Без посторонней помощи компьютеры могут обмениваться пакетами только в рамках своей подсети. Для
 межсетевого взаимодействия им необходим маршрутизатор. Если несколько подсетей управляются одним
@@ -4941,7 +5194,8 @@ BGP). Часто операторы организуют точки обмена
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;/div&gt;
-</summary><category term="route"></category></entry><entry><title>DNS и Интернет</title><link href="http://blog.hoxnox.com/inet/dns_internet.html" rel="alternate"></link><published>2012-03-23T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-23:inet/dns_internet.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="route"></category></entry><entry><title>DNS и Интернет</title><link href="http://blog.hoxnox.com/inet/dns_internet.html" rel="alternate"></link><published>2012-03-23T00:00:00+04:00</published><updated>2012-03-23T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-23:/inet/dns_internet.html</id><summary type="html">&lt;p class="first last"&gt;Описание организации работы сети Интернет в рамках технологии DNS.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Главные по именам&lt;/h2&gt;
 &lt;p&gt;Выработкой правил функционирования DNS в Интернете занимается организация под названием &lt;a class="reference external" href="http://iana.org"&gt;IANA&lt;/a&gt;
 (Internet Assigned Numbers Authority), управляемая &lt;a class="reference external" href="http://icann.org"&gt;ICANN&lt;/a&gt; (Internet Corporation for Assigned Names
@@ -5053,7 +5307,8 @@ ns5.msk-ix.net.
 зоны которых могут являться копией зон оригинальных корневых серверов, а могут иметь свои записи,
 получая таким образом свой &amp;quot;альтернативный Интернет&amp;quot;.&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="DNS"></category><category term="internet"></category></entry><entry><title>Кто ты такой, DNS?</title><link href="http://blog.hoxnox.com/inet/dns.html" rel="alternate"></link><published>2012-03-22T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-22:inet/dns.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="DNS"></category><category term="internet"></category></entry><entry><title>Кто ты такой, DNS?</title><link href="http://blog.hoxnox.com/inet/dns.html" rel="alternate"></link><published>2012-03-22T00:00:00+04:00</published><updated>2012-03-22T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-03-22:/inet/dns.html</id><summary type="html">&lt;p class="first last"&gt;Краткое описание технологии DNS.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Основные понятия&lt;/h2&gt;
 &lt;p&gt;Не секрет, что каждая машина в сети, работающая по протоколу IP, уникально идентифицируется либо
 IPv4, либо IPv6. Использование данного номера при организации работы в сети имеет ряд существенных
@@ -5276,7 +5531,8 @@ Extensions&lt;/p&gt;
 &lt;li&gt;RFC1034, RFC1035&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/div&gt;
-</summary><category term="DNS"></category><category term="internet"></category><category term="DNS-zone"></category><category term="dig"></category><category term="nslookup"></category></entry><entry><title>Сеть</title><link href="http://blog.hoxnox.com/gentoo/net.html" rel="alternate"></link><published>2012-02-23T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-23:gentoo/net.html</id><summary type="html">&lt;p&gt;Без сети в Gentoo-desktop катастрофически тяжело. Поэтому еще до того, как я начну настройку и
+</content><category term="DNS"></category><category term="internet"></category><category term="DNS-zone"></category><category term="dig"></category><category term="nslookup"></category></entry><entry><title>Сеть</title><link href="http://blog.hoxnox.com/gentoo/net.html" rel="alternate"></link><published>2012-02-23T00:00:00+04:00</published><updated>2012-02-23T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-23:/gentoo/net.html</id><summary type="html">&lt;p class="first last"&gt;Настраиваю сетевые коммуникации в Gentoo.&lt;/p&gt;
+</summary><content type="html">&lt;p&gt;Без сети в Gentoo-desktop катастрофически тяжело. Поэтому еще до того, как я начну настройку и
 установку программного обеспечения, сразу после получения более-менее работающего &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;собственноручно
 собранного ядра&lt;/a&gt;, настраиваем сеть.&lt;/p&gt;
 &lt;p&gt;Начну с общего. Для начала пропишу адреса &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/DNS"&gt;DNS&lt;/a&gt; серверов, которые буду использовать. Для этого имеется
@@ -5386,7 +5642,10 @@ postup&lt;span class="o"&gt;()&lt;/span&gt; &lt;span class="o"&gt;{&lt;/span&gt;
 &lt;p&gt;Настройка bluetooth - тема для &lt;a class="reference external" href="http://hoxnox.github.com/todo"&gt;отдельного разговора&lt;/a&gt;. Если вкратце, необходимо настроить поддержку
 железа в ядре. Настроить &lt;a class="reference external" href="http://ru.wikipedia.org/wiki/RFCOMM"&gt;rfcomm&lt;/a&gt;, поставить &lt;a class="reference external" href="http://ppp.samba.org/"&gt;pppd&lt;/a&gt;, написать &lt;a class="reference external" href="http://sysoev.ru/pppd/connect.html"&gt;скрипт дозвона&lt;/a&gt;&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="gentoo"></category><category term="wifi"></category><category term="bluetooth"></category><category term="ethernet"></category></entry><entry><title>Плавный переход с Ubuntu на Gentoo</title><link href="http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html" rel="alternate"></link><published>2012-02-22T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-22:gentoo/ubuntu-gentoo.html</id><summary type="html">&lt;div class="section" id="id1"&gt;
+</content><category term="gentoo"></category><category term="wifi"></category><category term="bluetooth"></category><category term="ethernet"></category></entry><entry><title>Плавный переход с Ubuntu на Gentoo</title><link href="http://blog.hoxnox.com/gentoo/ubuntu-gentoo.html" rel="alternate"></link><published>2012-02-22T00:00:00+04:00</published><updated>2012-02-22T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-02-22:/gentoo/ubuntu-gentoo.html</id><summary type="html">&lt;p class="first last"&gt;Данная статья будет интересна тем, кто уже проникся философией *nix систем, успешно использует на
+своей рабочей машинке Ubuntu и чувствует, что её простота мешает ещё больше углубиться в мир
+открытого ПО.&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="id1"&gt;
 &lt;h2&gt;Мотивация&lt;/h2&gt;
 &lt;p&gt;В своё время, когда я начинал свой путь в мир открытого ПО с FreeBSD, мне очень понравилась
 концепция &lt;em&gt;&amp;quot;собери все сам&amp;quot;&lt;/em&gt;, она позволяет вскрыть новые пласты знаний и получить драгоценный опыт.
@@ -5690,7 +5949,14 @@ menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class
 &lt;/pre&gt;&lt;/div&gt;
 &lt;p&gt;Перезагружаюсь в Gentoo. Welcome home. Теперь начинается самое интересное ...&lt;/p&gt;
 &lt;/div&gt;
-</summary><category term="ubuntu"></category><category term="gentoo"></category><category term="linux"></category></entry><entry><title>Wine</title><link href="http://blog.hoxnox.com/gentoo/games.html" rel="alternate"></link><published>2012-01-01T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-01-01:gentoo/games.html</id><summary type="html">&lt;h1&gt;wine&lt;/h1&gt;
+</content><category term="ubuntu"></category><category term="gentoo"></category><category term="linux"></category></entry><entry><title>Wine</title><link href="http://blog.hoxnox.com/gentoo/games.html" rel="alternate"></link><published>2012-01-01T00:00:00+04:00</published><updated>2012-01-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-01-01:/gentoo/games.html</id><summary type="html">&lt;h1&gt;wine&lt;/h1&gt;
+&lt;p&gt;Wine позволяет играться. Есть замечательный сайт
+[winehq][http://winehq.org], на котором можно найти особенности запуска
+той или иной игрушки под wine'ом. В том числе параметры системного
+реестра для повышения производительности.&lt;/p&gt;
+&lt;p&gt;Некоторые игры требуют специального архиватора для текстур (s3tc),
+который можно установить с пакетом &lt;code&gt;libtxc_dxtn&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Открытая реализация OpenGL - это …&lt;/p&gt;</summary><content type="html">&lt;h1&gt;wine&lt;/h1&gt;
 &lt;p&gt;Wine позволяет играться. Есть замечательный сайт
 [winehq][http://winehq.org], на котором можно найти особенности запуска
 той или иной игрушки под wine'ом. В том числе параметры системного
@@ -5700,7 +5966,8 @@ menuentry &lt;span class="s2"&gt;&amp;quot;Gentoo&amp;quot;&lt;/span&gt; --class
 &lt;p&gt;Открытая реализация OpenGL - это mesa. С пакетом mesa-progs идет утилита
 glxinfo, с помощью нее можно узнать различные параметры:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;glxinfo | grep OpenGL
-&lt;/pre&gt;&lt;/div&gt;</summary></entry><entry><title>Утилиты для работы с TCP/IP</title><link href="http://blog.hoxnox.com/inet/tcp_utils.html" rel="alternate"></link><published>2012-01-01T00:00:00+04:00</published><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-01-01:inet/tcp_utils.html</id><summary type="html">&lt;div class="section" id="ping"&gt;
+&lt;/pre&gt;&lt;/div&gt;</content></entry><entry><title>Утилиты для работы с TCP/IP</title><link href="http://blog.hoxnox.com/inet/tcp_utils.html" rel="alternate"></link><published>2012-01-01T00:00:00+04:00</published><updated>2012-01-01T00:00:00+04:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2012-01-01:/inet/tcp_utils.html</id><summary type="html">&lt;p class="first last"&gt;ping, tcpdump, traceroute, ttcp, lsof, netstat&lt;/p&gt;
+</summary><content type="html">&lt;div class="section" id="ping"&gt;
 &lt;h2&gt;ping&lt;/h2&gt;
 &lt;p&gt;Посылает ICMP запросы и читает ответы. Все гениальное - просто.&lt;/p&gt;
 &lt;/div&gt;
@@ -5758,4 +6025,4 @@ ttcp -r | ttcp -t следующий узел
 &lt;p&gt;Ядро ОС ведет разнообразную статистику об объектах, имеющих отношение к сети. Эту информацию можно
 получить с помощью программы netstat.&lt;/p&gt;
 &lt;/div&gt;
-</summary></entry></feed>
+</content></entry></feed>
