@@ -31,7 +31,7 @@ readable. It's not:&lt;/p&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;I had to path the sources (see below), choose the appropriate font in
+&lt;p&gt;I had to patch the sources (see below), choose the appropriate font in
 the patched version and use the font line from the configuration file (see
 above).&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="gh"&gt;diff --git a/src/fontdialog.cpp b/src/fontdialog.cpp&lt;/span&gt;
@@ -67,10 +67,10 @@ above).&lt;/p&gt;
 
 &lt;h2&gt;Colors&lt;/h2&gt;
 &lt;p&gt;After all the font was set, ligatures worked, but the colors were ugly.
-I've found good &lt;a href="https://terminal.sexy"&gt;online visual redactor&lt;/a&gt;. It
+I've found good &lt;a href="https://terminal.sexy"&gt;online visual editor&lt;/a&gt;. It
 helped to create a very nice color scheme. Good start point was theme
 from &lt;a href="https://github.com/lysyi3m/osx-terminal-themes"&gt;lusy3m's themes repository&lt;/a&gt;. You can
-import it into the redactor as &lt;code&gt;Terminal.app&lt;/code&gt;.
+import it into the editor as &lt;code&gt;Terminal.app&lt;/code&gt;.
 After all you must export file in &lt;code&gt;konsole&lt;/code&gt; format and save into
 &lt;code&gt;~/.config/qterminal.org/color-schemes&lt;/code&gt; with &lt;code&gt;.colorsheme&lt;/code&gt; extension.&lt;/p&gt;
 &lt;p&gt;Now I'm satisfied for some time. =)&lt;/p&gt;
