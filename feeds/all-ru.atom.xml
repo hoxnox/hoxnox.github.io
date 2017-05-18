@@ -636,7 +636,9 @@ sudo emerge -av --quiet gdk-pixbuf
 
 &lt;p&gt;&lt;code&gt;~/.config/gtk-3.0/settings.ini&lt;/code&gt;&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[Settings]&lt;/span&gt;
-&lt;span class="na"&gt;gtk-theme-name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;Vertex-Dark&lt;/span&gt;
+&lt;span class="na"&gt;gtk-icon-theme-name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;Vertex&lt;/span&gt;
+&lt;span class="na"&gt;gtk-theme-name&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;Vertex&lt;/span&gt;
+&lt;span class="na"&gt;gtk-application-prefer-dark-theme&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;true&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -664,10 +666,20 @@ GDK_SCALE=2
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;And apply it globally in &lt;code&gt;~/.Xresources&lt;/code&gt; file (chromium required
-~/.Xdefaults symlink).&lt;/p&gt;
+&lt;p&gt;And apply it globally in &lt;code&gt;~/.Xresources&lt;/code&gt; file &lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Xcursor.theme: Vanilla-DMZ-AA
 Xcursor.size: 48
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;for chromium:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ln -s ~/.Xresources ~/.Xdefaults
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;for awesome-wm:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;mkdir ~/.icons
+ln -s ~/.icons/default /usr/share/cursors/xorg-X11/Vanilla-DMZ-AA
 &lt;/pre&gt;&lt;/div&gt;
 
 
@@ -684,8 +696,6 @@ gtk-cursor-theme-size = 48
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;Only awesome-wm left with a small cursor. I didn't found a way to change
-it.&lt;/p&gt;
 &lt;h1&gt;adwaita warnings&lt;/h1&gt;
 &lt;p&gt;Some GTK applications gave me warnings:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;Gtk-WARNING **: Загружаемый модуль тем не найден в module_path: «adwaita»,
