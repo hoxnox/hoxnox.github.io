@@ -1,5 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/all-ru.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2017-01-08T00:00:00+03:00</updated><entry><title>Fancy Linux terminal</title><link href="http://blog.hoxnox.com/gentoo/fancy_terminal.md.html" rel="alternate"></link><published>2017-01-08T00:00:00+03:00</published><updated>2017-01-08T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2017-01-08:/gentoo/fancy_terminal.md.html</id><summary type="html">&lt;p&gt;I've decided to revise my every day terminal life. There are not many things that can be changed, only fonts and colors. Nevertheless their importance is tremendous.&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Fonts&lt;/h2&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>NX</title><link href="http://blog.hoxnox.com/" rel="alternate"></link><link href="http://blog.hoxnox.com/feeds/all-ru.atom.xml" rel="self"></link><id>http://blog.hoxnox.com/</id><updated>2017-07-06T00:00:00+03:00</updated><entry><title>Android C++ with conan quick start</title><link href="http://blog.hoxnox.com/devel/android_cpp_conan_start.md.html" rel="alternate"></link><published>2017-07-06T00:00:00+03:00</published><updated>2017-07-06T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2017-07-06:/devel/android_cpp_conan_start.md.html</id><summary type="html">&lt;p&gt;This tutorial shows how to quickly start develop Android applications on C++ with third-party libraries (boost for example), available in conan package manager.&lt;/p&gt;</summary><content type="html">&lt;p&gt;Install the latest &lt;a href="https://developer.android.com/studio/index.html"&gt;Android Studio&lt;/a&gt;,
+&lt;a href="https://www.conan.io/downloads"&gt;conan&lt;/a&gt; and
+&lt;a href="https://developer.android.com/ndk/downloads/index.html"&gt;NDK&lt;/a&gt;. Start the
+studio, chose "Start a new Android Studio project". Fill the form. Don't
+forget to check "Include C++ support".&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Start new project" class height="397px" id="id.svg" src="http://blog.hoxnox.com/devel/android_start.pic1.png" width="425px"&gt;&lt;/p&gt;
+&lt;p&gt;Choose minimum SDK.&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Minimum SDK" class height="397px" id="id.svg" src="http://blog.hoxnox.com/devel/android_start.pic2.png" width="425px"&gt;&lt;/p&gt;
+&lt;p&gt;Choose minimum SDK, empty Activity, fill in activity parameters. In
+Customize C++ support form chose C++ standard (C++11 is highly
+recommended) and check the box "Exceptions support".&lt;/p&gt;
+&lt;p&gt;&lt;img alt="Customize C++" class height="397px" id="id.svg" src="http://blog.hoxnox.com/devel/android_start.pic3.png" width="425px"&gt;&lt;/p&gt;
+&lt;p&gt;Go to &lt;code&gt;File-&amp;gt;Project Structure&lt;/code&gt; and fill in "Android NDK location".&lt;/p&gt;
+&lt;p&gt;&lt;img alt="NDK location" class height="283px" id="id.svg" src="http://blog.hoxnox.com/devel/android_start.pic4.png" width="739px"&gt;&lt;/p&gt;
+&lt;p&gt;Add my repository to conan&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;conan remote add hoxnox https://api.bintray.com/conan/hoxnox/conan
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;In the &lt;code&gt;app&lt;/code&gt; directory add two files: &lt;code&gt;conanfile.txt&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[requires]&lt;/span&gt;
+&lt;span class="err"&gt;boost/1.64.0@hoxnox/stable&lt;/span&gt;
+
+&lt;span class="k"&gt;[options]&lt;/span&gt;
+&lt;span class="na"&gt;boost:fPIC&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;True&lt;/span&gt;
+&lt;span class="na"&gt;boost:without_locale&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;True&lt;/span&gt;
+&lt;span class="na"&gt;boost:without_math&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;True&lt;/span&gt;
+&lt;span class="na"&gt;boost:without_context&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;True&lt;/span&gt;
+
+&lt;span class="k"&gt;[generators]&lt;/span&gt;
+&lt;span class="err"&gt;cmake&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and &lt;code&gt;conan_android_profile&lt;/code&gt;&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="k"&gt;[settings]&lt;/span&gt;
+&lt;span class="na"&gt;os&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;Android&lt;/span&gt;
+&lt;span class="na"&gt;compiler&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;clang&lt;/span&gt;
+&lt;span class="na"&gt;compiler.version&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;3.8&lt;/span&gt;
+&lt;span class="na"&gt;compiler.libcxx&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;libstdc++&lt;/span&gt;
+
+&lt;span class="k"&gt;[options]&lt;/span&gt;
+&lt;span class="na"&gt;android-toolchain:ndk_path&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s"&gt;/opt/android-ndk&lt;/span&gt;
+
+&lt;span class="k"&gt;[build_requires]&lt;/span&gt;
+&lt;span class="err"&gt;*:android-toolchain/r13b@lasote/testing&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Change &lt;code&gt;app/build.gradle&lt;/code&gt;: add into android::defaultConfig:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;ndk { abiFilters &amp;#39;x86&amp;#39;, &amp;#39;armeabi&amp;#39; }
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;and in the root of the file:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;task conanInstall {
+    def CONAN_ARCHS_MAP = [&amp;quot;x86&amp;quot;:&amp;#39;x86&amp;#39;, &amp;#39;armeabi&amp;#39;:&amp;#39;armv6&amp;#39;]
+    def api_level = android.defaultConfig.minSdkVersion.mApiLevel
+    android.defaultConfig.ndk.abiFilters.each {
+        def arch = CONAN_ARCHS_MAP.get(it, it)
+        def build_dir = new File(&amp;quot;app/conan/&lt;span class="nv"&gt;$it&lt;/span&gt;&amp;quot;)
+        build_dir.mkdirs()
+        def cmd = &amp;quot;conan install --file ../../conanfile.txt &amp;quot; +
+                &amp;quot;--profile ../../conan_android_profile &amp;quot; +
+                &amp;quot;-s arch=&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;arch&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt; -s os=Android -s os.api_level=&lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;api_level&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt; &amp;quot; +
+                &amp;quot; --build missing &amp;quot;
+        print(&amp;quot;&amp;gt;&amp;gt; &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt; \n&amp;quot;)
+
+        def sout = new StringBuilder(), serr = new StringBuilder()
+        def proc = cmd.execute(null, build_dir)
+        proc.consumeProcessOutput(sout, serr)
+        proc.waitFor()
+        println &amp;quot;&lt;span class="nv"&gt;$sout&lt;/span&gt; &lt;span class="nv"&gt;$serr&lt;/span&gt;&amp;quot;
+        if(proc.exitValue() != 0){
+            throw new Exception(&amp;quot;out&amp;gt; &lt;span class="nv"&gt;$sout&lt;/span&gt; err&amp;gt; &lt;span class="nv"&gt;$serr&lt;/span&gt;&amp;quot; + &amp;quot;\nCommand: &lt;span class="cp"&gt;${&lt;/span&gt;&lt;span class="n"&gt;cmd&lt;/span&gt;&lt;span class="cp"&gt;}&lt;/span&gt;&amp;quot;)
+        }
+    }
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Now you can use libraries, defined in &lt;code&gt;conanfile.txt&lt;/code&gt; in your native cpp
+code:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;jni.h&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;string&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+&lt;span class="cp"&gt;#include&lt;/span&gt; &lt;span class="cpf"&gt;&amp;lt;boost/filesystem.hpp&amp;gt;&lt;/span&gt;&lt;span class="cp"&gt;&lt;/span&gt;
+
+&lt;span class="k"&gt;extern&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;C&amp;quot;&lt;/span&gt;
+&lt;span class="n"&gt;JNIEXPORT&lt;/span&gt; &lt;span class="n"&gt;jstring&lt;/span&gt; &lt;span class="n"&gt;JNICALL&lt;/span&gt;
+&lt;span class="n"&gt;Java_com_example_hoxnox_test_1android_MainActivity_stringFromJNI&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;
+        &lt;span class="n"&gt;JNIEnv&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
+        &lt;span class="n"&gt;jobject&lt;/span&gt; &lt;span class="cm"&gt;/* this */&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+    &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt; &lt;span class="n"&gt;hello&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Fail&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="k"&gt;try&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="k"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;boost&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;filesystem&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;exists&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="s"&gt;&amp;quot;/default.prop&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;))&lt;/span&gt;
+            &lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;string&lt;/span&gt; &lt;span class="n"&gt;hello&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="s"&gt;&amp;quot;Hello from C++&amp;quot;&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;catch&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;std&lt;/span&gt;&lt;span class="o"&gt;::&lt;/span&gt;&lt;span class="n"&gt;exception&lt;/span&gt;&lt;span class="o"&gt;&amp;amp;&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+    &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="n"&gt;hello&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;e&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;what&lt;/span&gt;&lt;span class="p"&gt;();&lt;/span&gt;
+    &lt;span class="p"&gt;}&lt;/span&gt;
+    &lt;span class="k"&gt;return&lt;/span&gt; &lt;span class="n"&gt;env&lt;/span&gt;&lt;span class="o"&gt;-&amp;gt;&lt;/span&gt;&lt;span class="n"&gt;NewStringUTF&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;hello&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;c_str&lt;/span&gt;&lt;span class="p"&gt;());&lt;/span&gt;
+&lt;span class="p"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</content><category term="android"></category><category term="cxx"></category><category term="conan"></category><category term="devel"></category></entry><entry><title>Fancy Linux terminal</title><link href="http://blog.hoxnox.com/gentoo/fancy_terminal.md.html" rel="alternate"></link><published>2017-01-08T00:00:00+03:00</published><updated>2017-01-08T00:00:00+03:00</updated><author><name>Merder hoxnox Kim &lt;hoxnox@gmail.com&gt;</name></author><id>tag:blog.hoxnox.com,2017-01-08:/gentoo/fancy_terminal.md.html</id><summary type="html">&lt;p&gt;I've decided to revise my every day terminal life. There are not many things that can be changed, only fonts and colors. Nevertheless their importance is tremendous.&lt;/p&gt;</summary><content type="html">&lt;h2&gt;Fonts&lt;/h2&gt;
 &lt;p&gt;I've planned to give a chance to fonts with
 &lt;a href="https://en.wikipedia.org/wiki/Typographic_ligature"&gt;ligatures&lt;/a&gt; long
 time ago. I looked at &lt;a href="https://github.com/tonsky/FiraCode"&gt;Fira Code&lt;/a&gt;
