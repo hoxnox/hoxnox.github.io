@@ -140,25 +140,81 @@ NX            </a>
 </footer><!-- /.post-info -->                    </div>
                 </div>
                 <h2>Fonts</h2>
-<p>I've planned to give a chance to fonts with
-<a href="https://en.wikipedia.org/wiki/Typographic_ligature">ligatures</a> long
-time ago. I looked at <a href="https://github.com/tonsky/FiraCode">Fira Code</a>
-and <a href="http://www.fsd.it/shop/fonts/pragmatapro/">Pragmata Pro</a>. I
-downloaded <code>ttf</code> file and put it into <code>~/.fonts</code> directory. Now
-<code>fontconfig</code> see it:</p>
-<div class="highlight"><pre><span></span>   pblog <span class="o">[</span>master<span class="o">]</span> ⚡ fc-list <span class="p">|</span> grep FiraCode
-/home/hoxnox/.fonts/FiraCode-Regular.ttf: Fira Code:style<span class="o">=</span>Regular
-/home/hoxnox/.fonts/FiraCode-Retina.ttf: Fira Code,Fira Code Retina:style<span class="o">=</span>Retina,Regular
-/home/hoxnox/.fonts/FiraCode-Medium.ttf: Fira Code,Fira Code Medium:style<span class="o">=</span>Medium,Regular
-/home/hoxnox/.fonts/FiraCode-Light.ttf: Fira Code,Fira Code Light:style<span class="o">=</span>Light,Regular
-/home/hoxnox/.fonts/FiraCode-Bold.ttf: Fira Code:style<span class="o">=</span>Bold
+<p>Long time ago I've planned to give a chance to fonts with
+<a href="https://en.wikipedia.org/wiki/Typographic_ligature">ligatures</a>.
+I looked at <a href="https://github.com/tonsky/FiraCode">Fira Code</a>
+and <a href="http://www.fsd.it/shop/fonts/pragmatapro/">Pragmata Pro</a>. Some time
+later I've found the best font ever - <a href="https://github.com/be5invis/Iosevka">iosevka</a>.
+It's open source and can be customized.</p>
+<h3>Building iosevka</h3>
+<p>You need to install some build-time dependencies. All of them can be
+removed after the building.</p>
+<ul>
+<li>nodejs</li>
+<li>otfcc from layman:4nykey</li>
+</ul>
+<p>Tune some parameters (I prefer more vertically compacted version):</p>
+<div class="highlight"><pre><span></span><span class="gh">diff --git a/parameters.toml b/parameters.toml</span>
+<span class="gh">index 1e26721..f3db81a 100644</span>
+<span class="gd">--- a/parameters.toml</span>
+<span class="gi">+++ b/parameters.toml</span>
+<span class="gu">@@ -8,10 +8,10 @@ manufacturer = &#39;Belleve Invis&#39;</span>
+ designer = &#39;Belleve Invis&#39;
+ description = &#39;Spatial efficient monospace font family for programming. Built from code. http://be5invis.github.io/Iosevka&#39;
+
+<span class="gd">-leading = 1250     # Default line height times 1000.</span>
+<span class="gi">+leading = 1050     # Default line height times 1000.</span>
+ descenderPad = 0   # Additional line height, added to descender.
+ width = 500        # Character width. Increase this if you think that Iosevka is too narrow.
+<span class="gd">-cap = 735          # Cap height (as well as ascender).</span>
+<span class="gi">+cap = 705          # Cap height (as well as ascender).</span>
+ xheight = 530      # X-height.
+ #descender = -205  # Depth of descender. Currently unused.
+</pre></div>
+
+
+<p>Make your custom set and build:</p>
+<div class="highlight"><pre><span></span>make custom-config <span class="nv">set</span><span class="o">=</span>hoxnox <span class="nv">design</span><span class="o">=</span><span class="s1">&#39;type ss03 cv33&#39;</span> <span class="nv">upright</span><span class="o">=</span><span class="s1">&#39;type ss03 cv33&#39;</span> <span class="nv">italic</span><span class="o">=</span><span class="s1">&#39;type ss03 cv33&#39;</span> <span class="nv">oblique</span><span class="o">=</span><span class="s1">&#39;type ss03 cv33&#39;</span>
+make custom <span class="nv">set</span><span class="o">=</span>hoxnox
+</pre></div>
+
+
+<p>Install fonts and update the cache</p>
+<div class="highlight"><pre><span></span>cp dist/iosevka-hoxnox/* ~/.fonts/
+fc-cache -f
+</pre></div>
+
+
+<p>Check:</p>
+<div class="highlight"><pre><span></span>~  fc-list <span class="p">|</span> grep Iosevka
+/home/hoxnox/.fonts/iosevka-hoxnox-extralightoblique.ttf: Iosevka Type Type,Iosevka Type Type Extralight Oblique:style<span class="o">=</span>Extralight Oblique,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-bolditalic.ttf: Iosevka Type Type:style<span class="o">=</span>Bold Italic
+/home/hoxnox/.fonts/iosevka-hoxnox-heavyoblique.ttf: Iosevka Type Type,Iosevka Type Type Heavy Oblique:style<span class="o">=</span>Heavy Oblique,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-thinoblique.ttf: Iosevka Type Type,Iosevka Type Type Thin Oblique:style<span class="o">=</span>Thin Oblique,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-thin.ttf: Iosevka Type Type,Iosevka Type Type Thin:style<span class="o">=</span>Thin,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-italic.ttf: Iosevka Type Type:style<span class="o">=</span>Italic
+/home/hoxnox/.fonts/iosevka-hoxnox-heavy.ttf: Iosevka Type Type,Iosevka Type Type Heavy:style<span class="o">=</span>Heavy,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-lightitalic.ttf: Iosevka Type Type,Iosevka Type Type Light:style<span class="o">=</span>Light Italic,Italic
+/home/hoxnox/.fonts/iosevka-hoxnox-extralightitalic.ttf: Iosevka Type Type,Iosevka Type Type Extralight:style<span class="o">=</span>Extralight Italic,Italic
+/home/hoxnox/.fonts/iosevka-hoxnox-heavyitalic.ttf: Iosevka Type Type,Iosevka Type Type Heavy:style<span class="o">=</span>Heavy Italic,Italic
+/home/hoxnox/.fonts/iosevka-hoxnox-regular.ttf: Iosevka Type Type:style<span class="o">=</span>Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-medium.ttf: Iosevka Type Type,Iosevka Type Type Medium:style<span class="o">=</span>Medium,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-boldoblique.ttf: Iosevka Type Type,Iosevka Type Type Bold Oblique:style<span class="o">=</span>Bold Oblique,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-thinitalic.ttf: Iosevka Type Type,Iosevka Type Type Thin:style<span class="o">=</span>Thin Italic,Italic
+/home/hoxnox/.fonts/iosevka-hoxnox-extralight.ttf: Iosevka Type Type,Iosevka Type Type Extralight:style<span class="o">=</span>Extralight,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-mediumoblique.ttf: Iosevka Type Type,Iosevka Type Type Medium Oblique:style<span class="o">=</span>Medium Oblique,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-bold.ttf: Iosevka Type Type:style<span class="o">=</span>Bold
+/home/hoxnox/.fonts/iosevka-hoxnox-mediumitalic.ttf: Iosevka Type Type,Iosevka Type Type Medium:style<span class="o">=</span>Medium Italic,Italic
+/home/hoxnox/.fonts/iosevka-hoxnox-lightoblique.ttf: Iosevka Type Type,Iosevka Type Type Light Oblique:style<span class="o">=</span>Light Oblique,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-oblique.ttf: Iosevka Type Type,Iosevka Type Type Oblique:style<span class="o">=</span>Oblique,Regular
+/home/hoxnox/.fonts/iosevka-hoxnox-light.ttf: Iosevka Type Type,Iosevka Type Type Light:style<span class="o">=</span>Light,Regular
 </pre></div>
 
 
 <p>It's essential to have the bold version of the font with the regular one.
 Terminal uses both of them. It will look ugly if the bold version is
 missing.</p>
-<p>The font name can be used in terminal settings.
+<p>Now the font name can be used in terminal settings.
 It can be found after colon in <code>fc-list</code> output.</p>
 <p>Unfortunately at that point I didn't see any ligatures. That's because
 <a href="https://github.com/tonsky/FiraCode#terminal-support">not many terminals actually support it</a>. I had to
@@ -167,7 +223,7 @@ switch to <code>qterminal</code>. But it didn't help either!
 By the coincidence <a href="https://github.com/lxde/qterminal/issues/49">qterminal doesn't allow to choose not monospace fonts</a>.
 It wouldn't not be a problem if the parameter in the configuration file was human
 readable. It's not:</p>
-<div class="highlight"><pre><span></span><span class="na">font</span><span class="o">=</span><span class="s">@Variant(\0\0\0@\0\0\0\x18\0P\0r\0\x61\0g\0m\0\x61\0t\0\x61\0 \0P\0r\0o@$\0\0\0\0\0\0\xff\xff\xff\xff\x2\x1\0\x32\x10)</span>
+<div class="highlight"><pre><span></span><span class="na">font</span><span class="o">=</span><span class="s">@Variant(\0\0\0@\0\0\0\&quot;\0I\0o\0s\0\x65\0v\0k\0\x61\0 \0T\0y\0p\0\x65\0 \0T\0y\0p\0\x65@$\0\0\0\0\0\0\xff\xff\xff\xff\x2\x1\0\x32\x10)</span>
 </pre></div>
 
 
@@ -205,6 +261,12 @@ above).</p>
 </pre></div>
 
 
+<p>But there was another problem. On my 4K 195dpi monitor I've got <a href="https://github.com/lxde/qtermwidget/issues/46">vertical font truncation</a>.
+Finaly it was fixed too (see putch at the end of the tread).</p>
+<p>Iosevka has powerline glyphs, so if you have powerline or
+<a href="https://github.com/vim-airline/vim-airline">airline</a> installed, you'll see
+these fancy arrows.</p>
+<p><img alt="" src="https://camo.githubusercontent.com/eb64a0924422c0a70f86cd0c91697b5ff36e5d3f/68747470733a2f2f662e636c6f75642e6769746875622e636f6d2f6173736574732f3330363530322f313036303833312f30356330386161632d313162632d313165332d383437302d6135303661333033376634352e706e67"></p>
 <h2>Colors</h2>
 <p>After all the font was set, ligatures worked, but the colors were ugly.
 I've found good <a href="https://terminal.sexy">online visual editor</a>. It
